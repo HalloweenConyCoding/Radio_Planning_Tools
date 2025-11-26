@@ -89,7 +89,7 @@
     }
 
     #left-panel {
-      flex: 0 0 320px;
+      flex: 0 0 400px;
     }
 
     #right-panel {
@@ -110,7 +110,7 @@
       padding: 10px; 
       background: rgba(255,255,255,0.85); 
       border: 1px solid #ccc; 
-      width: 600px; 
+      width: 900px; 
       border-radius: 8px; 
     }
   </style>
@@ -139,7 +139,7 @@
         <label>Vertical Beam Width (°):</label><input id="vbw" value="6.5"><br>
         <label>Building Distance (m):</label><input id="bdistance"><br>
         <label>Building Height (m):</label><input id="bheight" value="50"><br>
-        <label>Building Width (m):</label><input id="bwidth" value="30"><br>
+        <label>Building Depth (m):</label><input id="bdepth" value="30"><br>
       </div>
 
       <button onclick="calculate()" style="margin-bottom: 20px;">Calculate</button>
@@ -153,13 +153,14 @@
 
   <div id="readme">
     <h3 style="color: #e74c3c;">Remarks</h3>
-    <p><strong>Encountering any bugs / strange logic behaviour/calculation please report to me [B. RPO].</strong></p>
+    <p style="color: #1100ff;"><strong>Please choose the correct site type [Macro/Small].</strong> -- this will effect picture rendering.</p>
+    <p><strong>Encountering any glitch/strange calculation results, please contact me [B.].</strong></p>
     <br>
     <h3 style="color: #1e90ff;">Note :</h3>
-    <p><strong>Keep this blank</strong><br>
-      Building Distance (m): (blank)<br>
-      if no building to be served (just normal macro site that serving around the city)<br>
-      only input this if you want to serve to the building (ex. small cell for low/high rise building)
+    <p><strong>Keep Building Distance (m): (blank)</strong>
+      <br>
+      If there is no building to be served (just normal macro site that serving on ground around the city)<br><br>
+      Only input this field if user want to simulate case that antenna serve on the building (ex. small cell for low/high rise building)
     </p>
   </div>
 
@@ -168,14 +169,19 @@
       return deg * Math.PI / 180;
     }
     
+    function getSelectedSiteType() {
+        // Helper to determine which radio button is checked
+        return document.querySelector('input[name="siteType"]:checked').value;
+    }
+    
     function calculate() {
       const HA = parseFloat(document.getElementById('ha').value);
       const M_Tilt = parseFloat(document.getElementById('mtilt').value);
       const E_Tilt = parseFloat(document.getElementById('etilt').value);
       const VBW = parseFloat(document.getElementById('vbw').value);
-      const B_DIST = parseFloat(document.getElementById('bdistance').value);
+      const B_DIST = document.getElementById('bdistance').value === "" ? NaN : parseFloat(document.getElementById('bdistance').value);
       const B_HEIGHT = parseFloat(document.getElementById('bheight').value);
-      const B_WIDTH = parseFloat(document.getElementById('bwidth').value);
+      const B_DEPTH = parseFloat(document.getElementById('bdepth').value);
     
       if (isNaN(HA) || HA <= 0) {
         alert("Antenna height must be a positive number.");
@@ -185,7 +191,7 @@
       const Total_Tilt = M_Tilt + E_Tilt;
       const beams = {
         upper: { angle: Total_Tilt - VBW / 2, color: 'blue' },
-        main:  { angle: Total_Tilt,           color: 'red' },
+        main: 	{ angle: Total_Tilt, 			 color: 'red' },
         lower: { angle: Total_Tilt + VBW / 2, color: 'green' }
       };
     
@@ -200,79 +206,88 @@
         let landingY = 0;
         let message = '';
         
+        // Helper for capitalized beam name in the message
+        const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+    
         if (angle > 0) {
-          // Downward beam
+          // Downward beam (Landing on ground or hitting building)
           const groundDist = HA / tan;
           let buildingFrontHeight = Infinity;
           if (!isNaN(B_DIST)) buildingFrontHeight = HA - B_DIST * tan;
-        
+    
           if (!isNaN(B_DIST) && groundDist >= B_DIST) {
-            // Beam reaches the building area
             if (buildingFrontHeight <= B_HEIGHT) {
-              // Beam hits the building front
+              // Case 1: Beam hits the building front
               landingX = B_DIST;
               landingY = HA - B_DIST * tan;
-              message = `${key} beam hits building front at ${landingY.toFixed(2)}m height`;
+              message = `${capitalizedKey} beam hits building front at ${landingY.toFixed(2)}m height`;
             } else {
-              // Beam hits the ground before or below building height
+              // Case 2: Beam lands on ground (past building height or distance)
               landingX = groundDist;
               landingY = 0;
-              message = `${key} beam lands on ground at ${landingX.toFixed(2)}m`;
+              message = `${capitalizedKey} beam lands on ground at ${landingX.toFixed(2)}m`;
             }
           } else {
-            // No building, normal ground landing
+            // Case 3: No building, normal ground landing
             landingX = groundDist;
             landingY = 0;
-            message = `${key} beam lands on ground at ${landingX.toFixed(2)}m`;
+            message = `${capitalizedKey} beam lands on ground at ${landingX.toFixed(2)}m`;
           }
         }
-        
+    
         else if (angle < 0) {
-          // Upward beam (can hit top of building if tall enough)
+          // Upward beam (Negative angle)
           if (!isNaN(B_DIST)) {
             const buildingTopX = B_DIST;
             const beamHeightAtBuilding = HA - buildingTopX * Math.tan(toRadians(angle));
+            
             if (beamHeightAtBuilding <= B_HEIGHT) {
+              // Case 4: Upward beam hits building front (low angle)
               landingX = B_DIST;
               landingY = beamHeightAtBuilding;
-              message = `${key} beam hits building front at ${landingY.toFixed(2)}m height`;
+              message = `${capitalizedKey} beam hits building front at ${landingY.toFixed(2)}m height`;
             } else {
-              landingX = B_DIST + B_WIDTH;
-              landingY = HA - landingX * Math.tan(toRadians(angle));
-              message = `${key} beam flies over the building – no landing`;
+              // Case 5: Beam flies over the building (NO LANDING)
+              landingX = 0;
+              landingY = HA;
+              message = `${capitalizedKey} beam flies over building – Not Landing`;
             }
           } else {
-            message = `${key} beam goes upward – no landing`;
+            // Case 6: Upward beam with no building (NO LANDING)
+            message = `${capitalizedKey} beam goes upward – Not Landing`;
             landingX = 0;
             landingY = HA;
           }
         } else {
           // Horizontal beam (0°)
           if (!isNaN(B_DIST)) {
-            // Stop at building front if present
+            // Case 7: Horizontal beam stops at building front
             landingX = B_DIST;
             landingY = HA;
-            message = `${key} beam hits building front at ${landingY.toFixed(2)} m height`;
+            message = `${capitalizedKey} beam hits building front at ${landingY.toFixed(2)} m height`;
           } else {
-            // No building — extend arbitrary short distance
-            landingX = 200;
+            // Case 8: Horizontal beam with no building (VISUALIZE SHORT DISTANCE)
+            landingX = 0;
             landingY = HA;
-            message = `${key} beam is horizontal`;
+            message = `${capitalizedKey} beam is horizontal – Not Landing`;
           }
         }
     
         beam.landing = landingX;
         beam.height = landingY;
         beam.message = message;
-        maxX = Math.max(maxX, landingX, (isNaN(B_DIST) ? 0 : B_DIST + B_WIDTH));
+        maxX = Math.max(maxX, landingX, (isNaN(B_DIST) ? 0 : B_DIST + B_DEPTH));
     
-        resultsDiv.innerHTML += `<div style="color:${beam.color}">${key} Beam (Angle: ${angle.toFixed(1)}°) - ${message}</div>`;
+        // Final Output Formatting
+        resultsDiv.innerHTML += `<div style="color:${beam.color}">
+          ${capitalizedKey} Beam (Angle: ${angle.toFixed(1)}°)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- ${message}
+        </div>`;
       }
     
-      draw(HA, beams, B_DIST, B_HEIGHT, B_WIDTH, maxX);
+      draw(HA, beams, B_DIST, B_HEIGHT, B_DEPTH, maxX);
     }
-    
-    function draw(HA, beams, B_DIST, B_HEIGHT, B_WIDTH, maxX) {
+    function draw(HA, beams, B_DIST, B_HEIGHT, B_DEPTH, maxX) {
       const canvas = document.getElementById("plot");
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -281,15 +296,43 @@
       const canvasW = canvas.width;
       const canvasH = canvas.height;
     
-      // Scale dynamically to fit both antenna and building
+      let scaleX, scaleY, baseY;
+    
+      // Determine site type for scaling logic
+      const siteType = getSelectedSiteType();
       let maxHeight = HA;
       if (!isNaN(B_HEIGHT)) maxHeight = Math.max(HA, B_HEIGHT);
     
-      const scaleX = (canvasW - margin * 2) / (maxX * 1.1);
-      const scaleY = (canvasH - margin * 2) / (maxHeight * 1.1);
+      // === 1. MACRO SITE (Original, Aspect-Distorting Scale) ===
+      if (siteType === "Macro") {
+        // Scale X and Y independently based on available canvas space
+        scaleX = (canvasW - margin * 2) / (maxX * 1.1);
+        scaleY = (canvasH - margin * 2) / (maxHeight * 1.1);
+        baseY = canvasH - margin; // Fixed baseline at the bottom
+    
+      // === 2. SMALL CELL (New, Aspect-Locked Scale) ===
+      } else if (siteType === "Small") {
+        
+        const worldMaxX = maxX * 1.1;
+        const worldMaxY = maxHeight * 1.1;
+    
+        // Calculate separate scales for available canvas space
+        const scaleX_space = (canvasW - margin * 2) / worldMaxX;
+        const scaleY_space = (canvasH - margin * 2) / worldMaxY;
+    
+        // UNIFY the scale factor: Choose the smaller scale to ensure everything fits
+        const scale = Math.min(scaleX_space, scaleY_space);
+    
+        scaleX = scale;
+        scaleY = scale;
+    
+        // Calculate a new baseline that centers the content vertically
+        const contentHeightPx = worldMaxY * scale;
+        // BaseY is set to center the content vertically on the canvas
+        baseY = margin + (canvasH - 2 * margin - contentHeightPx) / 2 + contentHeightPx;
+      }
     
       const baseX = margin;
-      const baseY = canvasH - margin;
       const antennaTopY = baseY - HA * scaleY;
     
       // Draw ground
@@ -309,15 +352,15 @@
       // Draw building (if distance filled)
       if (!isNaN(B_DIST)) {
         const bx = baseX + B_DIST * scaleX;
-        const bw = B_WIDTH * scaleX;
+        const bw = B_DEPTH * scaleX;
         const bh = B_HEIGHT * scaleY;
-        ctx.fillStyle = "gray";
+        ctx.fillStyle = "lightgreen";
         ctx.fillRect(bx, baseY - bh, bw, bh);
         ctx.fillStyle = "black";
         ctx.font = "12px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(`Height = ${B_HEIGHT.toFixed(1)} m.`, bx + bw / 2, baseY - bh / 2 - 7);
-        ctx.fillText(`Width = ${B_WIDTH.toFixed(1)} m.`, bx + bw / 2, baseY - bh / 2 + 10);
+        ctx.fillText(`Height = ${B_HEIGHT.toFixed(0)} m.`, bx + bw / 2, baseY - bh / 2 - 7);
+        ctx.fillText(`Depth = ${B_DEPTH.toFixed(0)} m.`, bx + bw / 2, baseY - bh / 2 + 10);
       }
     
       // Draw beams
@@ -347,12 +390,20 @@
           document.getElementById("etilt").value = 3;
           document.getElementById("vbw").value = 6.5;
           document.getElementById("bheight").value = 50;
+          // Re-run calculation if results exist
+          if (document.getElementById("results").innerHTML !== '') {
+            calculate();
+          }
         } else if (type === "Small") {
           document.getElementById("ha").value = 30;
           document.getElementById("mtilt").value = 0;
           document.getElementById("etilt").value = 0;
           document.getElementById("vbw").value = 30;
           document.getElementById("bheight").value = 50;
+          // Re-run calculation if results exist
+          if (document.getElementById("results").innerHTML !== '') {
+            calculate();
+          }
         }
       });
     });

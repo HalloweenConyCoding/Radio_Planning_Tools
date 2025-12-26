@@ -1,0 +1,249 @@
+/* =========================================
+   1. VARIABLES & RESET
+   ========================================= */
+:root {
+    /* Colors - Dark Professional Theme (Matching V3) */
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #252525;
+    --accent-primary: #00ff9d;
+    /* Cyber Green */
+    --accent-secondary: #2ecc71;
+    --accent-hover: #00cc7d;
+    --text-main: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --text-dark: #121212;
+    --border-color: #333333;
+
+    /* Effects */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --glow-accent: 0 0 15px rgba(0, 255, 157, 0.15);
+
+    /* Typography */
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* =========================================
+   2. LAYOUT
+   ========================================= */
+.app-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+/* Header Section */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header-image {
+    max-height: 400px;
+    width: auto;
+    /* Glass-morphism Frame */
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 255, 157, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+
+    /* Neon Backlight Glow */
+    box-shadow:
+        0 0 20px rgba(0, 255, 157, 0.1),
+        0 0 40px rgba(0, 255, 157, 0.05),
+        inset 0 0 20px rgba(0, 255, 157, 0.05);
+
+    margin-bottom: 30px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.header-image:hover {
+    transform: scale(1.02) translateY(-5px);
+    border-color: var(--accent-primary);
+    box-shadow:
+        0 10px 30px rgba(0, 255, 157, 0.2),
+        0 0 60px rgba(0, 255, 157, 0.1),
+        inset 0 0 30px rgba(0, 255, 157, 0.1);
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 0;
+    width: 100%;
+}
+
+.spacer {
+    height: 40px;
+}
+
+/* =========================================
+   3. VERSIONS GRID / STACK
+   ========================================= */
+.versions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    /* Limit width for cleaner single column */
+    margin: 0 auto;
+}
+
+.version-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px 30px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.version-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), var(--glow-accent);
+    border-color: var(--accent-primary);
+}
+
+.version-card:active {
+    transform: translateY(-2px);
+}
+
+/* Card Content */
+.card-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.version-number {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-primary);
+    background: rgba(0, 255, 157, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.card-description {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.card-status {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Status Colors */
+.status-active .status-dot {
+    background-color: var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-primary);
+}
+
+.status-dev .status-dot {
+    background-color: #ffb74d;
+    /* Orange */
+    box-shadow: 0 0 8px #ffb74d;
+}
+
+.status-legacy .status-dot {
+    background-color: #757575;
+    /* Grey */
+}
+
+/* Section Titles */
+.section-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-label::after {
+    content: '';
+    height: 1px;
+    flex-grow: 1;
+    background: var(--border-color);
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    padding: 40px 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+}

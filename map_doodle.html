@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Map - Color Picker</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+        crossorigin="" />
+
+    <style>
+        /* --- LAYOUT --- */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            cursor: grab;
+        }
+
+        /* Cursors */
+        .mode-pen {
+            cursor: crosshair !important;
+        }
+
+        .mode-eraser {
+            cursor: cell !important;
+        }
+
+        .mode-locked {
+            cursor: default !important;
+        }
+
+        /* --- UI ELEMENTS --- */
+        /* Top Left: Lock Button */
+        #lock-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 2000;
+        }
+
+        #lock-button {
+            background: #0099ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s;
+        }
+
+        #lock-button.locked {
+            background: #ff4444;
+        }
+
+        /* Top Right: Drawing Tools */
+        #draw-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* COLOR BUTTON (CIRCLE) */
+        #btn-color {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            background-color: #00ffff;
+            /* Default Cyan */
+            transition: transform 0.1s;
+        }
+
+        #btn-color:hover {
+            transform: scale(1.1);
+        }
+
+        /* COLOR PICKER POPUP (Hidden by default) */
+        #color-picker-popup {
+            display: none;
+            /* Hidden */
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            z-index: 2100;
+            background: #252526;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        canvas#spectrum-canvas {
+            cursor: crosshair;
+            border: 1px solid #444;
+            display: block;
+        }
+
+        .tool-btn {
+            background: #252526;
+            color: white;
+            border: 1px solid #555;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-btn:hover {
+            background: #333;
+        }
+
+        .tool-btn.active {
+            background: #00ffff;
+            color: black;
+            border-color: #00ffff;
+        }
+
+        #btn-clear {
+            background: #444;
+            color: #aaa;
+            border: 1px solid #666;
+        }
+
+        #btn-clear:hover {
+            background: #ff3333;
+            color: white;
+            border-color: #ff3333;
+        }
+
+        /* Bottom Left: Search */
+        #search-container {
+            position: absolute;
+            bottom: 40px;
+            left: 20px;
+            z-index: 2000;
+            background: #252526;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #coord-input {
+            background: #1e1e1e;
+            border: 1px solid #555;
+            color: white;
+            padding: 5px;
+            width: 220px;
+        }
+
+        #go-btn {
+            background: #0099ff;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+
+        /* Status Bar */
+        #status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25px;
+            background: #007acc;
+            color: white;
+            font-size: 12px;
+            line-height: 25px;
+            padding-left: 20px;
+            z-index: 3000;
+        }
+
+        /* --- CUSTOM VERTEX STYLE --- */
+        .leaflet-div-icon {
+            background: transparent;
+            border: none;
+        }
+
+        .custom-vertex-icon {
+            width: 8px !important;
+            height: 8px !important;
+            margin-left: -4px !important;
+            margin-top: -4px !important;
+            background-color: #ff0000;
+            border: 1px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px black;
+        }
+
+        /* --- LABEL STYLE (Always White Text) --- */
+        .dist-label {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            /* WHITE TEXT */
+            border: 1px solid #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+            text-align: center;
+            pointer-events: auto;
+        }
+
+        /* --- COLOR CORRECTION FOR ESRI TILES --- */
+        .cool-map {
+            /* saturate(0.6): Removes the heavy yellow/brown warmth (makes asphalt grey)
+            brightness(1.1): Makes it pop more (Google maps are usually brighter)
+            contrast(1.15): Sharpens the shadows and lines
+            hue-rotate(-5deg): Shifts slightly away from yellow towards blue 
+            */
+            filter: saturate(0.8) brightness(1) contrast(1.1) hue-rotate(-0deg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="status-bar">Status: Ready.</div>
+
+    <div id="lock-container">
+        <button id="lock-button" onclick="toggleLock()">🔓 Unlock Panning</button>
+    </div>
+
+    <div id="draw-container">
+        <div id="btn-color" onclick="toggleColorPicker()" title="Change Color"></div>
+
+        <button class="tool-btn" id="btn-pen" onclick="setTool('pen')">✏️ Pen</button>
+        <button class="tool-btn" id="btn-line" onclick="setTool('polyline')">📏 Draw Line</button>
+        <button class="tool-btn" id="btn-eraser" onclick="setTool('eraser')">🗑️ Eraser</button>
+        <button class="tool-btn" id="btn-clear" onclick="clearAll()">Clear All</button>
+    </div>
+
+    <div id="color-picker-popup">
+        <canvas id="spectrum-canvas" width="200" height="150"></canvas>
+        <div style="color: #ccc; font-size: 10px; margin-top: 5px; text-align: center;">Click to Select</div>
+    </div>
+
+    <div id="search-container">
+        <input type="text" id="coord-input" value="13.98937472, 100.61781242">
+        <button id="go-btn" onclick="searchCoords()">Go</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" crossorigin=""></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geometryutil/0.10.1/leaflet.geometryutil.min.js"></script>
+
+    <script>
+        // --- 1. SETUP MAP ---
+        // --- 1. SETUP MAP ---
+        var map = L.map('map', { zoomControl: false }).setView([13.98937472, 100.61781242], 18);
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Esri, Maxar',
+            className: 'cool-map' // <--- ADD THIS LINE TO APPLY THE FILTER
+        }).addTo(map);
+
+        var drawnItems = new L.FeatureGroup();
+        var labelItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        map.addLayer(labelItems);
+
+        // --- 2. GLOBAL VARIABLES ---
+        var isManualLocked = false;
+        var activeTool = null;
+        var isPenDrawing = false;
+        var currentFreehandLine = null;
+        var currentColor = '#00ffff'; // Default Cyan
+
+        // --- 3. COLOR PICKER LOGIC ---
+
+        // Init Canvas Spectrum
+        function initColorPicker() {
+            var canvas = document.getElementById('spectrum-canvas');
+            var ctx = canvas.getContext('2d');
+
+            // Create Horizontal Gradient (Rainbow)
+            var gradH = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradH.addColorStop(0, "red");
+            gradH.addColorStop(0.17, "orange");
+            gradH.addColorStop(0.33, "yellow");
+            gradH.addColorStop(0.5, "green");
+            gradH.addColorStop(0.67, "cyan");
+            gradH.addColorStop(0.83, "blue");
+            gradH.addColorStop(1, "magenta");
+
+            ctx.fillStyle = gradH;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add Vertical Gradient (White to Transparent) for brightness
+            var gradV = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradV.addColorStop(0, "rgba(255,255,255,1)");
+            gradV.addColorStop(0.5, "rgba(255,255,255,0)");
+            gradV.addColorStop(0.5, "rgba(0,0,0,0)");
+            gradV.addColorStop(1, "rgba(0,0,0,1)"); // Darken at bottom
+
+            ctx.fillStyle = gradV;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add Click Listener
+            canvas.addEventListener('mousedown', function (e) {
+                pickColor(e, ctx);
+            });
+        }
+
+        function toggleColorPicker() {
+            var popup = document.getElementById('color-picker-popup');
+            if (popup.style.display === 'block') {
+                popup.style.display = 'none';
+            } else {
+                popup.style.display = 'block';
+                // Initialize canvas only when shown to ensure size is correct
+                initColorPicker();
+            }
+        }
+
+        function pickColor(e, ctx) {
+            var x = e.offsetX;
+            var y = e.offsetY;
+            var imgData = ctx.getImageData(x, y, 1, 1).data;
+            // Convert RGB to Hex
+            var hex = "#" + ((1 << 24) + (imgData[0] << 16) + (imgData[1] << 8) + imgData[2]).toString(16).slice(1);
+
+            // Apply Color
+            applyColor(hex);
+
+            // Hide Popup
+            document.getElementById('color-picker-popup').style.display = 'none';
+        }
+
+        function applyColor(hex) {
+            currentColor = hex;
+            // Update Button UI
+            document.getElementById('btn-color').style.backgroundColor = hex;
+
+            // Update Polyline Drawer Config
+            polylineDrawer.setOptions({
+                shapeOptions: {
+                    color: currentColor,
+                    weight: 4
+                }
+            });
+            updateStatus("Color changed to " + hex);
+        }
+
+        // --- 4. CONFIGURATION ---
+        var polylineDrawer = new L.Draw.Polyline(map, {
+            shapeOptions: { color: currentColor, weight: 4 }, // Use variable
+            metric: true, feet: false, guidelineDistance: 10,
+            icon: new L.DivIcon({ iconSize: [8, 8], className: 'custom-vertex-icon' }),
+            touchIcon: new L.DivIcon({ iconSize: [8, 8], className: 'custom-vertex-icon' })
+        });
+
+        // --- 5. TOOL SWITCHING ---
+        function setTool(toolName) {
+            if (activeTool === toolName) { resetTools(); return; }
+            if (activeTool === 'polyline') polylineDrawer.disable();
+
+            activeTool = toolName;
+
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            if (toolName !== 'clear') document.getElementById('btn-' + (toolName === 'polyline' ? 'line' : toolName)).classList.add('active');
+
+            if (toolName === 'polyline') {
+                polylineDrawer.enable();
+                updateStatus("Mode: MEASURE. Click points. Double-click to finish.");
+            } else if (toolName === 'pen') {
+                updateStatus("Mode: PEN. Hold left click to freehand draw.");
+            } else if (toolName === 'eraser') {
+                updateStatus("Mode: ERASER. Drag over items to delete.");
+            }
+            updateMapInteraction();
+        }
+
+        function resetTools() {
+            activeTool = null;
+            polylineDrawer.disable();
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            updateStatus("Ready.");
+            updateMapInteraction();
+        }
+
+        function clearAll() {
+            if (confirm("Delete all drawings?")) {
+                drawnItems.clearLayers();
+                labelItems.clearLayers();
+                updateStatus("Map cleared.");
+            }
+        }
+
+        function updateMapInteraction() {
+            var mapEl = document.getElementById('map');
+            if (isManualLocked || activeTool === 'pen') {
+                disableDragging();
+                mapEl.className = activeTool === 'pen' ? 'mode-pen' : 'mode-locked';
+            } else if (activeTool === 'eraser') {
+                enableDragging();
+                mapEl.className = 'mode-eraser';
+            } else {
+                enableDragging();
+                mapEl.className = '';
+            }
+        }
+        function disableDragging() { map.dragging.disable(); map.touchZoom.disable(); }
+        function enableDragging() { map.dragging.enable(); map.touchZoom.enable(); }
+
+        // --- 6. EVENT HANDLERS ---
+
+        // A. PEN (Freehand)
+        map.on('mousedown', function (e) {
+            if (activeTool !== 'pen') return;
+            isPenDrawing = true;
+            // Create line with CURRENT COLOR
+            currentFreehandLine = L.polyline([e.latlng], { color: currentColor, weight: 4 }).addTo(drawnItems);
+            attachEraserEvents(currentFreehandLine);
+        });
+        map.on('mousemove', function (e) {
+            if (activeTool === 'pen' && isPenDrawing && currentFreehandLine) currentFreehandLine.addLatLng(e.latlng);
+        });
+        map.on('mouseup', function () { if (activeTool === 'pen') isPenDrawing = false; });
+
+        // B. MEASURE LINE (Creation)
+        map.on(L.Draw.Event.CREATED, function (e) {
+            var layer = e.layer;
+            drawnItems.addLayer(layer);
+            layer.attachedLabels = [];
+
+            if (e.layerType === 'polyline') {
+                var latlngs = layer.getLatLngs();
+                for (var i = 0; i < latlngs.length - 1; i++) {
+                    var p1 = latlngs[i], p2 = latlngs[i + 1];
+                    var distMeters = map.distance(p1, p2);
+                    var midLat = (p1.lat + p2.lat) / 2;
+                    var midLng = (p1.lng + p2.lng) / 2;
+
+                    var labelIcon = L.divIcon({ className: 'dist-label', html: distMeters.toFixed(1) + " m", iconSize: null });
+                    var labelMarker = L.marker([midLat, midLng], { icon: labelIcon }).addTo(labelItems);
+
+                    labelMarker.attachedLine = layer;
+                    layer.attachedLabels.push(labelMarker);
+                    attachEraserEvents(labelMarker);
+                }
+            }
+            attachEraserEvents(layer);
+            updateStatus("Measurement added.");
+        });
+
+        // --- 7. ERASER LOGIC ---
+        function attachEraserEvents(layer) {
+            layer.on('mouseover', function (e) { if (activeTool === 'eraser' && e.originalEvent.buttons === 1) deleteSmart(e.target); });
+            layer.on('mousedown', function (e) { if (activeTool === 'eraser') deleteSmart(e.target); });
+        }
+        function deleteSmart(target) {
+            if (target.attachedLine) { deleteSmart(target.attachedLine); return; }
+            if (target.attachedLabels) { target.attachedLabels.forEach(function (l) { labelItems.removeLayer(l); }); }
+            if (drawnItems.hasLayer(target)) drawnItems.removeLayer(target);
+            if (labelItems.hasLayer(target)) labelItems.removeLayer(target);
+        }
+
+        L.Draw.Polyline.prototype._createMarker = function (latlng) {
+            var icon = new L.DivIcon({ iconSize: [8, 8], className: 'custom-vertex-icon' });
+            var marker = new L.Marker(latlng, { icon: icon, draggable: true });
+            this._markerGroup.addLayer(marker);
+            return marker;
+        };
+
+        // --- 8. UTILS ---
+        function toggleLock() {
+            isManualLocked = !isManualLocked;
+            var btn = document.getElementById('lock-button');
+            if (isManualLocked) {
+                btn.innerHTML = "🔒 Lock Panning"; btn.classList.add('locked');
+            } else {
+                btn.innerHTML = "🔓 Unlock Panning"; btn.classList.remove('locked');
+            }
+            updateMapInteraction();
+        }
+
+        function searchCoords() {
+            var input = document.getElementById('coord-input').value;
+            var parts = input.replace(/,/g, ' ').split(/\s+/).filter(Boolean);
+            if (parts.length >= 2 && !isNaN(parts[0])) {
+                map.setView([parts[0], parts[1]], 18);
+                L.marker([parts[0], parts[1]]).addTo(map);
+            } else { alert("Invalid format."); }
+        }
+
+        function updateStatus(msg) { document.getElementById('status-bar').innerText = "Status: " + msg; }
+
+        // Initial init
+        applyColor('#00ffff');
+    </script>
+</body>
+
+</html>

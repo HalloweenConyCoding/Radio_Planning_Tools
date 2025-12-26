@@ -10,15 +10,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
         crossorigin="" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <style>
-        /* --- LAYOUT --- */
+        /* --- 1. THEME VARIABLES --- */
+        :root {
+            --bg-primary: #121212;
+            --bg-glass: rgba(30, 30, 30, 0.95);
+            --bg-glass-hover: rgba(45, 45, 45, 1);
+            --accent-primary: #00ff9d;
+            --accent-secondary: #2ecc71;
+            --accent-danger: #ff4444;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 15px rgba(0, 255, 157, 0.2);
+        }
+
+        /* --- 2. LAYOUT --- */
         html,
         body {
             height: 100%;
             margin: 0;
             padding: 0;
-            background-color: #1e1e1e;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-primary);
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text-main);
             overflow: hidden;
         }
 
@@ -26,6 +48,7 @@
             height: 100%;
             width: 100%;
             cursor: grab;
+            z-index: 1;
         }
 
         /* Cursors */
@@ -41,30 +64,56 @@
             cursor: default !important;
         }
 
+        /* --- 3. GLASS CONTAINERS --- */
+        #lock-container,
+        #draw-container,
+        #search-container,
+        #color-picker-popup {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            /* Sharper corners for CAD look */
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
         /* --- UI ELEMENTS --- */
+
         /* Top Left: Lock Button */
         #lock-container {
             position: absolute;
             top: 20px;
             left: 20px;
             z-index: 2000;
+            padding: 0;
+            overflow: hidden;
         }
 
         #lock-button {
-            background: #0099ff;
-            color: white;
+            background: transparent;
+            color: var(--text-main);
             border: none;
             padding: 10px 20px;
             font-size: 14px;
-            font-weight: bold;
-            border-radius: 4px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        #lock-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
         }
 
         #lock-button.locked {
-            background: #ff4444;
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff8888;
         }
 
         /* Top Right: Drawing Tools */
@@ -74,129 +123,210 @@
             right: 20px;
             z-index: 2000;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
+            padding: 8px;
         }
 
-        /* COLOR BUTTON (CIRCLE) */
+        /* COLOR BUTTON indicator */
         #btn-color {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 2px solid white;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            /* Square for CAD look */
+            border: 1px solid var(--text-muted);
             cursor: pointer;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.5);
             background-color: #00ffff;
-            /* Default Cyan */
-            transition: transform 0.1s;
         }
 
         #btn-color:hover {
-            transform: scale(1.1);
+            border-color: white;
         }
 
-        /* COLOR PICKER POPUP (Hidden by default) */
+        /* ADVANCED COLOR PICKER */
         #color-picker-popup {
             display: none;
-            /* Hidden */
             position: absolute;
             top: 70px;
             right: 20px;
-            z-index: 2100;
-            background: #252526;
-            padding: 10px;
-            border: 1px solid #555;
-            border-radius: 6px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            z-index: 2200;
+            padding: 12px;
+            width: 250px;
+            display: flex;
+            /* Flex but hidden via JS toggle */
+            flex-direction: column;
+            gap: 10px;
         }
 
-        canvas#spectrum-canvas {
+        .cp-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .cp-body {
+            display: flex;
+            gap: 10px;
+            height: 150px;
+        }
+
+        /* Left: Hue/Sat Area */
+        #cp-spectrum {
+            flex: 1;
+            position: relative;
             cursor: crosshair;
-            border: 1px solid #444;
-            display: block;
+            background: white;
+            /* Fallback */
+            border: 1px solid #555;
         }
 
-        .tool-btn {
-            background: #252526;
-            color: white;
+        /* Right: Lightness Slider */
+        #cp-slider {
+            width: 25px;
+            position: relative;
+            cursor: ns-resize;
             border: 1px solid #555;
-            padding: 8px 15px;
-            font-size: 14px;
-            font-weight: bold;
+        }
+
+        /* Inputs Area */
+        .cp-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cp-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cp-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            min-width: 20px;
+        }
+
+        .cp-input {
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            padding: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            width: 40px;
+            text-align: right;
+        }
+
+        .cp-input.hex {
+            width: 70px;
+            text-align: left;
+        }
+
+        .cp-input:focus {
+            border-color: var(--accent-primary);
+            outline: none;
+        }
+
+        /* TOOL BUTTONS */
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
             border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.1s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .tool-btn:hover {
-            background: #333;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
         }
 
         .tool-btn.active {
-            background: #00ffff;
-            color: black;
-            border-color: #00ffff;
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
         }
 
         #btn-clear {
-            background: #444;
-            color: #aaa;
-            border: 1px solid #666;
+            border-color: rgba(255, 68, 68, 0.4);
+            color: #ff8888;
         }
 
         #btn-clear:hover {
-            background: #ff3333;
+            background: rgba(255, 68, 68, 0.2);
             color: white;
-            border-color: #ff3333;
         }
 
         /* Bottom Left: Search */
         #search-container {
             position: absolute;
-            bottom: 40px;
+            bottom: 60px;
             left: 20px;
             z-index: 2000;
-            background: #252526;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #444;
             display: flex;
-            gap: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            gap: 8px;
+            padding: 10px;
         }
 
         #coord-input {
-            background: #1e1e1e;
-            border: 1px solid #555;
-            color: white;
-            padding: 5px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 10px;
             width: 220px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        #coord-input:focus {
+            border-color: var(--accent-primary);
+            background: rgba(0, 0, 0, 0.6);
         }
 
         #go-btn {
-            background: #0099ff;
-            color: white;
+            background: var(--accent-primary);
+            color: #121212;
             border: none;
-            padding: 5px 15px;
+            padding: 8px 16px;
             cursor: pointer;
+            border-radius: 6px;
+            font-weight: 700;
         }
 
-        /* Status Bar */
+        /* Status Bar (Pill Style) */
         #status-bar {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 25px;
-            background: #007acc;
-            color: white;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            background: var(--bg-glass-hover);
+            color: var(--accent-primary);
             font-size: 12px;
-            line-height: 25px;
-            padding-left: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 6px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
             z-index: 3000;
+            pointer-events: none;
         }
 
-        /* --- CUSTOM VERTEX STYLE --- */
         .leaflet-div-icon {
             background: transparent;
             border: none;
@@ -207,63 +337,90 @@
             height: 8px !important;
             margin-left: -4px !important;
             margin-top: -4px !important;
-            background-color: #ff0000;
+            background-color: var(--accent-primary);
             border: 1px solid white;
             border-radius: 50%;
-            box-shadow: 0 0 4px black;
+            box-shadow: 0 0 6px var(--accent-primary);
         }
 
-        /* --- LABEL STYLE (Always White Text) --- */
         .dist-label {
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
-            /* WHITE TEXT */
-            border: 1px solid #ffffff;
-            padding: 2px 6px;
-            border-radius: 4px;
+            background-color: var(--bg-glass-hover);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
             white-space: nowrap;
-            text-align: center;
+            /* FIX OVERFLOW */
+            min-width: 50px;
+            width: auto !important;
+            height: auto !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             pointer-events: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            line-height: normal;
         }
 
-        /* --- COLOR CORRECTION FOR ESRI TILES --- */
         .cool-map {
-            /* saturate(0.6): Removes the heavy yellow/brown warmth (makes asphalt grey)
-            brightness(1.1): Makes it pop more (Google maps are usually brighter)
-            contrast(1.15): Sharpens the shadows and lines
-            hue-rotate(-5deg): Shifts slightly away from yellow towards blue 
-            */
-            filter: saturate(0.8) brightness(1) contrast(1.1) hue-rotate(-0deg);
+            filter: saturate(0.8) brightness(1) contrast(1.1);
         }
     </style>
 </head>
 
 <body>
 
-    <div id="status-bar">Status: Ready.</div>
+    <div id="status-bar">System Ready.</div>
 
     <div id="lock-container">
-        <button id="lock-button" onclick="toggleLock()">🔓 Unlock Panning</button>
+        <button id="lock-button" onclick="toggleLock()"><span>🔓</span> Unlock Map</button>
     </div>
 
     <div id="draw-container">
-        <div id="btn-color" onclick="toggleColorPicker()" title="Change Color"></div>
+        <div id="btn-color" onclick="toggleColorPicker()" title="True Color Picker"></div>
 
         <button class="tool-btn" id="btn-pen" onclick="setTool('pen')">✏️ Pen</button>
-        <button class="tool-btn" id="btn-line" onclick="setTool('polyline')">📏 Draw Line</button>
+        <button class="tool-btn" id="btn-line" onclick="setTool('polyline')">📏 Line</button>
         <button class="tool-btn" id="btn-eraser" onclick="setTool('eraser')">🗑️ Eraser</button>
-        <button class="tool-btn" id="btn-clear" onclick="clearAll()">Clear All</button>
+        <button class="tool-btn" id="btn-clear" onclick="clearAll()">Clear</button>
     </div>
 
-    <div id="color-picker-popup">
-        <canvas id="spectrum-canvas" width="200" height="150"></canvas>
-        <div style="color: #ccc; font-size: 10px; margin-top: 5px; text-align: center;">Click to Select</div>
+    <!-- ADVANCED TRUE COLOR PICKER -->
+    <div id="color-picker-popup" style="display:none;">
+        <div class="cp-title">True Color</div>
+        <div class="cp-body">
+            <!-- Box: Hue (x) vs Saturation (y) -->
+            <div style="position:relative; width:150px; height:150px;">
+                <canvas id="cp-spectrum" width="150" height="150"></canvas>
+                <div id="cp-cursor"
+                    style="position:absolute; width:10px; height:10px; border:2px solid black; border-radius:50%; box-shadow:0 0 2px white; pointer-events:none; transform:translate(-50%, -50%); top:0; left:0;">
+                </div>
+            </div>
+            <!-- Slider: Lightness (y) -->
+            <div style="position:relative; width:25px; height:150px;">
+                <canvas id="cp-slider" width="25" height="150"></canvas>
+                <div id="cp-slider-cursor"
+                    style="position:absolute; width:100%; height:4px; border:2px solid black; box-shadow:0 0 2px white; pointer-events:none; transform:translateY(-50%); top:50%; left:0;">
+                </div>
+            </div>
+        </div>
+        <div class="cp-inputs">
+            <div class="cp-row">
+                <span class="cp-label">R:</span><input id="in-r" class="cp-input" value="0">
+                <span class="cp-label">G:</span><input id="in-g" class="cp-input" value="255">
+                <span class="cp-label">B:</span><input id="in-b" class="cp-input" value="255">
+            </div>
+            <div class="cp-row">
+                <span class="cp-label">#:</span><input id="in-hex" class="cp-input hex" value="#00ffff">
+            </div>
+        </div>
     </div>
 
     <div id="search-container">
-        <input type="text" id="coord-input" value="13.98937472, 100.61781242">
+        <input type="text" id="coord-input" value="13.98937472, 100.61781242" placeholder="Lat, Lng">
         <button id="go-btn" onclick="searchCoords()">Go</button>
     </div>
 
@@ -275,129 +432,249 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geometryutil/0.10.1/leaflet.geometryutil.min.js"></script>
 
     <script>
-        // --- 1. SETUP MAP ---
-        // --- 1. SETUP MAP ---
+        // --- 1. CONFIG ---
         var map = L.map('map', { zoomControl: false }).setView([13.98937472, 100.61781242], 18);
-
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19,
-            attribution: 'Esri, Maxar',
-            className: 'cool-map' // <--- ADD THIS LINE TO APPLY THE FILTER
+            maxZoom: 19, attribution: 'Esri, Maxar', className: 'cool-map'
         }).addTo(map);
 
-        var drawnItems = new L.FeatureGroup();
-        var labelItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
-        map.addLayer(labelItems);
+        var drawnItems = new L.FeatureGroup().addTo(map);
+        var labelItems = new L.FeatureGroup().addTo(map);
 
-        // --- 2. GLOBAL VARIABLES ---
         var isManualLocked = false;
         var activeTool = null;
         var isPenDrawing = false;
         var currentFreehandLine = null;
-        var currentColor = '#00ffff'; // Default Cyan
+        var currentColor = '#00ffff';
 
-        // --- 3. COLOR PICKER LOGIC ---
+        // --- 2. ROBUST HSL COLOR PICKER ---
+        var cpSpectrum = document.getElementById('cp-spectrum');
+        var cpSlider = document.getElementById('cp-slider');
+        var ctxSpec = cpSpectrum.getContext('2d');
+        var ctxSlide = cpSlider.getContext('2d');
 
-        // Init Canvas Spectrum
+        // State: Hue 0-360, Sat 0-100, Light 0-100
+        var cpState = { h: 180, s: 100, l: 50 };
+
         function initColorPicker() {
-            var canvas = document.getElementById('spectrum-canvas');
-            var ctx = canvas.getContext('2d');
-
-            // Create Horizontal Gradient (Rainbow)
-            var gradH = ctx.createLinearGradient(0, 0, canvas.width, 0);
-            gradH.addColorStop(0, "red");
-            gradH.addColorStop(0.17, "orange");
-            gradH.addColorStop(0.33, "yellow");
-            gradH.addColorStop(0.5, "green");
-            gradH.addColorStop(0.67, "cyan");
-            gradH.addColorStop(0.83, "blue");
-            gradH.addColorStop(1, "magenta");
-
-            ctx.fillStyle = gradH;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Add Vertical Gradient (White to Transparent) for brightness
-            var gradV = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradV.addColorStop(0, "rgba(255,255,255,1)");
-            gradV.addColorStop(0.5, "rgba(255,255,255,0)");
-            gradV.addColorStop(0.5, "rgba(0,0,0,0)");
-            gradV.addColorStop(1, "rgba(0,0,0,1)"); // Darken at bottom
-
-            ctx.fillStyle = gradV;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Add Click Listener
-            canvas.addEventListener('mousedown', function (e) {
-                pickColor(e, ctx);
-            });
+            drawSpectrum();
+            drawSlider();
+            updateUIFromState();
+            setupCPListeners();
         }
 
-        function toggleColorPicker() {
-            var popup = document.getElementById('color-picker-popup');
-            if (popup.style.display === 'block') {
-                popup.style.display = 'none';
-            } else {
-                popup.style.display = 'block';
-                // Initialize canvas only when shown to ensure size is correct
-                initColorPicker();
+        // Draw Hue (X) vs Saturation (Y)
+        function drawSpectrum() {
+            var w = cpSpectrum.width, h = cpSpectrum.height;
+            ctxSpec.clearRect(0, 0, w, h);
+
+            // Horizontal: Hue
+            var gradH = ctxSpec.createLinearGradient(0, 0, w, 0);
+            for (var i = 0; i <= 360; i += 60) gradH.addColorStop(i / 360, `hsl(${i}, 100%, 50%)`);
+            ctxSpec.fillStyle = gradH;
+            ctxSpec.fillRect(0, 0, w, h);
+
+            // Vertical: Saturation (Top=100%, Bottom=0% i.e. Gray)
+            var gradS = ctxSpec.createLinearGradient(0, 0, 0, h);
+            gradS.addColorStop(0, 'rgba(128,128,128,0)'); // Top: Full Color
+            gradS.addColorStop(1, 'rgba(128,128,128,1)'); // Bottom: Fully Gray
+            ctxSpec.fillStyle = gradS;
+            ctxSpec.fillRect(0, 0, w, h);
+        }
+
+        // Draw Lightness Slider (White -> Color -> Black)
+        function drawSlider() {
+            var w = cpSlider.width, h = cpSlider.height;
+            ctxSlide.clearRect(0, 0, w, h);
+
+            var gradL = ctxSlide.createLinearGradient(0, 0, 0, h);
+            gradL.addColorStop(0, '#ffffff');
+            gradL.addColorStop(0.5, `hsl(${cpState.h}, ${cpState.s}%, 50%)`);
+            gradL.addColorStop(1, '#000000');
+            ctxSlide.fillStyle = gradL;
+            ctxSlide.fillRect(0, 0, w, h);
+        }
+
+        function setupCPListeners() {
+            var downSpec = false;
+            cpSpectrum.onmousedown = (e) => { downSpec = true; updateFromSpectrum(e); };
+            window.addEventListener('mousemove', (e) => { if (downSpec) updateFromSpectrum(e); });
+            window.addEventListener('mouseup', () => { downSpec = false; });
+
+            var downSlide = false;
+            cpSlider.onmousedown = (e) => { downSlide = true; updateFromSlider(e); };
+            window.addEventListener('mousemove', (e) => { if (downSlide) updateFromSlider(e); });
+            window.addEventListener('mouseup', () => { downSlide = false; });
+
+            ['in-r', 'in-g', 'in-b'].forEach(id => {
+                document.getElementById(id).oninput = updateFromRGBInputs;
+                document.getElementById(id).onchange = updateFromRGBInputs;
+            });
+            document.getElementById('in-hex').oninput = updateFromHexInput;
+            document.getElementById('in-hex').onchange = updateFromHexInput;
+        }
+
+        function updateFromSpectrum(e) {
+            var rect = cpSpectrum.getBoundingClientRect();
+            var x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+            var y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
+
+            // X -> Hue (0-360)
+            cpState.h = (x / rect.width) * 360;
+            // Y -> Saturation (100-0)
+            cpState.s = 100 - (y / rect.height) * 100;
+
+            updateUIFromState();
+        }
+
+        function updateFromSlider(e) {
+            var rect = cpSlider.getBoundingClientRect();
+            var y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
+
+            // Y -> Lightness (100-0)
+            cpState.l = 100 - (y / rect.height) * 100;
+
+            updateUIFromState();
+        }
+
+        function updateFromRGBInputs() {
+            var r = parseInt(document.getElementById('in-r').value) || 0;
+            var g = parseInt(document.getElementById('in-g').value) || 0;
+            var b = parseInt(document.getElementById('in-b').value) || 0;
+            var hsl = rgbToHsl(r, g, b);
+            cpState = { h: hsl[0] * 360, s: hsl[1] * 100, l: hsl[2] * 100 };
+            updateUIFromState(true);
+        }
+
+        function updateFromHexInput() {
+            var hex = document.getElementById('in-hex').value;
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                var rgb = hexToRgb(hex);
+                var hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                cpState = { h: hsl[0] * 360, s: hsl[1] * 100, l: hsl[2] * 100 };
+                updateUIFromState(true);
             }
         }
 
-        function pickColor(e, ctx) {
-            var x = e.offsetX;
-            var y = e.offsetY;
-            var imgData = ctx.getImageData(x, y, 1, 1).data;
-            // Convert RGB to Hex
-            var hex = "#" + ((1 << 24) + (imgData[0] << 16) + (imgData[1] << 8) + imgData[2]).toString(16).slice(1);
+        function updateUIFromState(skipInputs) {
+            var rgb = hslToRgb(cpState.h / 360, cpState.s / 100, cpState.l / 100);
+            var hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
 
-            // Apply Color
-            applyColor(hex);
+            applyColor(hex); // APPLY COLOR HERE
 
-            // Hide Popup
-            document.getElementById('color-picker-popup').style.display = 'none';
+            drawSlider();
+
+            var cx = (cpState.h / 360) * 150;
+            var cy = (100 - cpState.s) / 100 * 150;
+            var cur = document.getElementById('cp-cursor');
+            cur.style.left = cx + 'px';
+            cur.style.top = cy + 'px';
+            cur.style.backgroundColor = hex;
+
+            var sy = (100 - cpState.l) / 100 * 150;
+            document.getElementById('cp-slider-cursor').style.top = sy + 'px';
+
+            if (!skipInputs) {
+                document.getElementById('in-r').value = rgb[0];
+                document.getElementById('in-g').value = rgb[1];
+                document.getElementById('in-b').value = rgb[2];
+                document.getElementById('in-hex').value = hex;
+            }
+        }
+
+        function toggleColorPicker() {
+            var p = document.getElementById('color-picker-popup');
+            if (p.style.display === 'none') {
+                p.style.display = 'flex';
+                initColorPicker();
+            } else {
+                p.style.display = 'none';
+            }
         }
 
         function applyColor(hex) {
             currentColor = hex;
-            // Update Button UI
             document.getElementById('btn-color').style.backgroundColor = hex;
 
-            // Update Polyline Drawer Config
-            polylineDrawer.setOptions({
-                shapeOptions: {
-                    color: currentColor,
-                    weight: 4
-                }
-            });
-            updateStatus("Color changed to " + hex);
+            // FIX: Ensure Drawing Tool Stays Active
+            if (polylineDrawer && activeTool === 'polyline') {
+                polylineDrawer.setOptions({ shapeOptions: { color: hex, weight: 4 } });
+            }
         }
 
-        // --- 4. CONFIGURATION ---
+        // --- MATH HELPERS ---
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r: 0, g: 0, b: 0 };
+        }
+
+        function hslToRgb(h, s, l) {
+            var r, g, b;
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                var hue2rgb = function hue2rgb(p, q, t) {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+                var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                var p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255, g /= 255, b /= 255;
+            var max = Math.max(r, g, b), min = Math.min(r, g, b);
+            var h, s, l = (max + min) / 2;
+            if (max === min) {
+                h = s = 0;
+            } else {
+                var d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return [h, s, l];
+        }
+
+        // --- 3. EXISTING MAP LOGIC ---
         var polylineDrawer = new L.Draw.Polyline(map, {
-            shapeOptions: { color: currentColor, weight: 4 }, // Use variable
+            shapeOptions: { color: currentColor, weight: 4 },
             metric: true, feet: false, guidelineDistance: 10,
             icon: new L.DivIcon({ iconSize: [8, 8], className: 'custom-vertex-icon' }),
             touchIcon: new L.DivIcon({ iconSize: [8, 8], className: 'custom-vertex-icon' })
         });
 
-        // --- 5. TOOL SWITCHING ---
         function setTool(toolName) {
             if (activeTool === toolName) { resetTools(); return; }
             if (activeTool === 'polyline') polylineDrawer.disable();
 
             activeTool = toolName;
-
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
             if (toolName !== 'clear') document.getElementById('btn-' + (toolName === 'polyline' ? 'line' : toolName)).classList.add('active');
 
             if (toolName === 'polyline') {
                 polylineDrawer.enable();
-                updateStatus("Mode: MEASURE. Click points. Double-click to finish.");
+                updateStatus("MEASURE");
             } else if (toolName === 'pen') {
-                updateStatus("Mode: PEN. Hold left click to freehand draw.");
+                updateStatus("PEN");
             } else if (toolName === 'eraser') {
-                updateStatus("Mode: ERASER. Drag over items to delete.");
+                updateStatus("ERASER");
             }
             updateMapInteraction();
         }
@@ -406,15 +683,15 @@
             activeTool = null;
             polylineDrawer.disable();
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-            updateStatus("Ready.");
+            updateStatus("Ready");
             updateMapInteraction();
         }
 
         function clearAll() {
-            if (confirm("Delete all drawings?")) {
+            if (confirm("Clear all?")) {
                 drawnItems.clearLayers();
                 labelItems.clearLayers();
-                updateStatus("Map cleared.");
+                updateStatus("Cleared");
             }
         }
 
@@ -434,13 +711,10 @@
         function disableDragging() { map.dragging.disable(); map.touchZoom.disable(); }
         function enableDragging() { map.dragging.enable(); map.touchZoom.enable(); }
 
-        // --- 6. EVENT HANDLERS ---
-
-        // A. PEN (Freehand)
+        // MOUSE EVENTS
         map.on('mousedown', function (e) {
             if (activeTool !== 'pen') return;
             isPenDrawing = true;
-            // Create line with CURRENT COLOR
             currentFreehandLine = L.polyline([e.latlng], { color: currentColor, weight: 4 }).addTo(drawnItems);
             attachEraserEvents(currentFreehandLine);
         });
@@ -449,42 +723,42 @@
         });
         map.on('mouseup', function () { if (activeTool === 'pen') isPenDrawing = false; });
 
-        // B. MEASURE LINE (Creation)
         map.on(L.Draw.Event.CREATED, function (e) {
             var layer = e.layer;
             drawnItems.addLayer(layer);
             layer.attachedLabels = [];
-
             if (e.layerType === 'polyline') {
                 var latlngs = layer.getLatLngs();
                 for (var i = 0; i < latlngs.length - 1; i++) {
                     var p1 = latlngs[i], p2 = latlngs[i + 1];
-                    var distMeters = map.distance(p1, p2);
-                    var midLat = (p1.lat + p2.lat) / 2;
-                    var midLng = (p1.lng + p2.lng) / 2;
-
-                    var labelIcon = L.divIcon({ className: 'dist-label', html: distMeters.toFixed(1) + " m", iconSize: null });
-                    var labelMarker = L.marker([midLat, midLng], { icon: labelIcon }).addTo(labelItems);
-
-                    labelMarker.attachedLine = layer;
-                    layer.attachedLabels.push(labelMarker);
-                    attachEraserEvents(labelMarker);
+                    var dist = map.distance(p1, p2);
+                    var mid = [(p1.lat + p2.lat) / 2, (p1.lng + p2.lng) / 2];
+                    var icon = L.divIcon({ className: 'dist-label', html: dist.toFixed(1) + " m" });
+                    var marker = L.marker(mid, { icon: icon }).addTo(labelItems);
+                    marker.attachedLine = layer;
+                    layer.attachedLabels.push(marker);
+                    attachEraserEvents(marker);
                 }
             }
             attachEraserEvents(layer);
-            updateStatus("Measurement added.");
+
+            // FIX: CONTINUOUS DRAWING MODE
+            if (activeTool === 'polyline') {
+                setTimeout(() => {
+                    polylineDrawer.enable();
+                }, 10);
+            }
         });
 
-        // --- 7. ERASER LOGIC ---
         function attachEraserEvents(layer) {
             layer.on('mouseover', function (e) { if (activeTool === 'eraser' && e.originalEvent.buttons === 1) deleteSmart(e.target); });
             layer.on('mousedown', function (e) { if (activeTool === 'eraser') deleteSmart(e.target); });
         }
         function deleteSmart(target) {
             if (target.attachedLine) { deleteSmart(target.attachedLine); return; }
-            if (target.attachedLabels) { target.attachedLabels.forEach(function (l) { labelItems.removeLayer(l); }); }
-            if (drawnItems.hasLayer(target)) drawnItems.removeLayer(target);
-            if (labelItems.hasLayer(target)) labelItems.removeLayer(target);
+            if (target.attachedLabels) { target.attachedLabels.forEach(l => labelItems.removeLayer(l)); }
+            drawnItems.removeLayer(target);
+            labelItems.removeLayer(target);
         }
 
         L.Draw.Polyline.prototype._createMarker = function (latlng) {
@@ -494,30 +768,27 @@
             return marker;
         };
 
-        // --- 8. UTILS ---
         function toggleLock() {
             isManualLocked = !isManualLocked;
             var btn = document.getElementById('lock-button');
             if (isManualLocked) {
-                btn.innerHTML = "🔒 Lock Panning"; btn.classList.add('locked');
+                btn.innerHTML = "<span>🔒</span> Locked"; btn.classList.add('locked');
             } else {
-                btn.innerHTML = "🔓 Unlock Panning"; btn.classList.remove('locked');
+                btn.innerHTML = "<span>🔓</span> Unlock Map"; btn.classList.remove('locked');
             }
             updateMapInteraction();
         }
 
         function searchCoords() {
-            var input = document.getElementById('coord-input').value;
-            var parts = input.replace(/,/g, ' ').split(/\s+/).filter(Boolean);
-            if (parts.length >= 2 && !isNaN(parts[0])) {
+            var v = document.getElementById('coord-input').value;
+            var parts = v.replace(/,/g, ' ').split(/\s+/).filter(Boolean);
+            if (parts.length >= 2) {
                 map.setView([parts[0], parts[1]], 18);
                 L.marker([parts[0], parts[1]]).addTo(map);
-            } else { alert("Invalid format."); }
+            }
         }
+        function updateStatus(msg) { document.getElementById('status-bar').innerText = msg; }
 
-        function updateStatus(msg) { document.getElementById('status-bar').innerText = "Status: " + msg; }
-
-        // Initial init
         applyColor('#00ffff');
     </script>
 </body>

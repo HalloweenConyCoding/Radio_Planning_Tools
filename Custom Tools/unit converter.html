@@ -378,23 +378,24 @@
       type: 'line',
       data: {
         datasets: [
-          {
+            {
             label: 'dBm to Watts',
             data: curveData,
-            borderColor: '#22d3ee',
+            borderColor: 'lime',
             backgroundColor: 'transparent',
             tension: 0.2,
             pointRadius: 0,
-            borderWidth: 2
+            borderWidth: 2,
+            borderDash: [8, 6]
           },
           {
             label: 'Current Value',
             data: [],
             type: 'scatter',
-            pointRadius: 6,
-            pointHoverRadius: 7,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: '#22d3ee',
+            pointRadius: 7, 
+            pointHoverRadius: 8,
+            pointBackgroundColor: '#22d3ee',
+            pointBorderColor: '#ffffff',
             pointBorderWidth: 2
           }
         ]

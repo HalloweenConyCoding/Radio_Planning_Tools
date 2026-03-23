@@ -225,7 +225,7 @@ hr {
 
 .tool-status.external .status-dot {
     background: #14ffff;
-    box-shadow: 0 0 8px cyan;
+    box-shadow: 0 0 8px #14ffff
 }
 
 /* Section Titles */

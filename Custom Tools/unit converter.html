@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Power Calculator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22d3ee;
+      --border: #334155;
+      --input-bg: #0b1220;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 980px;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 20px;
+      width: 100%;
+    }
+
+    .unit {
+      color: var(--muted);
+      font-weight: 700;
+      min-width: 52px;
+      text-align: right;
+    }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      margin-top: 16px;
+      min-height: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .formula-section,
+    .graph-section {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .formula-box,
+    .graph-box {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .formula-line {
+      font-size: 24px;
+      line-height: 1.8;
+      color: var(--text);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .graph-box {
+      height: 360px;
+    }
+
+    .chart-section {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .tables-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .tables-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-section h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .table-panel {
+      min-width: 0;
+    }
+
+    .table-panel.right {
+      border-left: 1px solid var(--border);
+      padding-left: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--accent);
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Power Calculator</h1>
+    <p class="subtitle">
+      Convert between dBm and watts. Edit either field and the other one updates automatically.
+    </p>
+
+    <div class="field">
+      <label for="dbmInput">dBm</label>
+      <div class="input-wrap">
+        <input id="dbmInput" type="number" step="any" placeholder="Enter dBm" />
+        <span class="unit">dBm</span>
+      </div>
+      <div class="hint">Formula: W = 10^((dBm - 30) / 10)</div>
+    </div>
+
+    <div class="field">
+      <label for="wattInput">Watt</label>
+      <div class="input-wrap">
+        <input id="wattInput" type="number" step="any" min="0" placeholder="Enter watt" />
+        <span class="unit">W</span>
+      </div>
+      <div class="hint">Formula: dBm = 10 × log10(W) + 30</div>
+    </div>
+
+    <div class="status" id="statusText"></div>
+
+    <div class="formula-section">
+      <h2>Conversion Formula</h2>
+      <div class="formula-box">
+        <div class="formula-line">W = 10<sup>(dBm - 30) / 10</sup></div>
+        <div class="formula-line">dBm =  30 + 10 log<sub>10</sub>(W)</div>
+      </div>
+    </div>
+
+    <div class="graph-section">
+      <h2>Graph View</h2>
+      <div class="graph-box">
+        <canvas id="powerChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="tables-grid">
+        <div class="table-panel left">
+          <h2>dBm to watts Conversion Chart</h2>
+          <table>
+        <thead>
+          <tr>
+            <th>Power (dBm)</th>
+            <th>Power (W)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>-30 dBm</td><td>0.000001 W</td></tr>
+          <tr><td>-20 dBm</td><td>0.00001 W</td></tr>
+          <tr><td>-10 dBm</td><td>0.0001 W</td></tr>
+          <tr><td>0 dBm</td><td>0.001 W</td></tr>
+          <tr><td>1 dBm</td><td>0.0012589 W</td></tr>
+          <tr><td>2 dBm</td><td>0.0015849 W</td></tr>
+          <tr><td>3 dBm</td><td>0.0019953 W</td></tr>
+          <tr><td>4 dBm</td><td>0.0025119 W</td></tr>
+          <tr><td>5 dBm</td><td>0.0031623 W</td></tr>
+          <tr><td>6 dBm</td><td>0.0039811 W</td></tr>
+          <tr><td>7 dBm</td><td>0.0050119 W</td></tr>
+          <tr><td>8 dBm</td><td>0.0063096 W</td></tr>
+          <tr><td>9 dBm</td><td>0.0079433 W</td></tr>
+          <tr><td>10 dBm</td><td>0.01 W</td></tr>
+          <tr><td>20 dBm</td><td>0.1 W</td></tr>
+          <tr><td>30 dBm</td><td>1 W</td></tr>
+          <tr><td>40 dBm</td><td>10 W</td></tr>
+          <tr><td>50 dBm</td><td>100 W</td></tr>
+        </tbody>
+      </table>
+        </div>
+
+        <div class="table-panel right">
+          <h2>Percent to 0.1 dBm Change Chart</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Percent Change</th>
+                <th>0.1 dBm Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>-50%</td><td>-30.103</td></tr>
+              <tr><td>-30%</td><td>-15.490</td></tr>
+              <tr><td>-20%</td><td>-9.691</td></tr>
+              <tr><td>-15%</td><td>-7.058</td></tr>
+              <tr><td>-10%</td><td>-4.576</td></tr>
+              <tr><td>-5%</td><td>-2.228</td></tr>
+              <tr><td>0%</td><td>0</td></tr>
+              <tr><td>+5%</td><td>+2.119</td></tr>
+              <tr><td>+10%</td><td>+4.139</td></tr>
+              <tr><td>+15%</td><td>+6.070</td></tr>
+              <tr><td>+20%</td><td>+7.918</td></tr>
+              <tr><td>+30%</td><td>+11.394</td></tr>
+              <tr><td>+50%</td><td>+17.609</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const dbmInput = document.getElementById('dbmInput');
+    const wattInput = document.getElementById('wattInput');
+    const statusText = document.getElementById('statusText');
+    const chartCtx = document.getElementById('powerChart').getContext('2d');
+
+    let lastEdited = null;
+    let debounceTimer = null;
+    const debounceMs = 350;
+
+    function dbmToWatt(dbm) {
+      return Math.pow(10, (dbm - 30) / 10);
+    }
+
+    function wattToDbm(watt) {
+      return 10 * Math.log10(watt) + 30;
+    }
+
+    function formatNumber(value) {
+      if (!Number.isFinite(value)) return '';
+      if (value === 0) return '0';
+
+      const abs = Math.abs(value);
+      if (abs >= 1000000 || abs < 0.000001) {
+        return value.toExponential(6);
+      }
+
+      return Number(value.toFixed(12)).toString();
+    }
+
+    function clearOther(except) {
+      if (except !== 'dbm') dbmInput.value = '';
+      if (except !== 'watt') wattInput.value = '';
+      statusText.textContent = '';
+      updateChart(null, null);
+    }
+
+    function buildCurveData() {
+      const points = [];
+      for (let dbm = -30; dbm <= 50; dbm += 1) {
+        points.push({ x: dbm, y: dbmToWatt(dbm) });
+      }
+      return points;
+    }
+
+    const curveData = buildCurveData();
+
+    const pointValueLabelPlugin = {
+      id: 'pointValueLabelPlugin',
+      afterDatasetsDraw(chart) {
+        const pointDataset = chart.data.datasets[1];
+        if (!pointDataset || !pointDataset.data || pointDataset.data.length === 0) return;
+
+        const meta = chart.getDatasetMeta(1);
+        if (!meta || !meta.data || meta.data.length === 0) return;
+
+        const point = meta.data[0];
+        const raw = pointDataset.data[0];
+        if (!point || !raw) return;
+
+        const { ctx } = chart;
+        ctx.save();
+        ctx.fillStyle = '#e5e7eb';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`${formatNumber(raw.x)} dBm, ${formatNumber(raw.y)} W`, point.x, point.y - 22);
+        ctx.restore();
+      }
+    };
+
+    const powerChart = new Chart(chartCtx, {
+      type: 'line',
+      data: {
+        datasets: [
+          {
+            label: 'dBm to Watts',
+            data: curveData,
+            borderColor: '#22d3ee',
+            backgroundColor: 'transparent',
+            tension: 0.2,
+            pointRadius: 0,
+            borderWidth: 2
+          },
+          {
+            label: 'Current Value',
+            data: [],
+            type: 'scatter',
+            pointRadius: 6,
+            pointHoverRadius: 7,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#22d3ee',
+            pointBorderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#e5e7eb'
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            title: {
+              display: true,
+              text: 'dBm',
+              color: '#e5e7eb'
+            },
+            ticks: {
+              color: '#9ca3af'
+            },
+            grid: {
+              color: 'rgba(148, 163, 184, 0.18)'
+            }
+          },
+          y: {
+            type: 'logarithmic',
+            title: {
+              display: true,
+              text: 'Watts',
+              color: '#e5e7eb'
+            },
+            ticks: {
+              color: '#9ca3af'
+            },
+            grid: {
+              color: 'rgba(148, 163, 184, 0.18)'
+            }
+          }
+        }
+      }
+    }, [pointValueLabelPlugin]);
+
+    function updateChart(dbm, watt) {
+      if (!Number.isFinite(dbm) || !Number.isFinite(watt) || watt <= 0) {
+        powerChart.data.datasets[1].data = [];
+      } else {
+        powerChart.data.datasets[1].data = [{ x: dbm, y: watt }];
+      }
+      powerChart.update();
+    }
+
+    function updateFromDbm() {
+      const dbm = parseFloat(dbmInput.value);
+
+      if (dbmInput.value.trim() === '') {
+        clearOther('dbm');
+        return;
+      }
+
+      if (!Number.isFinite(dbm)) {
+        statusText.textContent = 'Please enter a valid dBm value.';
+        return;
+      }
+
+      const watt = dbmToWatt(dbm);
+      wattInput.value = formatNumber(watt);
+      statusText.textContent = 'Converted from dBm to watt.';
+      updateChart(dbm, watt);
+    }
+
+    function updateFromWatt() {
+      const watt = parseFloat(wattInput.value);
+
+      if (wattInput.value.trim() === '') {
+        clearOther('watt');
+        return;
+      }
+
+      if (!Number.isFinite(watt) || watt <= 0) {
+        statusText.textContent = 'Watt must be greater than 0.';
+        return;
+      }
+
+      const dbm = wattToDbm(watt);
+      dbmInput.value = formatNumber(dbm);
+      statusText.textContent = 'Converted from watt to dBm.';
+      updateChart(dbm, watt);
+    }
+
+    function queueUpdate(source) {
+      lastEdited = source;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        if (lastEdited === 'dbm') {
+          updateFromDbm();
+        } else if (lastEdited === 'watt') {
+          updateFromWatt();
+        }
+      }, debounceMs);
+    }
+
+    dbmInput.addEventListener('input', () => queueUpdate('dbm'));
+    wattInput.addEventListener('input', () => queueUpdate('watt'));
+  </script>
+</body>
+</html>

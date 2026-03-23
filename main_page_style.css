@@ -220,11 +220,11 @@ hr {
 }
 
 .tool-status.external {
-    border-color: cyan;
+    border-color: #14ffff;
 }
 
 .tool-status.external .status-dot {
-    background: cyan;
+    background: #14ffff;
     box-shadow: 0 0 8px cyan;
 }
 

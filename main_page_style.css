@@ -219,6 +219,15 @@ hr {
     /* Grey */
 }
 
+.tool-status.external {
+    border-color: cyan;
+}
+
+.tool-status.external .status-dot {
+    background: cyan;
+    box-shadow: 0 0 8px cyan;
+}
+
 /* Section Titles */
 .section-label {
     font-size: 0.9rem;

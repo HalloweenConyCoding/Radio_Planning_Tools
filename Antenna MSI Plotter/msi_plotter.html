@@ -34,6 +34,28 @@
           <small>Unknown tilt stays unrotated.</small>
         </div>
 
+        <div class="field compact tilt-filter-box">
+          <label>Tilt Filter</label>
+        
+          <div class="tilt-toolbar">
+            <button id="tiltFilterBtn" type="button" class="small-btn">Select Tilt</button>
+            <span id="tiltHint" class="filter-hint">All tilts</span>
+          </div>
+        
+          <div id="tiltPanel" class="tilt-panel hidden">
+            <div class="tilt-panel-actions">
+              <button id="tiltAllBtn" type="button" class="small-btn">All</button>
+              <button id="tiltNoneBtn" type="button" class="small-btn">None</button>
+            </div>
+        
+            <div id="tiltList" class="tilt-list">
+              <div class="tilt-empty">No tilt values yet</div>
+            </div>
+          </div>
+        
+          <small>Select which tilt values should be plotted.</small>
+        </div>
+        
         <div class="field compact">
           <label>&nbsp;</label>
           <button id="plotBtn">Plot Folder</button>

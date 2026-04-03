@@ -156,65 +156,74 @@
     }
 
     function detectTilt({ tiltRaw, comment, model, fileName }) {
-        // 1) direct TILT field
-        const fromTiltField = extractTiltNumber(tiltRaw);
-        if (fromTiltField !== null) {
-          return { value: fromTiltField, source: "TILT" };
-        }
-      
-        // 2) COMMENT / COMMENTS
-        const fromComment = extractTiltNumber(comment);
-        if (fromComment !== null) {
-          return { value: fromComment, source: "COMMENT" };
-        }
-      
-        // 3) NAME inside file
-        const fromModel = extractTiltNumber(model);
-        if (fromModel !== null) {
-          return { value: fromModel, source: "NAME" };
-        }
-      
-        // 4) filename fallback
-        const fromFileName = extractTiltFromFilename(fileName);
-        if (fromFileName !== null) {
-          return { value: fromFileName, source: "FILENAME" };
-        }
-      
-        return { value: null, source: "" };
+      // 1) direct TILT field
+      const fromTiltField = extractTiltNumber(tiltRaw);
+      if (fromTiltField !== null) {
+        return { value: fromTiltField, source: "TILT" };
       }
-
-      function extractTiltNumber(text) {
-        if (!text) return null;
-      
-        const str = String(text).trim();
-        if (!str) return null;
-      
-        if (/^ELECTRICAL$/i.test(str)) {
-          return null;
-        }
-      
-        // plain number only
-        if (/^-?\d+(\.\d+)?$/.test(str)) {
-          return parseFloat(str);
-        }
-      
-        const patterns = [
-          /(?:^|[^A-Za-z0-9])T\s*(-?\d+(?:\.\d+)?)(?=$|[^A-Za-z0-9])/i,
-          /(?:^|[^A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*T(?=$|[^A-Za-z0-9])/i,
-          /\b(-?\d+(?:\.\d+)?)\s*degree\s*downtilt\b/i,
-          /\bdowntilt\b.*?\b(-?\d+(?:\.\d+)?)\b/i
-        ];
-      
-        for (const rx of patterns) {
-          const match = str.match(rx);
-          if (match) {
-            const num = parseFloat(match[1]);
-            if (!Number.isNaN(num)) return num;
-          }
-        }
-      
+    
+      // 2) COMMENT / COMMENTS
+      // reject bare +45 / -45 / 45 because that is usually polarization
+      const fromComment = extractTiltNumber(comment, { rejectPolarization45: true });
+      if (fromComment !== null) {
+        return { value: fromComment, source: "COMMENT" };
+      }
+    
+      // 3) NAME inside file
+      const fromModel = extractTiltNumber(model);
+      if (fromModel !== null) {
+        return { value: fromModel, source: "NAME" };
+      }
+    
+      // 4) filename fallback
+      const fromFileName = extractTiltFromFilename(fileName);
+      if (fromFileName !== null) {
+        return { value: fromFileName, source: "FILENAME" };
+      }
+    
+      return { value: null, source: "" };
+    }
+    
+    function extractTiltNumber(text, options = {}) {
+      if (!text) return null;
+    
+      const str = String(text).trim();
+      if (!str) return null;
+    
+      const compact = str.replace(/\s+/g, "").replace(/°/g, "");
+      const rejectPolarization45 = options.rejectPolarization45 === true;
+    
+      if (/^ELECTRICAL$/i.test(str)) {
         return null;
       }
+    
+      // for COMMENT only: reject +45 / -45 / 45 because that is polarization, not tilt
+      if (rejectPolarization45 && /^[+-]?45(?:\.0+)?$/i.test(compact)) {
+        return null;
+      }
+    
+      // plain number only
+      if (/^-?\d+(\.\d+)?$/.test(str)) {
+        return parseFloat(str);
+      }
+    
+      const patterns = [
+        /(?:^|[^A-Za-z0-9])T\s*(-?\d+(?:\.\d+)?)(?=$|[^A-Za-z0-9])/i,
+        /(?:^|[^A-Za-z0-9])(-?\d+(?:\.\d+)?)\s*T(?=$|[^A-Za-z0-9])/i,
+        /\b(-?\d+(?:\.\d+)?)\s*degree\s*downtilt\b/i,
+        /\bdowntilt\b.*?\b(-?\d+(?:\.\d+)?)\b/i
+      ];
+    
+      for (const rx of patterns) {
+        const match = str.match(rx);
+        if (match) {
+          const num = parseFloat(match[1]);
+          if (!Number.isNaN(num)) return num;
+        }
+      }
+    
+      return null;
+    }
 
     function parseGain(gainRaw) {
       if (!gainRaw) return { value: null, unit: "" };

@@ -241,7 +241,6 @@
                     linecolor: colors.line
                 }
             }
-          
         };
       }
   

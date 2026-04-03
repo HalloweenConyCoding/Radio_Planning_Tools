@@ -19,7 +19,7 @@
     }
     .card {
       width: 100%;
-      max-width: 820px;
+      max-width: 980px;
       background: rgba(17, 24, 39, 0.96);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 20px;
@@ -32,10 +32,20 @@
       line-height: 1.2;
       color: #f9fafb;
     }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      color: #f9fafb;
+    }
     .subtitle {
       margin: 0 0 24px;
       color: #9ca3af;
       font-size: 14px;
+    }
+    .section {
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
     .grid {
       display: grid;
@@ -136,25 +146,24 @@
       font-size: 13px;
       min-height: 18px;
     }
-    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>FSPL Comparison Calculator</h1>
     <p class="subtitle">
-      Enter one or two frequencies. If Frequency 2 is filled, the page will also compare the additional path loss drop between them.
+      Enter one or two frequencies. If Frequency 2 is filled, the page also compares the path loss drop and can auto-balance the power setting between both frequencies.
     </p>
 
     <div class="grid">
       <div class="field">
         <label for="freq1">Frequency 1 (MHz)</label>
-        <input type="number" id="freq1" placeholder="Example: 700" min="0" step="0.1" />
+        <input type="number" id="freq1" placeholder="Example: 1800" min="0" step="0.1" />
       </div>
 
       <div class="field">
         <label for="freq2">Frequency 2 (MHz) - optional</label>
-        <input type="number" id="freq2" placeholder="Example: 900" min="0" step="0.1" />
+        <input type="number" id="freq2" placeholder="Example: 2100" min="0" step="0.1" />
       </div>
 
       <div class="field">
@@ -195,14 +204,57 @@
       </div>
     </div>
 
+    <div class="section">
+      <h2>Power Balance Calculator</h2>
+      <p class="subtitle" style="margin-bottom:16px;">
+        Type a power setting on either side in <strong>0.1 dBm unit</strong>. The other side will be cleared and recalculated automatically using the path loss difference.
+      </p>
+
+      <div class="grid">
+        <div class="field">
+          <label for="power1">Power Config for Frequency 1 (0.1 dBm)</label>
+          <input type="number" id="power1" placeholder="Example: 164" step="1" />
+        </div>
+
+        <div class="field">
+          <label for="power2">Power Config for Frequency 2 (0.1 dBm)</label>
+          <input type="number" id="power2" placeholder="Auto calculated" step="1" />
+        </div>
+      </div>
+
+      <div class="results" style="margin-top:18px;">
+        <div class="result-box">
+          <div class="result-title">Balanced Power for Frequency 1</div>
+          <div class="result-value" id="balanced1">-</div>
+          <div class="result-note" id="balancedNote1">Waiting for power input.</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-title">Balanced Power for Frequency 2</div>
+          <div class="result-value" id="balanced2">-</div>
+          <div class="result-note" id="balancedNote2">Waiting for power input.</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-title">Balance Logic</div>
+          <div class="result-value" id="balanceDiff">-</div>
+          <div class="result-note" id="balanceNote">Needs both frequencies to compare.</div>
+        </div>
+      </div>
+    </div>
+
     <div class="formula">
       <strong>Formula used:</strong><br>
       FSPL (dB) = 32.44 + 20log10(distance in km) + 20log10(frequency in MHz)<br>
-      Total Loss (dB) = FSPL + Extra Attenuation
+      Total Loss (dB) = FSPL + Extra Attenuation<br>
+      Balanced Power 2 = Power 1 - (Loss 2 - Loss 1)<br>
+      Balanced Power 1 = Power 2 - (Loss 1 - Loss 2)
     </div>
   </div>
 
   <script>
+    let activePowerSide = null;
+
     function fsplDb(freqMHz, distanceM) {
       const distanceKm = distanceM / 1000;
       return 32.44 + 20 * Math.log10(distanceKm) + 20 * Math.log10(freqMHz);
@@ -212,18 +264,29 @@
       return value.toFixed(2) + ' dB';
     }
 
-    function calculateFSPL() {
-      const freq1 = parseFloat(document.getElementById('freq1').value);
-      const freq2Raw = document.getElementById('freq2').value.trim();
-      const freq2 = freq2Raw === '' ? NaN : parseFloat(freq2Raw);
-      const distance = parseFloat(document.getElementById('distance').value || '1000');
-      const attenuation = parseFloat(document.getElementById('attenuation').value || '0');
-      const warning = document.getElementById('warning');
+    function formatTenthDbm(value) {
+      return Math.round(value) + ' (' + (value / 10).toFixed(1) + ' dBm)';
+    }
 
+    function getInputs() {
+      return {
+        freq1: parseFloat(document.getElementById('freq1').value),
+        freq2Raw: document.getElementById('freq2').value.trim(),
+        freq2: document.getElementById('freq2').value.trim() === '' ? NaN : parseFloat(document.getElementById('freq2').value),
+        distance: parseFloat(document.getElementById('distance').value || '1000'),
+        attenuation: parseFloat(document.getElementById('attenuation').value || '0')
+      };
+    }
+
+    function calculateFSPL() {
+      const { freq1, freq2, distance, attenuation } = getInputs();
+      const warning = document.getElementById('warning');
       warning.textContent = '';
 
       if (!Number.isFinite(freq1) || freq1 <= 0) {
-        warning.textContent = 'Please enter a valid Frequency 1 in MHz.';
+        document.getElementById('result1').textContent = '-';
+        document.getElementById('note1').textContent = 'Enter Frequency 1 to calculate.';
+        resetPowerResults();
         return;
       }
 
@@ -242,7 +305,6 @@
 
         document.getElementById('result2').textContent = formatDb(loss2);
         document.getElementById('note2').textContent = 'Frequency 2 = ' + freq2 + ' MHz at ' + distance + ' m';
-
         document.getElementById('compareResult').textContent = formatDb(Math.abs(diff));
 
         if (diff > 0) {
@@ -258,6 +320,76 @@
         document.getElementById('compareResult').textContent = '-';
         document.getElementById('compareNote').textContent = 'Shows how much more path loss Frequency 2 has compared with Frequency 1.';
       }
+
+      recalculatePowerBalance();
+    }
+
+    function resetPowerResults() {
+      document.getElementById('balanced1').textContent = '-';
+      document.getElementById('balanced2').textContent = '-';
+      document.getElementById('balancedNote1').textContent = 'Waiting for power input.';
+      document.getElementById('balancedNote2').textContent = 'Waiting for power input.';
+      document.getElementById('balanceDiff').textContent = '-';
+      document.getElementById('balanceNote').textContent = 'Needs both frequencies to compare.';
+    }
+
+    function recalculatePowerBalance() {
+      const { freq1, freq2, distance, attenuation } = getInputs();
+      const power1El = document.getElementById('power1');
+      const power2El = document.getElementById('power2');
+
+      if (!Number.isFinite(freq1) || freq1 <= 0 || !Number.isFinite(freq2) || freq2 <= 0 || !Number.isFinite(distance) || distance <= 0) {
+        resetPowerResults();
+        return;
+      }
+
+      const loss1 = fsplDb(freq1, distance) + attenuation;
+      const loss2 = fsplDb(freq2, distance) + attenuation;
+      const diffDb = loss2 - loss1;
+      const diffTenthDb = diffDb * 10;
+
+      document.getElementById('balanceDiff').textContent = formatDb(Math.abs(diffDb));
+
+      if (diffDb > 0) {
+        document.getElementById('balanceNote').textContent = freq2 + ' MHz needs about ' + Math.abs(diffDb).toFixed(2) + ' dB more power than ' + freq1 + ' MHz to balance free-space loss.';
+      } else if (diffDb < 0) {
+        document.getElementById('balanceNote').textContent = freq1 + ' MHz needs about ' + Math.abs(diffDb).toFixed(2) + ' dB more power than ' + freq2 + ' MHz to balance free-space loss.';
+      } else {
+        document.getElementById('balanceNote').textContent = 'Both frequencies have equal calculated path loss.';
+      }
+
+      const power1 = power1El.value.trim() === '' ? NaN : parseFloat(power1El.value);
+      const power2 = power2El.value.trim() === '' ? NaN : parseFloat(power2El.value);
+
+      if (activePowerSide === 'power1' && Number.isFinite(power1)) {
+        const balancedPower2 = Math.round(power1 + diffTenthDb);
+        power2El.value = balancedPower2;
+        document.getElementById('balanced1').textContent = formatTenthDbm(power1);
+        document.getElementById('balanced2').textContent = formatTenthDbm(balancedPower2);
+        document.getElementById('balancedNote1').textContent = 'Reference input from Frequency 1 side.';
+        document.getElementById('balancedNote2').textContent = 'Auto calculated from path loss difference.';
+      } else if (activePowerSide === 'power2' && Number.isFinite(power2)) {
+        const balancedPower1 = Math.round(power2 - diffTenthDb);
+        power1El.value = balancedPower1;
+        document.getElementById('balanced1').textContent = formatTenthDbm(balancedPower1);
+        document.getElementById('balanced2').textContent = formatTenthDbm(power2);
+        document.getElementById('balancedNote1').textContent = 'Auto calculated from path loss difference.';
+        document.getElementById('balancedNote2').textContent = 'Reference input from Frequency 2 side.';
+      } else {
+        resetPowerResults();
+      }
+    }
+
+    function handlePower1Input() {
+      activePowerSide = 'power1';
+      document.getElementById('power2').value = '';
+      recalculatePowerBalance();
+    }
+
+    function handlePower2Input() {
+      activePowerSide = 'power2';
+      document.getElementById('power1').value = '';
+      recalculatePowerBalance();
     }
 
     function resetForm() {
@@ -265,6 +397,9 @@
       document.getElementById('freq2').value = '';
       document.getElementById('distance').value = '1000';
       document.getElementById('attenuation').value = '0';
+      document.getElementById('power1').value = '';
+      document.getElementById('power2').value = '';
+      activePowerSide = null;
       document.getElementById('result1').textContent = '-';
       document.getElementById('note1').textContent = 'Enter Frequency 1 to calculate.';
       document.getElementById('result2').textContent = '-';
@@ -272,12 +407,15 @@
       document.getElementById('compareResult').textContent = '-';
       document.getElementById('compareNote').textContent = 'Shows how much more path loss Frequency 2 has compared with Frequency 1.';
       document.getElementById('warning').textContent = '';
+      resetPowerResults();
     }
 
     document.getElementById('freq1').addEventListener('input', calculateFSPL);
     document.getElementById('freq2').addEventListener('input', calculateFSPL);
     document.getElementById('distance').addEventListener('input', calculateFSPL);
     document.getElementById('attenuation').addEventListener('input', calculateFSPL);
+    document.getElementById('power1').addEventListener('input', handlePower1Input);
+    document.getElementById('power2').addEventListener('input', handlePower2Input);
   </script>
 </body>
 </html>

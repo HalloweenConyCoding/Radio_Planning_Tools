@@ -68,6 +68,25 @@ body {
     margin-bottom: 10px;
 }
 
+.header-image-wrap {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 12px auto;
+    padding: 0;
+    border-radius: 18px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    overflow: hidden;
+}
+
+.header-image {
+    display: block;
+    max-width: 100%;
+    max-height: 300px;   /* adjust if needed */
+    width: auto;
+    height: auto;
+}
+
 .logo {
     display: flex;
     align-items: center;

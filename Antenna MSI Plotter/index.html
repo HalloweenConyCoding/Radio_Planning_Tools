@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSI Beam Plotter</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>MSI Beam Plotter</h1>
+      <p>
+        Pure HTML + CSS + JavaScript version. It reads metadata from inside each MSI file first,
+        then uses the filename only as the last fallback.
+      </p>
+    </header>
+
+    <section class="panel controls-panel">
+      <div class="controls-grid">
+        <div class="field">
+          <label for="folderInput">Select MSI Folder</label>
+          <input id="folderInput" type="file" webkitdirectory directory multiple accept=".msi,.txt" />
+          <small>Select the top folder. Subfolders are included automatically.</small>
+        </div>
+
+        <div class="field compact">
+          <label for="rotateToggle">Auto Adjust Tilt</label>
+          <label class="toggle-row">
+            <input id="rotateToggle" type="checkbox" checked />
+            <span>Rotate vertical plot by detected tilt</span>
+          </label>
+          <small>Unknown tilt stays unrotated.</small>
+        </div>
+
+        <div class="field compact">
+          <label>&nbsp;</label>
+          <button id="plotBtn">Plot Folder</button>
+        </div>
+      </div>
+
+      <div id="status" class="status">
+        Waiting for folder selection...
+      </div>
+
+      <div id="globalSummary" class="global-summary hidden">
+        <div class="summary-card">
+          <div class="summary-key">Selected files</div>
+          <div class="summary-value" id="sumSelected">0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-key">MSI files used</div>
+          <div class="summary-value" id="sumUsed">0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-key">Frequencies found</div>
+          <div class="summary-value" id="sumFreq">0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-key">Plots created</div>
+          <div class="summary-value" id="sumPlots">0</div>
+        </div>
+      </div>
+
+      <div class="note">
+        <div>Notes</div>
+        <ul>
+          <li>Tilt detection priority: <b>TILT field → COMMENT(S) → NAME → filename</b>.</li>
+          <li>If copied PNG is blocked by browser clipboard permission, it will fall back to download.</li>
+          <li>Copied PNG uses a <b>white background</b> and <b>no legend</b>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="plotsContainer" class="plots-container"></section>
+  </div>
+
+  <script src="js/parser.js"></script>
+  <script src="js/plotter.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -39,6 +39,7 @@
           mode: "lines",
           theta: prepared.theta,
           r: prepared.gains,
+          customdata: prepared.theta.map(v => Math.round(v)),
           name: item.label,
           line: {
             color: getVividColor(idx, traceItems.length),
@@ -46,7 +47,7 @@
           },
           hovertemplate:
             `<b>${escapeHtml(item.label)}</b><br>` +
-            `Theta: %{theta}°<br>` +
+            `Angle: %{customdata}°<br>` +
             `Gain: %{r:.2f} dB` +
             `<extra></extra>`
         };

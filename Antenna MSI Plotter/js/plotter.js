@@ -24,22 +24,22 @@
       const {
         zeroDirection = "N",
         rotateEnabled = false,
-        include3dB = true
+        include3dB = true,
+        guideAngles = []
       } = options || {};
-  
+    
       const traces = traceItems.map((item, idx) => {
         const prepared = MSIPlotter.preparePatternData(
           item.pattern,
           item.meta.TILT_VALUE,
           rotateEnabled
         );
-  
+    
         return {
           type: "scatterpolar",
           mode: "lines",
           theta: prepared.theta,
           r: prepared.gains,
-          customdata: prepared.theta.map(v => Math.round(v)),
           name: item.label,
           line: {
             color: getVividColor(idx, traceItems.length),
@@ -47,12 +47,12 @@
           },
           hovertemplate:
             `<b>${escapeHtml(item.label)}</b><br>` +
-            `Angle: %{customdata}°<br>` +
+            `Theta: %{theta}°<br>` +
             `Gain: %{r:.2f} dB` +
             `<extra></extra>`
         };
       });
-  
+    
       if (include3dB) {
         const circle = make3dBCircle();
         traces.push({
@@ -69,32 +69,41 @@
           hovertemplate: "-3 dB<extra></extra>"
         });
       }
-  
+    
+      for (const angle of guideAngles) {
+        const guideTrace = makeManualGuideTrace(angle);
+        if (guideTrace) {
+          traces.push(guideTrace);
+        }
+      }
+    
       const layout = buildPolarLayout({
         title: "",
         zeroDirection,
         theme: "dark",
         showLegend: true
       });
-  
+    
       return { traces, layout };
     };
   
-    MSIPlotter.renderPlot = async function (plotDiv, traceItems, options) {
+    MSIPlotter.renderPlot = async function (plotDiv, traceItems, options = {}) {
       const zeroDirection = options.zeroDirection || "N";
       const rotateEnabled = !!options.rotateEnabled;
-  
+      const guideAngles = Array.isArray(options.guideAngles) ? options.guideAngles : [];
+    
       const { traces, layout } = MSIPlotter.buildPlotData(traceItems, {
         zeroDirection,
-        rotateEnabled
+        rotateEnabled,
+        guideAngles
       });
-  
+    
       await Plotly.newPlot(plotDiv, traces, layout, {
         responsive: true,
         displaylogo: false,
         modeBarButtonsToRemove: ["lasso2d", "select2d", "autoScale2d", "toImage"]
       });
-  
+    
       plotDiv.dataset.zeroDirection = zeroDirection;
       plotDiv.dataset.rotateEnabled = rotateEnabled ? "true" : "false";
     };
@@ -268,7 +277,33 @@
   
       return { theta, r };
     }
-  
+    
+    function makeManualGuideTrace(angleValue) {
+      if (angleValue === null || angleValue === undefined || angleValue === "") {
+        return null;
+      }
+    
+      const angleNum = Number(angleValue);
+      if (Number.isNaN(angleNum)) {
+        return null;
+      }
+    
+      const theta = normalizeAngle(angleNum);
+    
+      return {
+        type: "scatterpolar",
+        mode: "lines",
+        theta: [theta, theta],
+        r: [-35, 0],
+        showlegend: false,
+        line: {
+          color: "red",
+          width: 2
+        },
+        hovertemplate: `Guide: ${angleNum}°<extra></extra>`
+      };
+    }
+    
     function getVividColor(index, total) {
       if (total <= 1) return "hsl(0, 95%, 55%)";
       const hue = (index / total) * 300;

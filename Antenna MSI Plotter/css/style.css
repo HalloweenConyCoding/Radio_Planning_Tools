@@ -24,38 +24,44 @@
     background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
     min-height: 100vh;
   }
-  
-  .page {
-    max-width: 1480px;
-    margin: 0 auto;
-    padding: 22px;
-  }
-  
-  .hero {
-    margin-bottom: 16px;
-  }
-  
-  .hero h1 {
-    margin: 0 0 8px 0;
-    font-size: 30px;
+
+  button {
+    appearance: none;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, var(--accent), #60a5fa);
+    color: #06121f;
     font-weight: 800;
-    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: 0.15s ease;
   }
   
-  .hero p {
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.6;
+  button:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
   }
   
-  .panel,
-  .freq-block {
-    background: rgba(17, 24, 39, 0.93);
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .band-summary {
+    margin-top: 16px;
+    background: var(--card-2);
     border: 1px solid var(--line);
-    border-radius: 18px;
-    box-shadow: var(--shadow);
+    border-radius: 16px;
+    padding: 14px;
   }
   
+  .band-summary-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
   .controls-panel {
     padding: 18px;
     margin-bottom: 18px;
@@ -66,8 +72,13 @@
     grid-template-columns: 1.5fr 1fr 1fr auto;
     gap: 14px;
     align-items: end;
+  }  
+
+  .copy-btn {
+    background: linear-gradient(90deg, #e2e8f0, #cbd5e1);
+    color: #0f172a;
   }
-  
+
   .field label {
     display: block;
     font-size: 13px;
@@ -95,51 +106,226 @@
   .field.compact {
     min-width: 220px;
   }
+
+  .filter-hint {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .freq-block {
+    padding: 18px;
+  }
   
-  .toggle-row {
-    display: flex !important;
+  .freq-head {
+    display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 46px;
-    background: var(--card-2);
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  
+  .freq-title {
+    font-size: 24px;
+    font-weight: 800;
+  }
+  
+  .freq-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  
+  .global-summary {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .hero {
+    margin-bottom: 16px;
+  }
+  
+  .hero h1 {
+    margin: 0 0 8px 0;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+  }
+  
+  .hero p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .manual-tilt-section {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  
+  .manual-tilt-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  
+  .manual-tilt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  
+  .manual-tilt-item {
+    background: rgba(17, 24, 39, 0.65);
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 10px 12px;
-    color: var(--text) !important;
   }
   
-  button {
-    appearance: none;
-    border: none;
+  .manual-tilt-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  
+  .manual-tilt-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--card-2);
+    color: var(--text);
+    font-size: 14px;
+  }
+  
+  .manual-tilt-help {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  
+  .meta-item {
+    background: rgba(17, 24, 39, 0.65);
+    border: 1px solid var(--line);
     border-radius: 12px;
-    padding: 12px 18px;
-    background: linear-gradient(90deg, var(--accent), #60a5fa);
-    color: #06121f;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.15s ease;
+    padding: 10px 12px;
+    min-height: 72px;
   }
   
-  button:hover {
-    filter: brightness(1.06);
-    transform: translateY(-1px);
+  .meta-key {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
   }
   
-  button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
+  .meta-value {
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
   }
   
+  .note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(11, 18, 32, 0.7);
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  
+  .note > div {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  
+  .note ul {
+    margin: 8px 0 0 18px;
+    padding: 0;
+  }
+  
+  .panel,
+  .freq-block {
+    background: rgba(17, 24, 39, 0.93);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+  }
+  
+  .page {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 22px;
+  }
+
+  .plots-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+
+  .plot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .plot-card {
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  
+  .plot-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 12px 0 12px;
+  }
+  
+  .plot-card-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  
+  .plot-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .plot-wrap {
+    padding: 6px 8px 10px 8px;
+  }
+  
+  .plot {
+    width: 100%;
+    height: 520px;
+  }
+
   .small-btn {
     padding: 8px 12px;
     font-size: 13px;
     border-radius: 10px;
-  }
-  
-  .copy-btn {
-    background: linear-gradient(90deg, #e2e8f0, #cbd5e1);
-    color: #0f172a;
   }
   
   .status {
@@ -163,13 +349,6 @@
   
   .status.bad {
     color: #fecaca;
-  }
-  
-  .global-summary {
-    margin-top: 14px;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
   }
   
   .summary-card {
@@ -204,13 +383,19 @@
     border-radius: 12px;
     padding: 10px 12px;
   }
-  
-  .filter-hint {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.4;
+
+  .toggle-row {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: var(--text) !important;
   }
-  
+
   .tilt-panel {
     position: absolute;
     top: calc(100% + 8px);
@@ -256,141 +441,6 @@
   .tilt-empty {
     color: var(--muted);
     font-size: 13px;
-  }
-  
-  .note {
-    margin-top: 16px;
-    padding: 12px 14px;
-    background: rgba(11, 18, 32, 0.7);
-    border: 1px dashed var(--line);
-    border-radius: 12px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-  
-  .note > div {
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  
-  .note ul {
-    margin: 8px 0 0 18px;
-    padding: 0;
-  }
-  
-  .plots-container {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-  
-  .freq-block {
-    padding: 18px;
-  }
-  
-  .freq-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 14px;
-  }
-  
-  .freq-title {
-    font-size: 24px;
-    font-weight: 800;
-  }
-  
-  .freq-subtitle {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 4px;
-  }
-  
-  .plot-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  
-  .plot-card {
-    background: var(--card-2);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    overflow: hidden;
-  }
-  
-  .plot-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 12px 0 12px;
-  }
-  
-  .plot-card-title {
-    font-size: 16px;
-    font-weight: 700;
-  }
-  
-  .plot-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  
-  .plot-wrap {
-    padding: 6px 8px 10px 8px;
-  }
-  
-  .plot {
-    width: 100%;
-    height: 520px;
-  }
-  
-  .band-summary {
-    margin-top: 16px;
-    background: var(--card-2);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 14px;
-  }
-  
-  .band-summary-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-  
-  .meta-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-  
-  .meta-item {
-    background: rgba(17, 24, 39, 0.65);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 10px 12px;
-    min-height: 72px;
-  }
-  
-  .meta-key {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  
-  .meta-value {
-    font-size: 14px;
-    line-height: 1.5;
-    word-break: break-word;
-  }
-  
-  .hidden {
-    display: none !important;
   }
   
   @media (max-width: 1180px) {

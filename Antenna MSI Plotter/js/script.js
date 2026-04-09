@@ -11,6 +11,7 @@
   const sumFreq = document.getElementById("sumFreq");
   const sumPlots = document.getElementById("sumPlots");
 
+  // optional tilt-filter controls (works only if present in HTML)
   const tiltFilterBtn = document.getElementById("tiltFilterBtn");
   const tiltPanel = document.getElementById("tiltPanel");
   const tiltAllBtn = document.getElementById("tiltAllBtn");
@@ -23,6 +24,13 @@
     selected: new Set()
   };
 
+  // NEW: per-frequency manual tilt offsets
+  // shape:
+  // {
+  //   "1710": { "20": 0, "-2": 1.5, "-11": 0, "-20": -0.5 }
+  // }
+  const manualTiltOffsetsByFreq = {};
+
   let parsedResultsCache = [];
   let skippedCache = [];
   let totalSelectedFiles = 0;
@@ -31,32 +39,38 @@
   plotBtn.addEventListener("click", onPlotClicked);
   rotateToggle.addEventListener("change", rerenderIfReady);
 
-  tiltFilterBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    tiltPanel.classList.toggle("hidden");
-  });
+  if (tiltFilterBtn && tiltPanel) {
+    tiltFilterBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      tiltPanel.classList.toggle("hidden");
+    });
 
-  tiltPanel.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
+    tiltPanel.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
 
-  document.addEventListener("click", () => {
-    tiltPanel.classList.add("hidden");
-  });
+    document.addEventListener("click", () => {
+      tiltPanel.classList.add("hidden");
+    });
+  }
 
-  tiltAllBtn.addEventListener("click", () => {
-    tiltFilterState.selected = new Set(tiltFilterState.available);
-    renderTiltList();
-    updateTiltHint();
-    rerenderIfReady();
-  });
+  if (tiltAllBtn) {
+    tiltAllBtn.addEventListener("click", () => {
+      tiltFilterState.selected = new Set(tiltFilterState.available);
+      renderTiltList();
+      updateTiltHint();
+      rerenderIfReady();
+    });
+  }
 
-  tiltNoneBtn.addEventListener("click", () => {
-    tiltFilterState.selected.clear();
-    renderTiltList();
-    updateTiltHint();
-    rerenderIfReady();
-  });
+  if (tiltNoneBtn) {
+    tiltNoneBtn.addEventListener("click", () => {
+      tiltFilterState.selected.clear();
+      renderTiltList();
+      updateTiltHint();
+      rerenderIfReady();
+    });
+  }
 
   function onFolderSelected() {
     const files = Array.from(folderInput.files || []);
@@ -65,6 +79,10 @@
     parsedResultsCache = [];
     skippedCache = [];
     totalSelectedFiles = files.length;
+
+    // reset manual tilt cache
+    Object.keys(manualTiltOffsetsByFreq).forEach((k) => delete manualTiltOffsetsByFreq[k]);
+
     resetTiltFilterUi();
     clearOutput();
 
@@ -175,7 +193,7 @@
       return;
     }
 
-    const grouped = groupByFrequency(filteredResults);
+    const grouped = groupByFrequency(filteredResults, !!rotateToggle.checked);
     const freqs = Object.keys(grouped)
       .map(Number)
       .sort((a, b) => a - b);
@@ -187,7 +205,7 @@
       const block = createFrequencyBlock(freq, band);
       plotsContainer.appendChild(block.root);
 
-      const rotateVertical = !!rotateToggle.checked;
+      const rotateVertical = !!rotateToggle.checked || hasManualTiltOffsetForBand(freq);
 
       if (band.H.length) {
         await MSIPlotter.renderPlot(block.hPlot, band.H, {
@@ -205,7 +223,7 @@
         plotCount++;
       }
 
-      fillBandSummary(block.summaryWrap, band);
+      fillBandSummary(block.summaryWrap, band, freq);
       bindCopyButtons(block, freq);
     }
 
@@ -222,8 +240,11 @@
       `\nMSI files parsed: ${parsedResultsCache.length}` +
       `\nMSI files currently plotted: ${filteredResults.length}` +
       `\nFrequencies shown: ${freqs.length}` +
-      `\nPlots created: ${plotCount}` +
-      `\nTilt filter: ${getTiltFilterSummary()}`;
+      `\nPlots created: ${plotCount}`;
+
+    if (tiltHint) {
+      doneText += `\nTilt filter: ${getTiltFilterSummary()}`;
+    }
 
     if (skippedCache.length) {
       doneText += `\nSkipped: ${skippedCache.length}`;
@@ -234,6 +255,7 @@
 
   function rerenderIfReady() {
     if (!parsedResultsCache.length) return;
+
     renderCurrentView().catch((err) => {
       console.error(err);
       setStatus("Something went wrong while refreshing the plots.", "bad");
@@ -245,7 +267,10 @@
     tiltFilterState.selected = new Set();
     renderTiltList();
     updateTiltHint();
-    tiltPanel.classList.add("hidden");
+
+    if (tiltPanel) {
+      tiltPanel.classList.add("hidden");
+    }
   }
 
   function initTiltFilter(parsedResults) {
@@ -256,9 +281,11 @@
   }
 
   function getAvailableTiltKeys(parsedResults) {
-    const uniq = [...new Set(parsedResults.map((item) => tiltKeyFromValue(item.meta.TILT_VALUE)))];
+    const keys = [
+      ...new Set(parsedResults.map((item) => tiltKeyFromValue(item.meta.TILT_VALUE)))
+    ];
 
-    return uniq.sort((a, b) => {
+    return keys.sort((a, b) => {
       if (a === "NO_TILT") return 1;
       if (b === "NO_TILT") return -1;
       return Number(a) - Number(b);
@@ -284,6 +311,8 @@
   }
 
   function renderTiltList() {
+    if (!tiltList) return;
+
     tiltList.innerHTML = "";
 
     if (!tiltFilterState.available.length) {
@@ -320,6 +349,7 @@
   }
 
   function updateTiltHint() {
+    if (!tiltHint) return;
     tiltHint.textContent = getTiltFilterSummary();
   }
 
@@ -361,7 +391,7 @@
     });
   }
 
-  function groupByFrequency(parsedResults) {
+  function groupByFrequency(parsedResults, useDetectedBase = true) {
     const grouped = {};
 
     for (const item of parsedResults) {
@@ -378,12 +408,18 @@
 
       grouped[freq].metas.push(item.meta);
 
-      const label = buildTraceLabel(item.meta, item.fileName);
+      // apply manual tilt offset per frequency + detected tilt group
+      const adjustedMeta = {
+        ...item.meta,
+        TILT_VALUE: getEffectiveTiltValue(freq, item.meta.TILT_VALUE, useDetectedBase)
+      };
+      
+      const label = buildTraceLabel(adjustedMeta, item.fileName);
 
       if (Object.keys(item.sections.H.pattern).length) {
         grouped[freq].H.push({
           label,
-          meta: item.meta,
+          meta: adjustedMeta,
           pattern: item.sections.H.pattern,
           fileName: item.fileName
         });
@@ -392,7 +428,7 @@
       if (Object.keys(item.sections.V.pattern).length) {
         grouped[freq].V.push({
           label,
-          meta: item.meta,
+          meta: adjustedMeta,
           pattern: item.sections.V.pattern,
           fileName: item.fileName
         });
@@ -533,8 +569,13 @@
     });
   }
 
-  function fillBandSummary(container, band) {
-    const meta = summarizeBandMeta(band.metas);
+  function fillBandSummary(container, band, freq) {
+    const adjustedMetas = band.metas.map((m) => ({
+      ...m,
+      TILT_VALUE: getEffectiveTiltValue(freq, m.TILT_VALUE, !!rotateToggle.checked)
+    }));
+  
+    const meta = summarizeBandMeta(adjustedMetas);
 
     const rows = [
       ["Vendor", meta.VENDOR],
@@ -568,6 +609,164 @@
       `;
       grid.appendChild(item);
     }
+
+    renderManualTiltSection(container, band, freq);
+  }
+
+  function renderManualTiltSection(container, band, freq) {
+    const tiltKeys = getBandDetectedTiltKeys(band.metas);
+    if (!tiltKeys.length) return;
+
+    ensureManualTiltOffsets(freq, tiltKeys);
+
+    const section = document.createElement("div");
+    section.className = "manual-tilt-section";
+
+    const title = document.createElement("div");
+    title.className = "manual-tilt-title";
+    title.textContent = "Manual Tilt";
+
+    const grid = document.createElement("div");
+    grid.className = "manual-tilt-grid";
+
+    for (const key of tiltKeys) {
+      const item = document.createElement("div");
+      item.className = "manual-tilt-item";
+
+      const label = document.createElement("div");
+      label.className = "manual-tilt-label";
+      label.textContent = `Offset for Tilt ${key}`;
+
+      const input = document.createElement("input");
+      input.className = "manual-tilt-input";
+      input.type = "number";
+      input.step = "0.1";
+      input.value = formatNumber(getManualTiltOffset(freq, key)) || "0";
+      input.placeholder = "0";
+
+      const applyManualTiltChange = async () => {
+        setManualTiltOffset(freq, key, input.value);
+      
+        try {
+          await renderCurrentView();
+        } catch (err) {
+          console.error(err);
+          setStatus("Something went wrong while refreshing the plots.", "bad");
+        }
+      };
+      
+      input.addEventListener("change", applyManualTiltChange);
+      
+      input.addEventListener("keydown", async (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          await applyManualTiltChange();
+        }
+      });
+
+      const help = document.createElement("div");
+      help.className = "manual-tilt-help";
+      help.textContent = rotateToggle.checked
+        ? `Applied tilt = detected ${key} - offset`
+        : `Applied tilt = -offset`;
+
+      item.appendChild(label);
+      item.appendChild(input);
+      item.appendChild(help);
+      grid.appendChild(item);
+    }
+
+    section.appendChild(title);
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+
+  function getBandDetectedTiltKeys(metas) {
+    const uniq = [
+      ...new Set(
+        metas
+          .map((m) => manualTiltKeyFromValue(m.TILT_VALUE))
+          .filter((key) => key !== "NO_TILT")
+      )
+    ];
+
+    return uniq.sort((a, b) => Number(a) - Number(b));
+  }
+
+  function manualTiltKeyFromValue(value) {
+    if (value === null || value === undefined || value === "") {
+      return "NO_TILT";
+    }
+
+    const num = Number(value);
+    if (Number.isNaN(num)) {
+      return String(value).trim();
+    }
+
+    return formatNumber(num);
+  }
+
+  function ensureManualTiltOffsets(freq, tiltKeys) {
+    const freqKey = String(freq);
+
+    if (!manualTiltOffsetsByFreq[freqKey]) {
+      manualTiltOffsetsByFreq[freqKey] = {};
+    }
+
+    for (const key of tiltKeys) {
+      if (!(key in manualTiltOffsetsByFreq[freqKey])) {
+        manualTiltOffsetsByFreq[freqKey][key] = 0;
+      }
+    }
+  }
+
+  function getManualTiltOffset(freq, tiltKey) {
+    const freqKey = String(freq);
+    return manualTiltOffsetsByFreq[freqKey]?.[tiltKey] ?? 0;
+  }
+
+  function setManualTiltOffset(freq, tiltKey, rawValue) {
+    const freqKey = String(freq);
+
+    if (!manualTiltOffsetsByFreq[freqKey]) {
+      manualTiltOffsetsByFreq[freqKey] = {};
+    }
+
+    const num = parseFloat(rawValue);
+    manualTiltOffsetsByFreq[freqKey][tiltKey] = Number.isNaN(num) ? 0 : num;
+  }
+
+  function hasManualTiltOffsetForBand(freq) {
+    const freqKey = String(freq);
+    const offsets = manualTiltOffsetsByFreq[freqKey];
+    if (!offsets) return false;
+  
+    return Object.values(offsets).some((v) => Math.abs(Number(v) || 0) > 0);
+  }
+  
+  function getEffectiveTiltValue(freq, detectedTiltValue, useDetectedBase = true) {
+    if (detectedTiltValue === null || detectedTiltValue === undefined || detectedTiltValue === "") {
+      return detectedTiltValue;
+    }
+  
+    const detectedNum = Number(detectedTiltValue);
+    if (Number.isNaN(detectedNum)) {
+      return detectedTiltValue;
+    }
+  
+    const tiltKey = manualTiltKeyFromValue(detectedTiltValue);
+    const offset = getManualTiltOffset(freq, tiltKey);
+  
+    // Auto Adjust Tilt OFF:
+    // use manual value only
+    if (!useDetectedBase) {
+      if (offset === 0) return detectedTiltValue;
+      return -offset;
+    }
+  
+    // Auto Adjust Tilt ON:
+    // invert manual direction: +10 behaves like -10
+    return detectedNum - offset;
   }
 
   function summarizeBandMeta(metas) {

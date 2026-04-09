@@ -30,6 +30,7 @@
   //   "1710": { "20": 0, "-2": 1.5, "-11": 0, "-20": -0.5 }
   // }
   const manualTiltOffsetsByFreq = {};
+  const manualGuideLinesByFreq = {};
 
   let parsedResultsCache = [];
   let skippedCache = [];
@@ -82,6 +83,7 @@
 
     // reset manual tilt cache
     Object.keys(manualTiltOffsetsByFreq).forEach((k) => delete manualTiltOffsetsByFreq[k]);
+    Object.keys(manualGuideLinesByFreq).forEach((k) => delete manualGuideLinesByFreq[k]);
 
     resetTiltFilterUi();
     clearOutput();
@@ -210,7 +212,8 @@
       if (band.H.length) {
         await MSIPlotter.renderPlot(block.hPlot, band.H, {
           zeroDirection: "N",
-          rotateEnabled: false
+          rotateEnabled: false,
+          guideAngles: getManualGuideAngles(freq, "H")
         });
         plotCount++;
       }
@@ -218,7 +221,8 @@
       if (band.V.length) {
         await MSIPlotter.renderPlot(block.vPlot, band.V, {
           zeroDirection: "E",
-          rotateEnabled: rotateVertical
+          rotateEnabled: rotateVertical,
+          guideAngles: getManualGuideAngles(freq, "V")
         });
         plotCount++;
       }
@@ -611,6 +615,7 @@
     }
 
     renderManualTiltSection(container, band, freq);
+    renderManualGuideSection(container, freq);
   }
 
   function renderManualTiltSection(container, band, freq) {
@@ -633,13 +638,9 @@
       const item = document.createElement("div");
       item.className = "manual-tilt-item";
   
-      const displayTilt = formatNumber(
-        getEffectiveTiltValue(freq, Number(key), !!rotateToggle.checked)
-      );
-  
       const label = document.createElement("div");
       label.className = "manual-tilt-label";
-      label.textContent = `Offset for Tilt ${displayTilt}`;
+      label.textContent = `Offset for Tilt ${key}`;
   
       const input = document.createElement("input");
       input.className = "manual-tilt-input";
@@ -684,7 +685,7 @@
     section.appendChild(grid);
     container.appendChild(section);
   }
-
+  
   function getBandDetectedTiltKeys(metas) {
     const uniq = [
       ...new Set(
@@ -772,6 +773,128 @@
     return detectedNum - offset;
   }
 
+  function ensureManualGuideLines(freq) {
+    const freqKey = String(freq);
+  
+    if (!manualGuideLinesByFreq[freqKey]) {
+      manualGuideLinesByFreq[freqKey] = {
+        hStart: null,
+        hStop: null,
+        vStart: null,
+        vStop: null
+      };
+    }
+  }
+  
+  function getManualGuideLineValue(freq, key) {
+    const freqKey = String(freq);
+    return manualGuideLinesByFreq[freqKey]?.[key] ?? null;
+  }
+  
+  function setManualGuideLineValue(freq, key, rawValue) {
+    const freqKey = String(freq);
+    ensureManualGuideLines(freq);
+  
+    const str = String(rawValue ?? "").trim();
+  
+    if (str === "") {
+      manualGuideLinesByFreq[freqKey][key] = null;
+      return;
+    }
+  
+    const num = parseFloat(str);
+    manualGuideLinesByFreq[freqKey][key] = Number.isNaN(num) ? null : num;
+  }
+  
+  function formatManualGuideLineValue(value) {
+    if (value === null || value === undefined || value === "") {
+      return "";
+    }
+    return formatNumber(value);
+  }
+  
+  function getManualGuideAngles(freq, plotType) {
+    ensureManualGuideLines(freq);
+    const freqKey = String(freq);
+    const state = manualGuideLinesByFreq[freqKey];
+  
+    if (plotType === "H") {
+      return [state.hStart, state.hStop].filter((v) => v !== null && v !== undefined && v !== "");
+    }
+  
+    return [state.vStart, state.vStop].filter((v) => v !== null && v !== undefined && v !== "");
+  }
+  
+  function renderManualGuideSection(container, freq) {
+    ensureManualGuideLines(freq);
+  
+    const section = document.createElement("div");
+    section.className = "manual-tilt-section";
+  
+    const title = document.createElement("div");
+    title.className = "manual-tilt-title";
+    title.textContent = "Manual Read Line";
+  
+    const grid = document.createElement("div");
+    grid.className = "manual-tilt-grid";
+  
+    const configs = [
+      { key: "hStart", label: "Start HBW" },
+      { key: "hStop",  label: "Stop HBW" },
+      { key: "vStart", label: "Start VBW" },
+      { key: "vStop",  label: "Stop VBW" }
+    ];
+  
+    for (const cfg of configs) {
+      const item = document.createElement("div");
+      item.className = "manual-tilt-item";
+  
+      const label = document.createElement("div");
+      label.className = "manual-tilt-label";
+      label.textContent = cfg.label;
+  
+      const input = document.createElement("input");
+      input.className = "manual-tilt-input";
+      input.type = "number";
+      input.step = "0.1";
+      input.value = formatManualGuideLineValue(getManualGuideLineValue(freq, cfg.key));
+      input.placeholder = "";
+  
+      const applyGuideChange = async () => {
+        setManualGuideLineValue(freq, cfg.key, input.value);
+  
+        try {
+          await renderCurrentView();
+        } catch (err) {
+          console.error(err);
+          setStatus("Something went wrong while refreshing the plots.", "bad");
+        }
+      };
+  
+      input.addEventListener("change", applyGuideChange);
+  
+      input.addEventListener("keydown", async (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          await applyGuideChange();
+        }
+      });
+  
+      const help = document.createElement("div");
+      help.className = "manual-tilt-help";
+      help.textContent = "Blank = hide line. 0 = draw at 0°. -20 and 340 draw at the same angle.";
+  
+      item.appendChild(label);
+      item.appendChild(input);
+      item.appendChild(help);
+      grid.appendChild(item);
+    }
+  
+    section.appendChild(title);
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+  
   function summarizeBandMeta(metas) {
     return {
       VENDOR: joinUnique(metas.map((m) => m.VENDOR)),

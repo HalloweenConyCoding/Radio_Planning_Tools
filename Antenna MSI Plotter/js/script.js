@@ -616,37 +616,41 @@
   function renderManualTiltSection(container, band, freq) {
     const tiltKeys = getBandDetectedTiltKeys(band.metas);
     if (!tiltKeys.length) return;
-
+  
     ensureManualTiltOffsets(freq, tiltKeys);
-
+  
     const section = document.createElement("div");
     section.className = "manual-tilt-section";
-
+  
     const title = document.createElement("div");
     title.className = "manual-tilt-title";
     title.textContent = "Manual Tilt";
-
+  
     const grid = document.createElement("div");
     grid.className = "manual-tilt-grid";
-
+  
     for (const key of tiltKeys) {
       const item = document.createElement("div");
       item.className = "manual-tilt-item";
-
+  
+      const displayTilt = formatNumber(
+        getEffectiveTiltValue(freq, Number(key), !!rotateToggle.checked)
+      );
+  
       const label = document.createElement("div");
       label.className = "manual-tilt-label";
-      label.textContent = `Offset for Tilt ${key}`;
-
+      label.textContent = `Offset for Tilt ${displayTilt}`;
+  
       const input = document.createElement("input");
       input.className = "manual-tilt-input";
       input.type = "number";
       input.step = "0.1";
       input.value = formatNumber(getManualTiltOffset(freq, key)) || "0";
       input.placeholder = "0";
-
+  
       const applyManualTiltChange = async () => {
         setManualTiltOffset(freq, key, input.value);
-      
+  
         try {
           await renderCurrentView();
         } catch (err) {
@@ -654,28 +658,28 @@
           setStatus("Something went wrong while refreshing the plots.", "bad");
         }
       };
-      
+  
       input.addEventListener("change", applyManualTiltChange);
-      
+  
       input.addEventListener("keydown", async (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
           await applyManualTiltChange();
         }
       });
-
+  
       const help = document.createElement("div");
       help.className = "manual-tilt-help";
       help.textContent = rotateToggle.checked
         ? `Applied tilt = detected ${key} - offset`
         : `Applied tilt = -offset`;
-
+  
       item.appendChild(label);
       item.appendChild(input);
       item.appendChild(help);
       grid.appendChild(item);
     }
-
+  
     section.appendChild(title);
     section.appendChild(grid);
     container.appendChild(section);
@@ -689,7 +693,7 @@
           .filter((key) => key !== "NO_TILT")
       )
     ];
-
+  
     return uniq.sort((a, b) => Number(a) - Number(b));
   }
 
@@ -760,7 +764,6 @@
     // Auto Adjust Tilt OFF:
     // use manual value only
     if (!useDetectedBase) {
-      if (offset === 0) return detectedTiltValue;
       return -offset;
     }
   

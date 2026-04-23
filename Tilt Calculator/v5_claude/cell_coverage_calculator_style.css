@@ -141,53 +141,9 @@ body {
 
 /* Header image */
 .header-image-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    max-width: 100%;
-    margin: 0 auto 2px auto;
-    padding: 10px;
-    border-radius: 22px;
-    border: 1px solid var(--border);
-    background:
-        linear-gradient(180deg, rgba(93,224,36,0.06), rgba(93,224,36,0.02)),
-        rgba(20,25,20,0.92);
-    box-shadow:
-        var(--shadow-md),
-        0 0 0 1px rgba(93,224,36,0.05),
-        0 0 28px rgba(93,224,36,0.08);
-    overflow: hidden;
-    position: relative;
-    animation: fadeSlideDown 0.5s var(--ease-smooth) both;
+    display: none; /* Hidden - v5 uses inline header */
 }
 
-.header-image-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 22px;
-    padding: 1px;
-    background: linear-gradient(90deg, transparent, rgba(111,232,50,0.45), transparent);
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0.7;
-}
-
-.header-image {
-    display: block;
-    max-width: 100%;
-    max-height: 300px;
-    width: auto;
-    height: auto;
-    border-radius: 14px;
-    position: relative;
-    z-index: 1;
-}
 .logo {
     display: flex;
     align-items: center;
@@ -718,15 +674,3 @@ input[type=number]::-webkit-outer-spin-button { opacity: 0.3; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
-
-
-@media (max-width: 768px) {
-    .header-image-wrap {
-        padding: 8px;
-        border-radius: 18px;
-    }
-
-    .header-image {
-        max-height: 220px;
-    }
-}

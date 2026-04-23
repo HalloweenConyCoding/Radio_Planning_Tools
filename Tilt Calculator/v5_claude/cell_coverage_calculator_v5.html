@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Coverage Calculator V5</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="cell_coverage_calculator_style.css">
+
+    <!-- Google tag (gtag.js) for data analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF46XXJ5V7"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-JF46XXJ5V7');
+    </script>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Tower icon -->
+                        <line x1="12" y1="2" x2="12" y2="22"/>
+                        <path d="M8 6 Q12 2 16 6"/>
+                        <path d="M5 10 Q12 3 19 10"/>
+                        <line x1="12" y1="14" x2="9" y2="22"/>
+                        <line x1="12" y1="14" x2="15" y2="22"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Cell Coverage Calculator <span class="version">V5</span></h1>
+                    <div class="subtitle">Antenna Tilt &amp; Coverage Planning Tool</div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="ais-badge">AIS RF TEAM</div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    System Ready
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== SITE TYPE SWITCH ===== -->
+        <div class="controls-section">
+            <div id="siteTypeSwitch" class="switch-container">
+                <span class="switch-label-text">Site Type:</span>
+                <div class="switch">
+                    <input type="radio" id="macro" name="siteType" value="Macro" checked>
+                    <label for="macro" class="switch-label">Macro Site</label>
+                    <input type="radio" id="small" name="siteType" value="Small">
+                    <label for="small" class="switch-label">Small Cell</label>
+                    <div class="glider"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MAIN DASHBOARD ===== -->
+        <div id="main-container" class="dashboard-grid">
+
+            <!-- LEFT: Control Panel -->
+            <div id="left-panel" class="panel control-panel">
+                <h3 class="panel-title">Parameters</h3>
+
+                <div class="parameters-grid">
+                    <div class="input-group">
+                        <label for="ha">Antenna Height (m)</label>
+                        <input id="ha" value="33" type="number" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="mtilt">Mechanical Tilt (°)</label>
+                        <input id="mtilt" value="2" type="number" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="etilt">Electrical Tilt (°)</label>
+                        <input id="etilt" value="3" type="number" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="vbw">Vertical Beam Width (°)</label>
+                        <input id="vbw" value="6.5" type="number" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="hbw">Horizontal Beam Width (°)</label>
+                        <input id="hbw" value="66" type="number" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="bdistance">Building Distance (m)</label>
+                        <input id="bdistance" type="number" placeholder="Optional" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="bheight">Building Height (m)</label>
+                        <input id="bheight" value="50" type="number" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="bdepth">Building Depth (m)</label>
+                        <input id="bdepth" value="30" type="number" step="1">
+                    </div>
+                </div>
+
+                <div class="calc-wrapper" onclick="calculate()">
+                    <div class="calc-link">
+                        <span>Calculate Coverage</span>
+                        <div class="calc-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.832 268.832">
+                                <path d="M265.17 125.577l-80-80c-4.88-4.88-12.796-4.88-17.677 0-4.882 4.882-4.882 12.796 0 17.678l58.66 58.66H12.5c-6.903 0-12.5 5.598-12.5 12.5 0 6.903 5.597 12.5 12.5 12.5h213.654l-58.66 58.662c-4.88 4.882-4.88 12.796 0 17.678 2.44 2.44 5.64 3.66 8.84 3.66s6.398-1.22 8.84-3.66l79.997-80c4.883-4.882 4.883-12.796 0-17.678z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results" class="results-container"></div>
+            </div>
+
+            <!-- RIGHT: Visualization Panel -->
+            <div id="right-panel" class="panel vis-panel">
+                <h3 class="panel-title">Visualization</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="plot" width="800" height="500"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== INFO / DOCS PANEL ===== -->
+        <div id="readme" class="panel info-panel">
+            <h3 class="panel-title">System Documentation</h3>
+            <div class="info-content">
+                <div class="info-item warning">
+                    <h4>Remarks</h4>
+                    <p>Please choose the correct site type <strong>[Macro / Small Cell]</strong> as this affects picture rendering and default parameters.</p>
+                    <p class="contact">Encountering any glitch or strange calculation results, please contact <strong>[B.]</strong></p>
+                </div>
+                <div class="info-item note">
+                    <h4>Usage Note</h4>
+                    <p><strong>Building Distance (m):</strong> Leave blank if there is no building to be served (standard macro site scenario).</p>
+                    <p>Input this field only when simulating an antenna serving a specific building — e.g. small cell for low / high rise coverage.</p>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.app-container -->
+
+    <script>
+        /* ============================================================
+           UTILITY
+        ============================================================ */
+        function toRadians(deg) {
+            return deg * Math.PI / 180;
+        }
+
+        function getSelectedSiteType() {
+            return document.querySelector('input[name="siteType"]:checked').value;
+        }
+
+        /* ============================================================
+           CALCULATE
+        ============================================================ */
+        function calculate() {
+            const HA       = parseFloat(document.getElementById('ha').value);
+            const M_Tilt   = parseFloat(document.getElementById('mtilt').value);
+            const E_Tilt   = parseFloat(document.getElementById('etilt').value);
+            const VBW      = parseFloat(document.getElementById('vbw').value);
+            const HBW      = parseFloat(document.getElementById('hbw').value);
+            const B_DIST   = document.getElementById('bdistance').value === ""
+                ? NaN
+                : parseFloat(document.getElementById('bdistance').value);
+            const B_HEIGHT = parseFloat(document.getElementById('bheight').value);
+            const B_DEPTH  = parseFloat(document.getElementById('bdepth').value);
+
+            if (isNaN(HA) || HA <= 0) {
+                alert("Antenna height must be a positive number.");
+                return;
+            }
+
+            const Total_Tilt = M_Tilt + E_Tilt;
+            const beams = {
+                upper: { angle: Total_Tilt - VBW / 2, color: 'blue'  },
+                main:  { angle: Total_Tilt,            color: 'red'   },
+                lower: { angle: Total_Tilt + VBW / 2, color: 'green' }
+            };
+
+            let maxX = 0;
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = '';
+
+            for (const [key, beam] of Object.entries(beams)) {
+                const angle = beam.angle;
+                const tan   = Math.tan(toRadians(angle));
+                let landingX = 0, landingY = 0, message = '';
+                const capKey = key.charAt(0).toUpperCase() + key.slice(1);
+
+                if (angle > 0) {
+                    const groundDist = HA / tan;
+                    let buildingFrontHeight = Infinity;
+                    if (!isNaN(B_DIST)) buildingFrontHeight = HA - B_DIST * tan;
+
+                    if (!isNaN(B_DIST) && groundDist >= B_DIST) {
+                        if (buildingFrontHeight <= B_HEIGHT) {
+                            landingX = B_DIST;
+                            landingY = HA - B_DIST * tan;
+                            message  = `${capKey} beam hits building front at ${landingY.toFixed(2)} [m.] height`;
+                        } else {
+                            landingX = groundDist;
+                            landingY = 0;
+                            message  = `${capKey} beam lands on ground at ${landingX.toFixed(2)} [m.]`;
+                        }
+                    } else {
+                        landingX = groundDist;
+                        landingY = 0;
+                        message  = `${capKey} beam lands on ground at ${landingX.toFixed(2)} [m.]`;
+                    }
+
+                } else if (angle < 0) {
+                    if (!isNaN(B_DIST)) {
+                        const beamHeightAtBuilding = HA - B_DIST * Math.tan(toRadians(angle));
+                        if (beamHeightAtBuilding <= B_HEIGHT) {
+                            landingX = B_DIST;
+                            landingY = beamHeightAtBuilding;
+                            message  = `${capKey} beam hits building front at ${landingY.toFixed(2)} [m.] height`;
+                        } else {
+                            landingX = 0;
+                            landingY = HA;
+                            message  = `${capKey} beam flies over building – Not Landing`;
+                        }
+                    } else {
+                        message  = `${capKey} beam goes upward – Not Landing`;
+                        landingX = 0;
+                        landingY = HA;
+                    }
+
+                } else {
+                    if (!isNaN(B_DIST)) {
+                        landingX = B_DIST;
+                        landingY = HA;
+                        message  = `${capKey} beam hits building front at ${landingY.toFixed(2)} [m.] height`;
+                    } else {
+                        landingX = 0;
+                        landingY = HA;
+                        message  = `${capKey} beam is horizontal – Not Landing`;
+                    }
+                }
+
+                beam.landing = landingX;
+                beam.height  = landingY;
+                beam.message = message;
+                maxX = Math.max(maxX, landingX, (isNaN(B_DIST) ? 0 : B_DIST + B_DEPTH));
+
+                resultsDiv.innerHTML += `<div style="color:${beam.color}">
+                    ${capKey} Beam (Angle: ${angle.toFixed(1)}°)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- ${message}
+                </div>`;
+            }
+
+            /* Beam Width on Building */
+            if (!isNaN(B_DIST)) {
+                const mainAngleRad        = toRadians(beams.main.angle);
+                const mainBeamHtAtBuilding = HA - B_DIST * Math.tan(mainAngleRad);
+                const halfHBWRad          = toRadians(HBW / 2);
+                let beamWidthOnBuilding;
+
+                if (Math.abs(Math.sin(mainAngleRad)) < 0.0001) {
+                    beamWidthOnBuilding = 2 * B_DIST * Math.tan(halfHBWRad);
+                } else {
+                    beamWidthOnBuilding = 2 *
+                        ((mainBeamHtAtBuilding - HA) / Math.abs(Math.sin(mainAngleRad))) *
+                        Math.tan(halfHBWRad);
+                }
+
+                resultsDiv.innerHTML += `<div style="color:white; font-weight: bold;">
+                    Beam Width on Building: ${Math.abs(beamWidthOnBuilding).toFixed(2)} [m.]
+                </div>`;
+            }
+
+            draw(HA, beams, B_DIST, B_HEIGHT, B_DEPTH, maxX);
+        }
+
+        /* ============================================================
+           DRAW
+        ============================================================ */
+        function draw(HA, beams, B_DIST, B_HEIGHT, B_DEPTH, maxX) {
+            const canvas  = document.getElementById("plot");
+            const ctx     = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const margin  = 50;
+            const canvasW = canvas.width;
+            const canvasH = canvas.height;
+            const siteType = getSelectedSiteType();
+            let scaleX, scaleY, baseY;
+
+            let maxHeight = HA;
+            if (!isNaN(B_HEIGHT)) maxHeight = Math.max(HA, B_HEIGHT);
+
+            if (siteType === "Macro") {
+                scaleX = (canvasW - margin * 2) / (maxX * 1.1);
+                scaleY = (canvasH - margin * 2) / (maxHeight * 1.1);
+                baseY  = canvasH - margin;
+            } else {
+                const worldMaxX     = maxX * 1.1;
+                const worldMaxY     = maxHeight * 1.1;
+                const scaleX_space  = (canvasW - margin * 2) / worldMaxX;
+                const scaleY_space  = (canvasH - margin * 2) / worldMaxY;
+                const scale         = Math.min(scaleX_space, scaleY_space);
+                scaleX = scale;
+                scaleY = scale;
+                const contentHeightPx = worldMaxY * scale;
+                baseY  = margin + (canvasH - 2 * margin - contentHeightPx) / 2 + contentHeightPx;
+            }
+
+            const baseX      = margin;
+            const antennaTopY = baseY - HA * scaleY;
+
+            /* Ground */
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(0, baseY);
+            ctx.lineTo(canvasW, baseY);
+            ctx.strokeStyle = "#aaa";
+            ctx.lineWidth   = 1;
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            /* Antenna tower */
+            const towerW = 14;
+            const grad   = ctx.createLinearGradient(baseX - towerW/2, 0, baseX + towerW/2, 0);
+            grad.addColorStop(0,   "#555");
+            grad.addColorStop(0.5, "#888");
+            grad.addColorStop(1,   "#555");
+            ctx.fillStyle = grad;
+            ctx.fillRect(baseX - towerW/2, antennaTopY, towerW, baseY - antennaTopY);
+
+            /* Antenna head */
+            ctx.fillStyle = "#333";
+            ctx.fillRect(baseX - 8, antennaTopY - 8, 16, 8);
+
+            /* Height label */
+            ctx.fillStyle = "#333";
+            ctx.font      = "bold 12px 'IBM Plex Mono', monospace";
+            ctx.textAlign = "right";
+            ctx.fillText(`${HA}m`, baseX - 10, antennaTopY + 4);
+
+            /* Building */
+            if (!isNaN(B_DIST)) {
+                const bx = baseX + B_DIST  * scaleX;
+                const bw = B_DEPTH         * scaleX;
+                const bh = B_HEIGHT        * scaleY;
+
+                /* Building fill */
+                const buildGrad = ctx.createLinearGradient(bx, baseY - bh, bx + bw, baseY);
+                buildGrad.addColorStop(0,   "rgba(100,200,80,0.55)");
+                buildGrad.addColorStop(1,   "rgba(60,150,40,0.35)");
+                ctx.fillStyle = buildGrad;
+                ctx.fillRect(bx, baseY - bh, bw, bh);
+
+                /* Building border */
+                ctx.strokeStyle = "rgba(80,180,60,0.7)";
+                ctx.lineWidth   = 1.5;
+                ctx.strokeRect(bx, baseY - bh, bw, bh);
+
+                /* Building labels */
+                ctx.fillStyle  = "#222";
+                ctx.font       = "11px 'IBM Plex Mono', monospace";
+                ctx.textAlign  = "center";
+                ctx.fillText(`H=${B_HEIGHT.toFixed(0)}m`,  bx + bw/2, baseY - bh/2 - 8);
+                ctx.fillText(`D=${B_DEPTH.toFixed(0)}m`,   bx + bw/2, baseY - bh/2 + 8);
+            }
+
+            /* Beams */
+            const beamColorMap = {
+                blue:  { stroke: '#2196F3', label: '#1565C0' },
+                red:   { stroke: '#F44336', label: '#B71C1C' },
+                green: { stroke: '#4CAF50', label: '#1B5E20' }
+            };
+
+            let labelOffset = 0;
+            for (const [key, beam] of Object.entries(beams)) {
+                const x = baseX + beam.landing * scaleX;
+                const y = baseY - beam.height  * scaleY;
+                const c = beamColorMap[beam.color] || { stroke: beam.color, label: beam.color };
+
+                ctx.beginPath();
+                ctx.moveTo(baseX, antennaTopY);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = c.stroke;
+                ctx.lineWidth   = 2.5;
+                ctx.stroke();
+
+                /* Beam end dot */
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = c.stroke;
+                ctx.fill();
+
+                /* Beam label */
+                ctx.fillStyle  = c.label;
+                ctx.font       = "bold 11px 'IBM Plex Mono', monospace";
+                ctx.textAlign  = "left";
+                ctx.fillText(
+                    `${key.charAt(0).toUpperCase() + key.slice(1)}: ${beam.angle.toFixed(1)}°`,
+                    baseX + 42,
+                    antennaTopY - 12 + labelOffset * 15
+                );
+                labelOffset++;
+            }
+        }
+
+        /* ============================================================
+           SITE TYPE SWITCH HANDLER
+        ============================================================ */
+        document.querySelectorAll('input[name="siteType"]').forEach((radio) => {
+            radio.addEventListener('change', (e) => {
+                const type = e.target.value;
+
+                if (type === "Macro") {
+                    document.getElementById("ha").value       = 33;
+                    document.getElementById("mtilt").value    = 2;
+                    document.getElementById("etilt").value    = 3;
+                    document.getElementById("vbw").value      = 6.5;
+                    document.getElementById("hbw").value      = 66;
+                    document.getElementById("bheight").value  = 50;
+                } else if (type === "Small") {
+                    document.getElementById("ha").value       = 30;
+                    document.getElementById("mtilt").value    = 0;
+                    document.getElementById("etilt").value    = 0;
+                    document.getElementById("vbw").value      = 30;
+                    document.getElementById("hbw").value      = 30;
+                    document.getElementById("bheight").value  = 50;
+                }
+
+                if (document.getElementById("results").innerHTML !== '') {
+                    calculate();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

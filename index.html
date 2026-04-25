@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
 
     <!-- Styles -->
@@ -28,204 +28,342 @@
 </head>
 
 <body>
+
+    <!-- Floating blobs background -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
     <div class="app-container">
 
-        <header>
-            <img src="images/BSandANT.png" alt="Base Station and Antenna Radiation" class="header-image">
-            <h1 class="title">Radio Coverage Planning Tools</h1>
-            <p class="subtitle">Visualization tools for cell coverage planning.</p>
+        <!-- HERO -->
+        <header class="hero">
+            <div class="hero-eyebrow">
+                <span class="eyebrow-dot"></span>
+                Radio Engineering Pack
+            </div>
+            <h1 class="hero-title">Coverage Planning<br><span class="hero-title-accent">Tools</span></h1>
+            <p class="hero-subtitle">Visualization tools for cell coverage planning by Beer</p>
+
+            <div class="hero-image-frame">
+                <img src="images/BSandANT.png" alt="Base Station and Antenna Radiation" class="header-image">
+                <div class="image-shimmer"></div>
+            </div>
+
+            <div class="hero-meta">
+                <div class="meta-chip">
+                    <span class="chip-dot chip-green"></span>
+                    All systems live
+                </div>
+                <div class="meta-chip">
+                    <span class="chip-dot chip-lavender"></span>
+                    4 active tools
+                </div>
+                <div class="meta-chip">
+                    <span class="chip-dot chip-peach"></span>
+                    3 in development
+                </div>
+            </div>
         </header>
 
+        <!-- MAIN -->
         <main>
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # # # Topic Section # # # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <div class="section-label">Planning Tools</div>
-            <a href="Tilt Calculator/v5/cell_coverage_calculator_v5.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Tilt Calculator V5</h2>
-                    <div class="card-status status-active">
-                        <span class="status-dot"></span> Stable
-                    </div>
+
+            <!-- Planning Tools -->
+            <section class="tool-section" data-animate>
+                <div class="section-header">
+                    <div class="section-label"><span class="label-icon">⚡</span> Planning Tools</div>
+                    <p class="section-desc">Core calculation and visualization tools for radio network planning.</p>
                 </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Add HBW/Building width >> calculate beam width landing on the building front.
-                </p>
-            </a>
+                <div class="cards-grid">
 
-            <div class="spacer" style="height: 20px;"></div>
+                    <a href="Tilt Calculator/v5/cell_coverage_calculator_v5.html" class="tool-card card-primary">
+                        <div class="card-glow"></div>
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-green">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
+                                        <path d="M13 13l6 6" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
+                            </div>
+                            <h2 class="card-title">Tilt Calculator <span class="version-tag">V5</span></h2>
+                            <p class="card-description">Add HBW/Building width to calculate beam width landing on the
+                                building front.</p>
+                            <div class="card-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
 
-            <a href="Antenna MSI Plotter/msi_plotter.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Antenna MSI Plotter</h2>
-                    <div class="card-status status-active">
-                        <span class="status-dot"></span> Stable
-                    </div>
+                    <a href="Antenna MSI Plotter/msi_plotter.html" class="tool-card card-primary">
+                        <div class="card-glow"></div>
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-lavender">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                                        <path d="M2 12h20" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
+                            </div>
+                            <h2 class="card-title">Antenna MSI Plotter</h2>
+                            <p class="card-description">Add HBW/Building width to calculate beam width landing on the
+                                building front.</p>
+                            <div class="card-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
                 </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Add HBW/Building width >> calculate beam width landing on the building front.
-                </p>
-            </a>
-
-            <div class="spacer"></div>
-
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # # Extra Tools Section # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <div class="spacer" style="height: 20px;"></div>
-
-            <div class="section-label">Extra Tools</div>
-            <a href="Custom Tools\map_doodle.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Satellite Map Drawing and Marking</h2>
-                    <div class="card-status status-active">
-                        <span class="status-dot"></span> Stable
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Satellite map drawing/measurment tools with color palete, pen, ruler, and styling.
-                </p>
-            </a>
-
-            <div class="spacer" style="height: 20px;"></div>
-
-            <a href="Power_Calculator/Power Unit Converter.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Power Unit Converter</h2>
-                    <div class="card-status status-active">
-                        <span class="status-dot"></span> Stable
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Tool for dBm to watts / watts to dBm power conversion.
-                </p>
-            </a>
-
-            <div class="spacer" style="height: 20px;"></div>
-
-            <a href="https://5g-tools.com/4g-lte-throughput-calculator/" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">LTE NR TP Calculator</h2>
-                    <div class="card-status tool-status external">
-                        <span class="status-dot"></span> External Tool
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Easy LTE/NR TP Calculator for single cell planning
-                </p>
-            </a>
-
-            <div class="spacer" style="height: 20px;"></div>
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # Under Development Section # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <div class="spacer" style="height: 20px;"></div>
-
-            <div class="section-label">Pages Underdevelopment State</div>
-            <a href="Power_Calculator/Frequency_FSPL_Comparator.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Frequency FSPL Calculator</h2>
-                    <div class="card-status status-dev">
-                        <span class="status-dot"></span> Under Development
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Tool power config calculation [Underdevelopment + Research!!]
-                </p>
-            </a>
-
-            <div class="spacer" style="height: 20px;"></div>
-
-            <a href="Custom%20Tools/test_python.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Test Python Page</h2>
-                    <div class="card-status status-dev">
-                        <span class="status-dot"></span> Under Development
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    -
-                </p>
-            </a>
-
-            <div class="spacer" style="height: 20px;"></div>
-
-            <a href="underdevelopment_blank.html" class="version-card single-card">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Blank Page2</h2>
-                    <div class="card-status status-dev">
-                        <span class="status-dot"></span> Under Development
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    -
-                </p>
-            </a>
-
-            <div class="spacer"></div>
-
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # #  Legacy Section # # # # # # # # # # # # # # # # # # # -->
-            <!--# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # -->
-            <div class="section-label">Pages in Older version</div>
-            <a href="Tilt Calculator/v4/cell_coverage_calculator_v4.html" class="version-card single-card"
-                style="opacity: 0.8;">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Tilt Calculator V4</h2>
-                    <div class="card-status status-legacy">
-                        <span class="status-dot"></span> Legacy
-                    </div>
-                </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    New Black Theme UI + Adapt picture scaling to site type.
-                </p>
-            </a>
+            </section>
             <br>
-            <a href="Tilt Calculator/v3/cell_coverage_calculator_v3.html" class="version-card single-card"
-                style="opacity: 0.8;">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Tilt Calculator V3</h2>
-                    <div class="card-status status-legacy">
-                        <span class="status-dot"></span> Legacy
-                    </div>
+            <!-- Extra Tools -->
+            <section class="tool-section" data-animate>
+                <div class="section-header">
+                    <div class="section-label"><span class="label-icon">🛠</span> Extra Tools</div>
+                    <p class="section-desc">Supplementary utilities to power your workflow.</p>
                 </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    New Black Theme UI + Adapt picture scaling to site type.
-                </p>
-            </a>
+                <div class="cards-grid">
+
+                    <a href="Custom%20Tools/map_doodle.html" class="tool-card">
+                        <div class="card-glow"></div>
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-peach">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
+                            </div>
+                            <h2 class="card-title">Satellite Map Drawing</h2>
+                            <p class="card-description">Drawing & measurement tools with color palette, pen, ruler, and
+                                custom styling.</p>
+                            <div class="card-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="Power_Calculator/Power Unit Converter.html" class="tool-card">
+                        <div class="card-glow"></div>
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-sky">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
+                            </div>
+                            <h2 class="card-title">Power Unit Converter</h2>
+                            <p class="card-description">Precision tool for dBm to watts and watts to dBm power
+                                conversion.</p>
+                            <div class="card-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://5g-tools.com/4g-lte-throughput-calculator/" class="tool-card card-external"
+                        target="_blank" rel="noopener">
+                        <div class="card-glow card-glow-mint"></div>
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-mint">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="18" height="18" x="3" y="3" rx="2" />
+                                        <path d="M9 3v18M15 3v18M3 9h18M3 15h18" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-external"><span class="badge-dot"></span>External</div>
+                            </div>
+                            <h2 class="card-title">LTE NR TP Calculator</h2>
+                            <p class="card-description">Easy LTE/NR throughput calculator for single cell planning.
+                                Opens in new tab.</p>
+                            <div class="card-arrow card-arrow-external">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path
+                                        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- Under Development -->
             <br>
-            <a href="Tilt Calculator/v2/cell_coverage_calculator_v2.html" class="version-card single-card"
-                style="opacity: 0.8;">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Tilt Calculator V2</h2>
-                    <div class="card-status status-legacy">
-                        <span class="status-dot"></span> Legacy
-                    </div>
+            <section class="tool-section" data-animate>
+                <div class="section-header">
+                    <div class="section-label"><span class="label-icon">🔬</span> Under Development</div>
+                    <p class="section-desc">Tools currently being researched and engineered.</p>
                 </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    Fix drawing scaling + New UI + Macro/Small Cell Switch Button.
-                </p>
-            </a>
+                <div class="cards-grid cards-grid-dev">
+
+                    <a href="Power_Calculator/Frequency_FSPL_Comparator.html" class="tool-card card-dev">
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-amber">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-dev"><span class="badge-dot"></span>In Progress</div>
+                            </div>
+                            <h2 class="card-title">Frequency FSPL Calculator</h2>
+                            <p class="card-description">Power config calculation tool — under active research and
+                                development.</p>
+                        </div>
+                    </a>
+
+                    <a href="Custom%20Tools/test_python.html" class="tool-card card-dev">
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-amber">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 18 22 12 16 6" />
+                                        <polyline points="8 6 2 12 8 18" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-dev"><span class="badge-dot"></span>In Progress</div>
+                            </div>
+                            <h2 class="card-title">Test Python Page</h2>
+                            <p class="card-description">Python integration testing environment — experimental stage.</p>
+                        </div>
+                    </a>
+
+                    <a href="underdevelopment_blank.html" class="tool-card card-dev">
+                        <div class="card-inner">
+                            <div class="card-top">
+                                <div class="card-icon-wrap icon-amber">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                                        <line x1="3" x2="21" y1="9" y2="9" />
+                                        <line x1="3" x2="21" y1="15" y2="15" />
+                                        <line x1="9" x2="9" y1="3" y2="21" />
+                                        <line x1="15" x2="15" y1="3" y2="21" />
+                                    </svg>
+                                </div>
+                                <div class="card-badge badge-dev"><span class="badge-dot"></span>In Progress</div>
+                            </div>
+                            <h2 class="card-title">Blank Page 2</h2>
+                            <p class="card-description">Reserved development sandbox for upcoming tool concepts.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
             <br>
-            <a href="Tilt Calculator/v1/cell_coverage_calculator_v1.html" class="version-card single-card"
-                style="opacity: 0.8;">
-                <div class="card-content-wrapper">
-                    <h2 class="card-title">Tilt Calculator V1</h2>
-                    <div class="card-status status-legacy">
-                        <span class="status-dot"></span> Legacy
-                    </div>
+            <!-- Legacy -->
+            <section class="tool-section" data-animate>
+                <div class="section-header">
+                    <div class="section-label"><span class="label-icon">🗂</span> Legacy Versions</div>
+                    <p class="section-desc">Older versions kept for reference and backward compatibility.</p>
                 </div>
-                <p class="card-description" style="margin-top: 10px; margin-bottom: 0;">
-                    The Calculation seems ok, except picture rendering is glitching (will be resolved in V2).
-                </p>
-            </a>
+                <div class="legacy-list">
+
+                    <a href="Tilt Calculator/v4/cell_coverage_calculator_v4.html" class="legacy-card">
+                        <div class="legacy-left">
+                            <span class="legacy-version">V4</span>
+                            <div>
+                                <div class="legacy-title">Tilt Calculator V4</div>
+                                <div class="legacy-desc">Black Theme UI + Adaptive picture scaling to site type.</div>
+                            </div>
+                        </div>
+                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
+                    </a>
+
+                    <a href="Tilt Calculator/v3/cell_coverage_calculator_v3.html" class="legacy-card">
+                        <div class="legacy-left">
+                            <span class="legacy-version">V3</span>
+                            <div>
+                                <div class="legacy-title">Tilt Calculator V3</div>
+                                <div class="legacy-desc">Black Theme UI + Adaptive picture scaling to site type.</div>
+                            </div>
+                        </div>
+                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
+                    </a>
+
+                    <a href="Tilt Calculator/v2/cell_coverage_calculator_v2.html" class="legacy-card">
+                        <div class="legacy-left">
+                            <span class="legacy-version">V2</span>
+                            <div>
+                                <div class="legacy-title">Tilt Calculator V2</div>
+                                <div class="legacy-desc">Fix drawing scaling + New UI + Macro/Small Cell switch button.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
+                    </a>
+
+                    <a href="Tilt Calculator/v1/cell_coverage_calculator_v1.html" class="legacy-card">
+                        <div class="legacy-left">
+                            <span class="legacy-version">V1</span>
+                            <div>
+                                <div class="legacy-title">Tilt Calculator V1</div>
+                                <div class="legacy-desc">Initial release — picture rendering glitch resolved in V2.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
+                    </a>
+
+                </div>
+            </section>
+
         </main>
 
         <footer>
-            <p>&copy; 2026 Cell Coverage Planner Project. All rights reserved.</p>
+            <div class="footer-inner">
+                <div class="footer-brand">Coverage Planning Tools</div>
+                <p class="footer-copy">&copy; 2026 Cell Coverage Planner Project. All rights reserved.</p>
+            </div>
         </footer>
 
     </div>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+    </script>
+
 </body>
 
 </html>

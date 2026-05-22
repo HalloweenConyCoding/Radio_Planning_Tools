@@ -1,58 +1,55 @@
 /* =========================================
    CELL COVERAGE CALCULATOR V6
-   Lightweight Orbital Planning Console Theme
+   Radar Scope Planner Theme
    ========================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 /* =========================================
    1. TOKENS & RESET
    ========================================= */
 :root {
-    --space-void: #030611;
-    --space-deep: #071126;
-    --space-navy: #0c1734;
-    --glass-strong: rgba(13, 27, 58, 0.78);
-    --glass-soft: rgba(8, 18, 42, 0.68);
-    --glass-input: rgba(3, 11, 27, 0.76);
+    --bg-page: #070b12;
+    --bg-panel: #101722;
+    --bg-panel-2: #0c131d;
+    --bg-panel-3: #121c28;
+    --bg-input: #080f17;
+    --bg-scope: #06100d;
 
-    --cyan: #61f3ff;
-    --blue: #4da2ff;
-    --green: #8cff7a;
-    --purple: #b893ff;
-    --amber: #ffd36f;
+    --line-soft: rgba(151, 170, 190, 0.16);
+    --line-mid: rgba(151, 170, 190, 0.26);
+    --line-strong: rgba(159, 187, 202, 0.42);
 
-    --text-primary: #eef8ff;
-    --text-secondary: #b8c9e8;
-    --text-muted: #7f90ad;
-    --text-dark: #031021;
+    --radar: #7fcf83;
+    --radar-soft: rgba(127, 207, 131, 0.16);
+    --cyan: #6db7c9;
+    --cyan-soft: rgba(109, 183, 201, 0.16);
+    --amber: #d6a85b;
+    --amber-soft: rgba(214, 168, 91, 0.14);
+    --danger-soft: #e58b75;
 
-    --border-subtle: rgba(160, 219, 255, 0.12);
-    --border: rgba(128, 224, 255, 0.24);
-    --border-bright: rgba(97, 243, 255, 0.48);
-    --border-green: rgba(140, 255, 122, 0.34);
+    --text-primary: #e8eef4;
+    --text-secondary: #aebdca;
+    --text-muted: #718292;
+    --text-faint: #536474;
+    --text-dark: #071016;
 
-    --shadow-panel: 0 14px 34px rgba(0, 0, 0, 0.34);
-    --shadow-tight: 0 8px 20px rgba(0, 0, 0, 0.28);
-    --glow-soft: 0 0 18px rgba(97, 243, 255, 0.12);
-    --glow-green: 0 0 18px rgba(140, 255, 122, 0.18);
+    --shadow-panel: 0 16px 34px rgba(0, 0, 0, 0.34);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 
-    --font-display: 'Rajdhani', sans-serif;
+    --font-ui: 'Sora', system-ui, -apple-system, sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
-    --font-body: 'Inter', sans-serif;
 
-    --radius-xl: 26px;
-    --radius-lg: 20px;
-    --radius-md: 15px;
-    --radius-sm: 10px;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
     --space-2: 10px;
     --space-3: 14px;
     --space-4: 20px;
     --space-5: 28px;
     --space-6: 36px;
 
-    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-press: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *, *::before, *::after {
@@ -71,16 +68,15 @@ body {
     display: flex;
     justify-content: center;
     color: var(--text-primary);
-    font-family: var(--font-body);
-    line-height: 1.6;
-    background-color: var(--space-void);
+    font-family: var(--font-ui);
+    line-height: 1.55;
+    background-color: var(--bg-page);
     background-image:
-        linear-gradient(rgba(97, 243, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(97, 243, 255, 0.035) 1px, transparent 1px),
-        radial-gradient(circle at 18% 8%, rgba(97, 243, 255, 0.12), transparent 26%),
-        radial-gradient(circle at 82% 6%, rgba(184, 147, 255, 0.11), transparent 24%),
-        linear-gradient(140deg, #02040c 0%, #071126 52%, #030611 100%);
-    background-size: 58px 58px, 58px 58px, auto, auto, auto;
+        linear-gradient(rgba(151, 170, 190, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(151, 170, 190, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 52% 0%, rgba(109, 183, 201, 0.1), transparent 34%),
+        linear-gradient(180deg, #0a1018 0%, #070b12 52%, #05080d 100%);
+    background-size: 42px 42px, 42px 42px, auto, auto;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -88,46 +84,24 @@ body {
    2. PAGE LAYOUT
    ========================================= */
 .app-container {
-    position: relative;
-    z-index: 1;
-    width: min(100%, 1480px);
-    padding: var(--space-5) var(--space-5) var(--space-6);
+    width: min(100%, 1460px);
+    padding: var(--space-5);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
 }
 
-/* Static orbital marker. No animation, filter, or viewport-sized layer. */
-.app-container::before {
-    content: '';
-    position: absolute;
-    top: 126px;
-    right: 28px;
-    width: 260px;
-    height: 260px;
-    border: 1px solid rgba(97, 243, 255, 0.1);
-    border-radius: 50%;
-    background:
-        radial-gradient(circle, transparent 0 35%, rgba(97, 243, 255, 0.04) 36%, transparent 37%),
-        linear-gradient(120deg, transparent 0 46%, rgba(140, 255, 122, 0.08) 47%, transparent 49% 100%);
-    opacity: 0.62;
-    pointer-events: none;
-}
-
-/* =========================================
-   3. HEADER CONSOLE
-   ========================================= */
 .header-image-wrap {
     position: relative;
-    width: min(100%, 980px);
-    margin: 0 auto -8px;
-    padding: 12px;
-    border: 1px solid rgba(97, 243, 255, 0.2);
-    border-radius: var(--radius-xl);
-    background: rgba(3, 11, 27, 0.76);
-    box-shadow: var(--shadow-panel), var(--glow-soft);
+    width: min(100%, 900px);
+    margin: 0 auto -4px;
+    padding: 10px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(18, 28, 40, 0.92), rgba(10, 17, 26, 0.96));
+    box-shadow: var(--shadow-panel);
     overflow: hidden;
-    animation: enterDown 0.45s var(--ease-smooth) both;
+    animation: enterDown 420ms var(--ease) both;
 }
 
 .header-image-wrap::before {
@@ -136,9 +110,8 @@ body {
     inset: 0;
     pointer-events: none;
     background:
-        linear-gradient(90deg, transparent, rgba(97, 243, 255, 0.12), transparent),
-        repeating-linear-gradient(90deg, transparent 0 46px, rgba(97, 243, 255, 0.045) 47px 48px);
-    opacity: 0.5;
+        linear-gradient(90deg, transparent, rgba(127, 207, 131, 0.09), transparent) top / 100% 1px no-repeat,
+        repeating-linear-gradient(90deg, transparent 0 46px, rgba(151, 170, 190, 0.035) 47px 48px);
 }
 
 .header-image {
@@ -146,59 +119,53 @@ body {
     z-index: 1;
     display: block;
     max-width: 100%;
-    max-height: 300px;
+    max-height: 260px;
     width: auto;
     height: auto;
     margin: 0 auto;
-    border-radius: 18px;
-    box-shadow: 0 16px 26px rgba(0, 0, 0, 0.34);
+    border-radius: 12px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
 }
 
+/* =========================================
+   3. HEADER
+   ========================================= */
 .app-header {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
-    padding: 22px 26px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    background:
-        linear-gradient(135deg, rgba(13, 27, 58, 0.86), rgba(7, 17, 38, 0.74)),
-        linear-gradient(90deg, rgba(97, 243, 255, 0.06), transparent 58%, rgba(140, 255, 122, 0.04));
-    box-shadow: var(--shadow-panel);
+    padding: 20px 24px;
+    border: 1px solid var(--line-mid);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(18, 28, 40, 0.96), rgba(11, 18, 27, 0.98));
+    box-shadow: var(--shadow-panel), var(--shadow-inset);
     overflow: hidden;
-    animation: enterDown 0.45s var(--ease-smooth) 0.04s both;
+    animation: enterDown 420ms var(--ease) 50ms both;
 }
 
 .app-header::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, transparent, rgba(97, 243, 255, 0.24), transparent) top / 100% 1px no-repeat;
     pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(109, 183, 201, 0.18), transparent) top / 100% 1px no-repeat;
 }
 
 .app-header::after {
-    content: 'ORBITAL RF PLANNING CONSOLE';
+    content: 'RF MEASUREMENT WORKBENCH';
     position: absolute;
-    right: 26px;
+    right: 24px;
     bottom: 8px;
-    color: rgba(184, 147, 255, 0.24);
-    font: 600 0.66rem/1 var(--font-mono);
-    letter-spacing: 0.24em;
+    color: rgba(151, 170, 190, 0.32);
+    font: 500 0.62rem/1 var(--font-mono);
+    letter-spacing: 0.22em;
     pointer-events: none;
 }
 
 .logo,
-.header-right,
-.panel-title,
-.parameters-grid,
-.calc-wrapper,
-.results-container,
-.info-content,
-.canvas-wrapper {
+.header-right {
     position: relative;
     z-index: 1;
 }
@@ -210,52 +177,54 @@ body {
 }
 
 .logo-icon {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     flex: 0 0 auto;
     display: grid;
     place-items: center;
-    border-radius: 16px;
-    color: var(--text-dark);
-    background: linear-gradient(135deg, var(--cyan), var(--green));
-    box-shadow: var(--glow-green), inset 0 1px 0 rgba(255,255,255,0.52);
+    border: 1px solid rgba(127, 207, 131, 0.42);
+    border-radius: 12px;
+    color: var(--radar);
+    background:
+        linear-gradient(rgba(127, 207, 131, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127, 207, 131, 0.08) 1px, transparent 1px),
+        #07120f;
+    background-size: 12px 12px;
 }
 
 .logo-icon svg {
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     stroke: currentColor;
 }
 
 .logo-text h1 {
-    font-family: var(--font-display);
-    font-size: clamp(1.7rem, 2.1vw, 2.35rem);
+    font-size: clamp(1.35rem, 1.7vw, 1.95rem);
     font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.035em;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
     color: var(--text-primary);
-    text-transform: uppercase;
 }
 
 .logo-text .subtitle {
-    margin-top: 7px;
+    margin-top: 6px;
     color: var(--text-secondary);
-    font: 500 0.73rem/1.4 var(--font-mono);
-    letter-spacing: 0.18em;
+    font: 500 0.7rem/1.35 var(--font-mono);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .version {
     display: inline-flex;
     align-items: center;
-    margin-left: 10px;
-    padding: 3px 10px;
-    border: 1px solid var(--border-bright);
+    margin-left: 8px;
+    padding: 2px 8px;
+    border: 1px solid rgba(109, 183, 201, 0.42);
     border-radius: 999px;
     color: var(--cyan);
-    background: rgba(97, 243, 255, 0.1);
-    font: 600 0.72rem/1 var(--font-mono);
-    letter-spacing: 0.12em;
+    background: rgba(109, 183, 201, 0.08);
+    font: 600 0.66rem/1 var(--font-mono);
+    letter-spacing: 0.08em;
     vertical-align: middle;
 }
 
@@ -269,45 +238,45 @@ body {
 
 .ais-badge,
 .status-indicator {
+    display: inline-flex;
+    align-items: center;
     border-radius: 999px;
-    border: 1px solid var(--border-subtle);
-    background: rgba(3, 11, 27, 0.54);
+    border: 1px solid var(--line-soft);
+    background: rgba(7, 13, 20, 0.72);
 }
 
 .ais-badge {
-    padding: 7px 14px;
-    color: var(--green);
-    font: 700 0.86rem/1 var(--font-display);
-    letter-spacing: 0.14em;
+    padding: 7px 13px;
+    color: var(--radar);
+    font: 700 0.73rem/1 var(--font-mono);
+    letter-spacing: 0.12em;
 }
 
 .status-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 8px 13px;
+    gap: 8px;
+    padding: 8px 12px;
     color: var(--text-secondary);
-    font: 500 0.72rem/1 var(--font-mono);
-    letter-spacing: 0.11em;
+    font: 500 0.68rem/1 var(--font-mono);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 10px rgba(140, 255, 122, 0.6);
+    background: var(--radar);
+    box-shadow: 0 0 8px rgba(127, 207, 131, 0.58);
     animation: statusPulse 2.4s ease-in-out infinite;
 }
 
 /* =========================================
-   4. SITE TYPE SEGMENTED CONTROL
+   4. SCOPE MODE SWITCH
    ========================================= */
 .controls-section {
     display: flex;
     align-items: center;
-    animation: enterDown 0.45s var(--ease-smooth) 0.08s both;
+    animation: enterDown 420ms var(--ease) 90ms both;
 }
 
 .switch-container {
@@ -316,17 +285,17 @@ body {
     gap: var(--space-3);
     width: fit-content;
     max-width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: rgba(8, 18, 42, 0.74);
-    box-shadow: var(--shadow-tight);
+    padding: 10px 12px;
+    border: 1px solid var(--line-mid);
+    border-radius: var(--radius-lg);
+    background: rgba(12, 19, 29, 0.94);
+    box-shadow: var(--shadow-tight), var(--shadow-inset);
 }
 
 .switch-label-text {
     color: var(--text-muted);
-    font: 600 0.73rem/1 var(--font-mono);
-    letter-spacing: 0.14em;
+    font: 600 0.68rem/1 var(--font-mono);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     white-space: nowrap;
 }
@@ -336,11 +305,11 @@ body {
     display: flex;
     align-items: center;
     width: 250px;
-    height: 42px;
-    padding: 4px;
-    border: 1px solid rgba(97, 243, 255, 0.18);
+    height: 40px;
+    padding: 3px;
+    border: 1px solid var(--line-soft);
     border-radius: 999px;
-    background: var(--glass-input);
+    background: var(--bg-input);
     overflow: hidden;
 }
 
@@ -361,28 +330,29 @@ body {
     cursor: pointer;
     border-radius: 999px;
     color: var(--text-muted);
-    font: 700 0.9rem/1 var(--font-display);
-    letter-spacing: 0.07em;
+    font: 600 0.72rem/1 var(--font-mono);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     user-select: none;
-    transition: color 0.22s var(--ease-smooth);
+    transition: color 220ms var(--ease);
 }
 
 .glider {
     position: absolute;
     z-index: 1;
-    top: 4px;
-    left: 4px;
-    width: calc(50% - 4px);
-    height: calc(100% - 8px);
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: calc(100% - 6px);
     border-radius: 999px;
-    background: linear-gradient(135deg, var(--cyan), var(--blue) 52%, var(--green));
-    box-shadow: 0 0 14px rgba(97, 243, 255, 0.28), inset 0 1px 0 rgba(255,255,255,0.5);
-    transition: transform 0.28s var(--ease-smooth);
+    background: linear-gradient(180deg, #9ed7a1, #6fad73);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+    transition: transform 280ms var(--ease), background 280ms var(--ease);
 }
 
 .switch input#small:checked ~ .glider {
     transform: translateX(100%);
+    background: linear-gradient(180deg, #8bc8d8, #5a9bab);
 }
 
 .switch input#macro:checked + label,
@@ -394,6 +364,28 @@ body {
     color: var(--text-primary);
 }
 
+.switch input:focus-visible + label {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+}
+
+.mode-readout {
+    min-width: 132px;
+    color: var(--radar);
+    font: 600 0.67rem/1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.mode-readout::after {
+    content: 'MACRO MODE';
+}
+
+body:has(#small:checked) .mode-readout::after {
+    content: 'SMALL CELL MODE';
+    color: var(--cyan);
+}
+
 /* =========================================
    5. DASHBOARD GRID & PANELS
    ========================================= */
@@ -402,114 +394,142 @@ body {
     grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
     gap: var(--space-4);
     align-items: start;
-    animation: enterUp 0.45s var(--ease-smooth) 0.12s both;
+    animation: enterUp 420ms var(--ease) 120ms both;
 }
 
 .panel {
     position: relative;
     overflow: hidden;
     padding: var(--space-5);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    background:
-        linear-gradient(145deg, rgba(18, 36, 75, 0.78), rgba(7, 17, 38, 0.66)),
-        rgba(7, 17, 38, 0.62);
-    box-shadow: var(--shadow-panel);
-    transition: transform 0.22s var(--ease-smooth), border-color 0.22s var(--ease-smooth), box-shadow 0.22s var(--ease-smooth);
+    border: 1px solid var(--line-mid);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(18, 28, 40, 0.96), rgba(10, 17, 26, 0.98));
+    box-shadow: var(--shadow-panel), var(--shadow-inset);
+    transition: border-color 200ms var(--ease), background 200ms var(--ease), transform 200ms var(--ease);
 }
 
 .panel::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, transparent, rgba(97, 243, 255, 0.22), transparent) top / 100% 1px no-repeat;
     pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(127, 207, 131, 0.16), transparent) top / 100% 1px no-repeat;
 }
 
 .panel:hover {
     transform: translateY(-1px);
-    border-color: rgba(97, 243, 255, 0.36);
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.36);
+    border-color: rgba(159, 187, 202, 0.5);
 }
 
 .panel-title {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: var(--space-4);
-    color: var(--cyan);
-    font: 700 0.82rem/1 var(--font-mono);
-    letter-spacing: 0.18em;
+    color: var(--text-primary);
+    font: 700 0.76rem/1 var(--font-mono);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .panel-title::before {
     content: '';
-    width: 30px;
+    width: 24px;
     height: 2px;
     border-radius: 999px;
-    background: linear-gradient(90deg, var(--green), var(--cyan));
+    background: var(--radar);
 }
 
-.control-panel,
-.vis-panel,
-.info-panel {
-    isolation: isolate;
+.panel-heading-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.panel-heading-row .panel-title {
+    margin-bottom: 0;
+}
+
+.scope-mode {
+    color: var(--radar);
+    font: 600 0.68rem/1 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.scope-mode::after {
+    content: 'MACRO SITE MODE';
+}
+
+body:has(#small:checked) .scope-mode {
+    color: var(--cyan);
+}
+
+body:has(#small:checked) .scope-mode::after {
+    content: 'SMALL CELL MODE';
 }
 
 /* =========================================
    6. PARAMETERS & INPUTS
    ========================================= */
 .parameters-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
-    gap: 13px;
+    gap: 12px;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 6px;
 }
 
 .input-group label {
     color: var(--text-secondary);
-    font: 600 0.69rem/1.25 var(--font-mono);
-    letter-spacing: 0.1em;
+    font: 600 0.66rem/1.25 var(--font-mono);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    transition: color 0.2s var(--ease-smooth);
+    transition: color 180ms var(--ease);
 }
 
 .input-group:focus-within label {
-    color: var(--cyan);
+    color: var(--radar);
 }
 
 .input-group input {
     width: 100%;
-    min-height: 43px;
-    padding: 10px 13px;
-    border: 1px solid rgba(128, 224, 255, 0.18);
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--line-soft);
     border-radius: var(--radius-sm);
     color: var(--text-primary);
-    background: var(--glass-input);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    font: 600 0.94rem/1 var(--font-mono);
-    transition: border-color 0.2s var(--ease-smooth), box-shadow 0.2s var(--ease-smooth), background 0.2s var(--ease-smooth);
+    background: var(--bg-input);
+    box-shadow: var(--shadow-inset);
+    font: 500 0.9rem/1 var(--font-mono);
+    transition: border-color 180ms var(--ease), background 180ms var(--ease), box-shadow 180ms var(--ease);
 }
 
 .input-group input::placeholder {
-    color: rgba(184, 201, 232, 0.48);
+    color: var(--text-faint);
 }
 
 .input-group input:hover {
-    border-color: rgba(97, 243, 255, 0.34);
-    background: rgba(5, 15, 35, 0.8);
+    border-color: var(--line-strong);
+    background: #0b141e;
 }
 
-.input-group input:focus {
+.input-group input:focus,
+.input-group input:focus-visible {
     outline: none;
-    border-color: var(--cyan);
-    box-shadow: 0 0 0 3px rgba(97, 243, 255, 0.11);
+    border-color: rgba(127, 207, 131, 0.66);
+    box-shadow: 0 0 0 3px rgba(127, 207, 131, 0.14), var(--shadow-inset);
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -518,9 +538,11 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 /* =========================================
-   7. CALCULATE CTA
+   7. CALCULATE ACTION
    ========================================= */
 .calc-wrapper {
+    position: relative;
+    z-index: 1;
     width: 100%;
     margin-top: var(--space-4);
     cursor: pointer;
@@ -529,10 +551,21 @@ input[type=number]::-webkit-outer-spin-button {
 .calc-link {
     position: relative;
     width: 100%;
-    min-height: 54px;
-    border-radius: 16px;
-    background: linear-gradient(120deg, var(--green), var(--cyan), var(--blue));
-    padding: 1px;
+    min-height: 50px;
+    border: 1px solid rgba(127, 207, 131, 0.56);
+    border-radius: var(--radius-sm);
+    background: #0b1713;
+    overflow: hidden;
+}
+
+.calc-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(127, 207, 131, 0.16), transparent);
+    opacity: 0;
+    transform: translateX(-70%);
 }
 
 .calc-link span {
@@ -542,15 +575,12 @@ input[type=number]::-webkit-outer-spin-button {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 52px;
-    border-radius: 15px;
-    color: var(--text-dark);
-    background: linear-gradient(135deg, var(--green), var(--cyan) 58%, var(--blue));
-    box-shadow: var(--glow-green), inset 0 1px 0 rgba(255,255,255,0.56);
-    font: 700 0.95rem/1 var(--font-display);
-    letter-spacing: 0.17em;
+    min-height: 48px;
+    color: var(--radar);
+    font: 700 0.77rem/1 var(--font-mono);
+    letter-spacing: 0.13em;
     text-transform: uppercase;
-    transition: transform 0.2s var(--ease-press), box-shadow 0.2s var(--ease-smooth), width 0.2s var(--ease-smooth);
+    transition: color 180ms var(--ease), background 180ms var(--ease), transform 180ms var(--ease);
 }
 
 .calc-icon {
@@ -558,25 +588,28 @@ input[type=number]::-webkit-outer-spin-button {
     z-index: 1;
     top: 0;
     right: 0;
-    width: 54px;
-    height: 54px;
+    width: 48px;
+    height: 48px;
     display: grid;
     place-items: center;
     opacity: 0;
-    transform: translateX(-12px);
-    transition: transform 0.2s var(--ease-smooth), opacity 0.2s var(--ease-smooth);
+    transform: translateX(-10px);
+    transition: transform 180ms var(--ease), opacity 180ms var(--ease);
 }
 
 .calc-icon svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--cyan);
+    width: 18px;
+    height: 18px;
+    fill: var(--radar);
+}
+
+.calc-wrapper:hover .calc-link {
+    background: #0d1d17;
 }
 
 .calc-wrapper:hover .calc-link span {
-    width: calc(100% - 54px);
-    transform: translateY(-1px);
-    box-shadow: 0 0 22px rgba(97, 243, 255, 0.22), inset 0 1px 0 rgba(255,255,255,0.56);
+    width: calc(100% - 48px);
+    color: #d7f3d8;
 }
 
 .calc-wrapper:hover .calc-icon {
@@ -585,43 +618,50 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .calc-wrapper:active .calc-link span {
-    transform: translateY(0) scale(0.99);
+    transform: translateY(1px);
+}
+
+.calc-wrapper:active .calc-link::before,
+.dashboard-grid:has(.calc-wrapper:active) .canvas-wrapper::after {
+    animation: scopeSweep 520ms var(--ease) both;
 }
 
 /* =========================================
-   8. RESULTS TELEMETRY
+   8. RESULTS READOUT
    ========================================= */
 .results-container {
+    position: relative;
+    z-index: 1;
     min-height: 94px;
     margin-top: var(--space-4);
-    padding: 13px;
-    border: 1px solid rgba(128, 224, 255, 0.16);
+    padding: 12px;
+    border: 1px solid var(--line-soft);
     border-radius: var(--radius-md);
-    background: rgba(2, 8, 20, 0.68);
+    background: #071017;
     color: var(--text-secondary);
-    font: 500 0.78rem/1.65 var(--font-mono);
+    font: 500 0.76rem/1.65 var(--font-mono);
 }
 
 .results-container:empty::before {
-    content: 'Awaiting coverage calculation telemetry';
+    content: 'Awaiting measurement output';
     display: block;
-    color: rgba(184, 201, 232, 0.48);
+    color: var(--text-faint);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 .results-container:not(:empty) {
-    border-color: rgba(97, 243, 255, 0.28);
+    border-color: rgba(127, 207, 131, 0.28);
 }
 
 #results div {
     position: relative;
-    padding: 10px 12px 10px 15px;
-    margin-bottom: 9px;
-    border: 1px solid rgba(128, 224, 255, 0.12);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.035);
-    animation: resultReveal 0.24s var(--ease-smooth) both;
+    padding: 10px 12px 10px 14px;
+    margin-bottom: 8px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.025);
+    animation: resultReveal 260ms var(--ease) both;
 }
 
 #results div:last-child {
@@ -640,57 +680,142 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #results div[style*="color:blue"] {
-    color: #6edbff !important;
+    color: #69b8d2 !important;
 }
 
 #results div[style*="color:red"] {
-    color: #ff8d7a !important;
+    color: var(--amber) !important;
 }
 
 #results div[style*="color:green"] {
-    color: var(--green) !important;
+    color: var(--radar) !important;
 }
 
 #results div[style*="color:white"] {
     color: var(--text-primary) !important;
     font-weight: 700 !important;
-    background: rgba(140, 255, 122, 0.1);
-    border-color: var(--border-green);
+    background: rgba(127, 207, 131, 0.08);
+    border-color: rgba(127, 207, 131, 0.26);
 }
 
 /* =========================================
-   9. RADAR VISUALIZATION
+   9. RADAR SCOPE VISUALIZATION
    ========================================= */
 .vis-panel {
     min-height: 430px;
+    padding: 22px;
 }
 
-.canvas-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 360px;
-    padding: 18px;
-    border: 1px solid rgba(97, 243, 255, 0.26);
+.scope-shell {
+    position: relative;
+    z-index: 1;
+    border: 1px solid var(--line-mid);
     border-radius: var(--radius-lg);
-    background-color: rgba(1, 8, 22, 0.78);
-    background-image:
-        linear-gradient(rgba(97, 243, 255, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(97, 243, 255, 0.055) 1px, transparent 1px);
-    background-size: 32px 32px;
-    box-shadow: inset 0 0 34px rgba(97, 243, 255, 0.08);
+    background: #080f13;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
     overflow: hidden;
 }
 
-.canvas-wrapper::before {
+.scope-statusbar,
+.scope-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 9px 12px;
+    color: var(--text-muted);
+    font: 500 0.66rem/1 var(--font-mono);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    background: #0d151d;
+}
+
+.scope-statusbar {
+    border-bottom: 1px solid var(--line-soft);
+}
+
+.scope-footer {
+    border-top: 1px solid var(--line-soft);
+}
+
+.scope-statusbar span:first-child {
+    color: var(--radar);
+}
+
+.scope-footer span:nth-child(2) {
+    color: var(--amber);
+}
+
+.canvas-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 390px;
+    padding: 18px;
+    border: 0;
+    background-color: var(--bg-scope);
+    background-image:
+        linear-gradient(rgba(127, 207, 131, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127, 207, 131, 0.055) 1px, transparent 1px),
+        linear-gradient(rgba(109, 183, 201, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(109, 183, 201, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px, 32px 32px, 8px 8px, 8px 8px;
+    overflow: hidden;
+}
+
+.canvas-wrapper::before,
+.canvas-wrapper::after {
     content: '';
     position: absolute;
-    inset: 0;
     pointer-events: none;
+}
+
+.canvas-wrapper::before {
+    inset: 10px;
+    border: 1px solid rgba(127, 207, 131, 0.2);
     background:
-        linear-gradient(90deg, transparent 0 49.9%, rgba(97, 243, 255, 0.1) 50%, transparent 50.1% 100%),
-        linear-gradient(0deg, transparent 0 49.9%, rgba(97, 243, 255, 0.1) 50%, transparent 50.1% 100%);
-    opacity: 0.55;
+        linear-gradient(90deg, transparent 0 49.95%, rgba(127, 207, 131, 0.12) 50%, transparent 50.05% 100%),
+        linear-gradient(0deg, transparent 0 49.95%, rgba(127, 207, 131, 0.12) 50%, transparent 50.05% 100%);
+}
+
+.canvas-wrapper::after {
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(127, 207, 131, 0.18), transparent);
+    opacity: 0;
+    transform: translateX(-80%);
+}
+
+.scope-shell::before,
+.scope-shell::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    pointer-events: none;
+}
+
+.scope-shell::before {
+    left: 12px;
+    top: 44px;
+    border-left: 2px solid rgba(127, 207, 131, 0.5);
+    border-top: 2px solid rgba(127, 207, 131, 0.5);
+}
+
+.scope-shell::after {
+    right: 12px;
+    bottom: 44px;
+    border-right: 2px solid rgba(127, 207, 131, 0.5);
+    border-bottom: 2px solid rgba(127, 207, 131, 0.5);
+}
+
+body:has(#small:checked) .canvas-wrapper::after {
+    animation: scopeSweep 620ms var(--ease) both;
+}
+
+body:has(#small:checked) .scope-statusbar span:first-child {
+    color: var(--cyan);
 }
 
 canvas {
@@ -699,14 +824,14 @@ canvas {
     display: block;
     max-width: 100%;
     height: auto;
-    border: 1px solid rgba(238, 248, 255, 0.42);
-    border-radius: 14px;
+    border: 1px solid rgba(127, 207, 131, 0.26);
+    border-radius: 8px;
     background:
-        linear-gradient(rgba(77, 162, 255, 0.11) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(77, 162, 255, 0.11) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(236, 249, 255, 0.96), rgba(204, 233, 241, 0.94));
+        linear-gradient(rgba(127, 207, 131, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127, 207, 131, 0.06) 1px, transparent 1px),
+        #08120f;
     background-size: 40px 40px, 40px 40px, auto;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
 /* =========================================
@@ -714,43 +839,44 @@ canvas {
    ========================================= */
 .info-panel {
     margin-bottom: var(--space-4);
-    animation: enterUp 0.45s var(--ease-smooth) 0.16s both;
+    animation: enterUp 420ms var(--ease) 150ms both;
 }
 
 .info-content {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4);
 }
 
 .info-item {
-    padding: 18px 20px;
-    border: 1px solid rgba(128, 224, 255, 0.15);
+    padding: 16px 18px;
+    border: 1px solid var(--line-soft);
     border-radius: var(--radius-md);
-    background: rgba(3, 11, 27, 0.5);
-    transition: transform 0.22s var(--ease-smooth), border-color 0.22s var(--ease-smooth), background 0.22s var(--ease-smooth);
+    background: rgba(8, 15, 23, 0.74);
+    transition: border-color 180ms var(--ease), background 180ms var(--ease);
 }
 
 .info-item:hover {
-    transform: translateY(-1px);
-    border-color: rgba(97, 243, 255, 0.32);
-    background: rgba(9, 22, 50, 0.58);
+    border-color: var(--line-strong);
+    background: rgba(12, 20, 30, 0.84);
 }
 
 .info-item h4 {
     margin-bottom: 10px;
     padding-bottom: 9px;
-    border-bottom: 1px solid rgba(128, 224, 255, 0.14);
+    border-bottom: 1px solid var(--line-soft);
     color: var(--text-primary);
-    font: 700 0.86rem/1 var(--font-display);
-    letter-spacing: 0.12em;
+    font: 700 0.74rem/1 var(--font-mono);
+    letter-spacing: 0.11em;
     text-transform: uppercase;
 }
 
 .info-item p {
     margin-bottom: 8px;
     color: var(--text-secondary);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     line-height: 1.65;
 }
 
@@ -759,34 +885,34 @@ canvas {
 }
 
 .info-item strong {
-    color: var(--green);
+    color: var(--radar);
     font-weight: 600;
 }
 
 .info-item.warning {
-    border-color: rgba(255, 211, 111, 0.2);
+    border-color: rgba(214, 168, 91, 0.22);
 }
 
 .info-item.note {
-    border-color: rgba(97, 243, 255, 0.18);
+    border-color: rgba(109, 183, 201, 0.2);
 }
 
 .contact {
     color: var(--text-muted) !important;
     font-family: var(--font-mono);
-    font-size: 0.76rem !important;
+    font-size: 0.74rem !important;
 }
 
 /* =========================================
    11. MOTION & UTILITIES
    ========================================= */
 @keyframes enterDown {
-    from { opacity: 0; transform: translateY(-10px); }
+    from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes enterUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -795,14 +921,20 @@ canvas {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes scopeSweep {
+    0% { opacity: 0; transform: translateX(-85%); }
+    18% { opacity: 0.8; }
+    100% { opacity: 0; transform: translateX(85%); }
+}
+
 @keyframes statusPulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.62; }
+    50% { opacity: 0.58; }
 }
 
 ::selection {
     color: var(--text-dark);
-    background: var(--cyan);
+    background: var(--radar);
 }
 
 ::-webkit-scrollbar {
@@ -810,16 +942,16 @@ canvas {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--space-void);
+    background: var(--bg-page);
 }
 
 ::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: rgba(97, 243, 255, 0.38);
+    background: rgba(151, 170, 190, 0.36);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(140, 255, 122, 0.52);
+    background: rgba(127, 207, 131, 0.5);
 }
 
 /* =========================================
@@ -841,38 +973,34 @@ canvas {
 
 @media (max-width: 820px) {
     body {
-        background-size: 44px 44px, 44px 44px, auto, auto, auto;
+        background-size: 34px 34px, 34px 34px, auto, auto;
     }
 
     .app-container {
-        padding: 18px 14px 28px;
-        gap: 16px;
-    }
-
-    .app-container::before {
-        display: none;
+        padding: 16px 12px 26px;
+        gap: 14px;
     }
 
     .header-image-wrap {
         padding: 8px;
-        border-radius: 22px;
+        border-radius: 14px;
     }
 
     .header-image {
-        max-height: 220px;
-        border-radius: 14px;
+        max-height: 210px;
+        border-radius: 10px;
     }
 
     .app-header {
         align-items: flex-start;
         flex-direction: column;
-        padding: 20px;
+        padding: 18px;
     }
 
     .app-header::after {
-        right: 20px;
-        bottom: 9px;
-        font-size: 0.56rem;
+        right: 18px;
+        bottom: 8px;
+        font-size: 0.54rem;
     }
 
     .header-right {
@@ -888,11 +1016,15 @@ canvas {
         width: 100%;
         align-items: stretch;
         flex-direction: column;
-        border-radius: 22px;
+        border-radius: var(--radius-md);
     }
 
     .switch {
         width: 100%;
+    }
+
+    .mode-readout {
+        min-width: 0;
     }
 
     .parameters-grid,
@@ -901,14 +1033,26 @@ canvas {
     }
 
     .panel {
-        padding: 20px;
-        border-radius: 22px;
+        padding: 18px;
+        border-radius: var(--radius-md);
+    }
+
+    .panel-heading-row,
+    .scope-statusbar,
+    .scope-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .scope-statusbar,
+    .scope-footer {
+        gap: 7px;
+        line-height: 1.35;
     }
 
     .canvas-wrapper {
         min-height: 0;
         padding: 10px;
-        border-radius: 18px;
         overflow-x: auto;
         justify-content: flex-start;
     }
@@ -924,19 +1068,19 @@ canvas {
     }
 
     .logo-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
     }
 
     .logo-text h1 {
-        font-size: 1.42rem;
-        line-height: 1.08;
+        font-size: 1.24rem;
+        line-height: 1.15;
     }
 
     .version {
         margin-left: 0;
-        margin-top: 8px;
+        margin-top: 7px;
     }
 
     .ais-badge,
@@ -947,7 +1091,6 @@ canvas {
 
     .calc-wrapper:hover .calc-link span {
         width: 100%;
-        transform: translateY(-1px);
     }
 
     .calc-icon {

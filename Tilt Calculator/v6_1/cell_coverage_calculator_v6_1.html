@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cell Coverage Calculator V6</title>
+    <title>Cell Coverage Calculator V6_1</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
         rel="stylesheet">
 
     <!-- External CSS -->
-    <link rel="stylesheet" href="cell_coverage_calculator_style.css">
+    <link rel="stylesheet" href="cell_coverage_calculator_v6_1_style.css">
 
     <!-- Google tag (gtag.js) for data analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF46XXJ5V7"></script>
@@ -25,7 +25,7 @@
     </script>
 </head>
 
-<body>
+<body class="pixel-console">
 
     <div class="app-container">
 
@@ -49,7 +49,7 @@
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h1>Cell Coverage Calculator <span class="version">V6</span></h1>
+                    <h1>Cell Coverage Calculator <span class="version">V6_1</span></h1>
                     <div class="subtitle">Antenna Tilt &amp; Coverage Planning Tool</div>
                 </div>
             </div>
@@ -196,10 +196,20 @@
             return document.querySelector('input[name="siteType"]:checked').value;
         }
 
+        function triggerConsolePulse(kind) {
+            const pulseClass = kind === 'mode' ? 'mode-shift' : 'calc-run';
+            document.body.classList.remove('mode-shift', 'calc-run');
+            void document.body.offsetWidth;
+            document.body.classList.add(pulseClass);
+            setTimeout(() => document.body.classList.remove(pulseClass), 640);
+        }
+
         /* ============================================================
            CALCULATE
         ============================================================ */
         function calculate() {
+            triggerConsolePulse('calc');
+
             const HA = parseFloat(document.getElementById('ha').value);
             const M_Tilt = parseFloat(document.getElementById('mtilt').value);
             const E_Tilt = parseFloat(document.getElementById('etilt').value);
@@ -453,6 +463,7 @@
         ============================================================ */
         document.querySelectorAll('input[name="siteType"]').forEach((radio) => {
             radio.addEventListener('change', (e) => {
+                triggerConsolePulse('mode');
                 const type = e.target.value;
 
                 if (type === "Macro") {

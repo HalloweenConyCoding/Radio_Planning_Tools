@@ -29,11 +29,6 @@
 
     <div class="app-container">
 
-
-        <div class="header-image-wrap">
-            <img src="../../images/Tilt_Calculation.png" alt="Tilt Calculation" class="header-image">
-        </div>
-
         <!-- ===== HEADER ===== -->
         <header class="app-header">
             <div class="logo">
@@ -76,6 +71,15 @@
                 </div>
                 <span class="mode-readout" aria-hidden="true"></span>
             </div>
+            <div class="switch-routing" aria-hidden="true">
+                <span class="route-line route-line-a"></span>
+                <span class="route-line route-line-b"></span>
+                <span class="route-node route-node-start"></span>
+                <span class="route-node route-node-end"></span>
+            </div>
+        </div>
+        <div class="header-image-wrap header-image-wrap--integrated">
+            <img src="../../images/Tilt_Calculation.png" alt="Tilt Calculation" class="header-image">
         </div>
 
         <!-- ===== MAIN DASHBOARD ===== -->
@@ -120,17 +124,17 @@
                     </div>
                 </div>
 
-                <div class="calc-wrapper" onclick="calculate()">
-                    <div class="calc-link">
+                <button id="calculateBtn" type="button" class="calc-wrapper" onclick="calculate()">
+                    <span class="calc-link">
                         <span>Calculate Coverage</span>
-                        <div class="calc-icon">
+                        <span class="calc-icon" aria-hidden="true">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.832 268.832">
                                 <path
                                     d="M265.17 125.577l-80-80c-4.88-4.88-12.796-4.88-17.677 0-4.882 4.882-4.882 12.796 0 17.678l58.66 58.66H12.5c-6.903 0-12.5 5.598-12.5 12.5 0 6.903 5.597 12.5 12.5 12.5h213.654l-58.66 58.662c-4.88 4.882-4.88 12.796 0 17.678 2.44 2.44 5.64 3.66 8.84 3.66s6.398-1.22 8.84-3.66l79.997-80c4.883-4.882 4.883-12.796 0-17.678z" />
                             </svg>
-                        </div>
-                    </div>
-                </div>
+                        </span>
+                    </span>
+                </button>
 
                 <div id="results" class="results-container"></div>
             </div>
@@ -208,8 +212,6 @@
            CALCULATE
         ============================================================ */
         function calculate() {
-            triggerConsolePulse('calc');
-
             const HA = parseFloat(document.getElementById('ha').value);
             const M_Tilt = parseFloat(document.getElementById('mtilt').value);
             const E_Tilt = parseFloat(document.getElementById('etilt').value);
@@ -225,6 +227,8 @@
                 alert("Antenna height must be a positive number.");
                 return;
             }
+
+            triggerConsolePulse('calc');
 
             const Total_Tilt = M_Tilt + E_Tilt;
             const beams = {

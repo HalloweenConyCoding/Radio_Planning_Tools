@@ -343,6 +343,8 @@ body::before {
 
 .label-icon {
     font-size: 0.94rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Symbol", sans-serif;
+    line-height: 1;
 }
 
 .section-desc {

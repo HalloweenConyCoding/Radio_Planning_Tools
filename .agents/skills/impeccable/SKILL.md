@@ -161,3 +161,11 @@ node .agents/skills/impeccable/scripts/pin.mjs <pin|unpin> <command>
 ```
 
 Valid `<command>` is any command from the table above. Report the script's result concisely. Confirm the new shortcut on success, relay stderr verbatim on error.
+
+## UI / Design tasks
+
+For UI, frontend, styling, dashboard, landing page, layout, typography, color, spacing, animation, or polish tasks:
+- Use the local Impeccable skill.
+- Read PRODUCT.md and DESIGN.md before editing.
+- Keep application logic, calculations, IDs, file paths, and data behavior unchanged unless explicitly requested.
+- Do not remove or break icon font imports when changing typography.

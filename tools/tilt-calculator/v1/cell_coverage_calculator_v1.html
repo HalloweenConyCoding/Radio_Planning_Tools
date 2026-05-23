@@ -1,0 +1,208 @@
+<!-- Updated HTML Script with building info shown inside the building and Read Me section -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cell Coverage Calculator</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #f3f3f3; }
+    label { display: inline-block; width: 200px; margin-bottom: 5px; }
+    input { width: 100px; }
+    #results { margin-top: 20px; }
+    canvas { background: #fff; border: 1px solid #ccc; margin-top: 20px; }
+    #readme { margin-top: 40px; padding: 10px; background: #e8e8e8; border: 1px solid #ccc; width: 600px; }
+    #readme h3 { margin-top: 0; }
+  </style>
+</head>
+<body>
+
+<h2>Cell Coverage Calculator</h2>
+
+<div>
+  <label>Antenna Height (m):</label><input id="ha" value="33"><br>
+  <label>Mechanical Tilt (°):</label><input id="mtilt" value="2"><br>
+  <label>Electrical Tilt (°):</label><input id="etilt" value="3"><br>
+  <label>Vertical Beam Width (°):</label><input id="vbw" value="6.5"><br>
+  <label>Building Distance (m):</label><input id="bdistance"><br>
+  <label>Building Height (m):</label><input id="bheight" value="50"><br>
+  <label>Building Width (m):</label><input id="bwidth" value="30"><br>
+</div>
+
+<button onclick="calculate()">Calculate</button>
+
+<div id="results"></div>
+<canvas id="plot" width="600" height="400"></canvas>
+
+<div id="readme">
+  <h3>Read Me</h3>
+  <p><strong>Download to your computer first</strong></p>
+  <p>Any encounter glitch/strange logic behavior please report to me</p>
+  <br>
+  <h4>Note</h4>
+  <p><strong>Keep Building Distance (m): (blank)</strong><br>
+  if no building to be serv (just normal macro site that serving around the city)<br>
+  only input this if want to serv to the building (ex. small cell on low/high rise)</p>
+</div>
+
+<script>
+function toRadians(deg) {
+  return deg * Math.PI / 180;
+}
+
+function calculate() {
+  const HA = parseFloat(document.getElementById('ha').value);
+  const M_Tilt = parseFloat(document.getElementById('mtilt').value);
+  const E_Tilt = parseFloat(document.getElementById('etilt').value);
+  const VBW = parseFloat(document.getElementById('vbw').value);
+  const B_DIST = parseFloat(document.getElementById('bdistance').value);
+  const B_HEIGHT = parseFloat(document.getElementById('bheight').value);
+  const B_WIDTH = parseFloat(document.getElementById('bwidth').value);
+
+  if (isNaN(HA) || HA <= 0) {
+    alert("Antenna height must be a positive number.");
+    return;
+  }
+
+  const Total_Tilt = M_Tilt + E_Tilt;
+  const beams = {
+    upper: { angle: Total_Tilt - VBW / 2, color: 'blue' },
+    main:  { angle: Total_Tilt,           color: 'red' },
+    lower: { angle: Total_Tilt + VBW / 2, color: 'green' }
+  };
+
+  let maxX = 0;
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = '';
+
+  for (const [key, beam] of Object.entries(beams)) {
+    const angle = beam.angle;
+    let landing = Infinity;
+    let height = null;
+    let message = '';
+    let draw = false;
+
+    if (angle <= 0) {
+      if (!isNaN(B_DIST)) {
+        const buildingHitHeight = HA - B_DIST * Math.tan(toRadians(angle));
+        if (buildingHitHeight <= B_HEIGHT) {
+          landing = B_DIST;
+          height = buildingHitHeight;
+          message = `${key} beam hits building front at ${buildingHitHeight.toFixed(2)}m height`;
+          draw = true;
+        } else {
+          message = `${key} beam flies over the building – no landing`;
+        }
+      } else {
+        message = `${key} beam is upward or horizontal – no landing`;
+      }
+    } else {
+      const theoreticalLanding = HA / Math.tan(toRadians(angle));
+      height = 0;
+      landing = theoreticalLanding;
+      draw = true;
+
+      if (!isNaN(B_DIST)) {
+        const frontHeight = HA - B_DIST * Math.tan(toRadians(angle));
+        const backX = B_DIST + B_WIDTH;
+        const backHeight = HA - backX * Math.tan(toRadians(angle));
+
+        if (frontHeight <= B_HEIGHT) {
+          landing = B_DIST;
+          height = frontHeight;
+          message = `${key} beam hits building front at ${frontHeight.toFixed(2)}m height`;
+        } else if (theoreticalLanding >= B_DIST && theoreticalLanding <= backX && backHeight <= B_HEIGHT) {
+          message = `${key} beam lands on building rooftop at ${theoreticalLanding.toFixed(2)}m`;
+        } else {
+          message = `${key} beam lands on ground at ${theoreticalLanding.toFixed(2)}m`;
+        }
+      } else {
+        message = `${key} beam lands on ground at ${landing.toFixed(2)}m`;
+      }
+    }
+
+    beam.landing = landing;
+    beam.height = height;
+    beam.message = message;
+    beam.draw = draw && isFinite(landing);
+
+    if (beam.draw) {
+      maxX = Math.max(maxX, landing);
+    }
+    if (!isNaN(B_DIST)) maxX = Math.max(maxX, B_DIST + B_WIDTH);
+
+    resultsDiv.innerHTML += `<div style="color:${beam.color}">${key} Beam (Angle: ${angle.toFixed(1)}°) - ${beam.draw ? `Landing: ${landing.toFixed(2)}m` : "Not drawn"}</div>`;
+    if (message) {
+      resultsDiv.innerHTML += `<div style="color:${beam.color}">${message}</div>`;
+    }
+  }
+
+  draw(HA, beams, B_DIST, B_HEIGHT, B_WIDTH, maxX);
+}
+
+function draw(HA, beams, B_DIST, B_HEIGHT, B_WIDTH, maxX) {
+  const canvas = document.getElementById("plot");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const margin = 50;
+  const canvasW = canvas.width;
+  const canvasH = canvas.height;
+  const scaleX = (canvasW - margin * 2) / (maxX * 1.1);
+  const scaleY = (canvasH - margin * 2) / (HA * 1.5);
+
+  const baseX = margin;
+  const baseY = canvasH - margin;
+  const antennaTopY = baseY - HA * scaleY;
+
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, baseY);
+  ctx.lineTo(canvasW, baseY);
+  ctx.strokeStyle = "#000";
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = "black";
+  ctx.fillRect(baseX - 10, antennaTopY, 20, baseY - antennaTopY);
+  ctx.fillText(`${HA}m`, baseX, antennaTopY - 5);
+
+  if (!isNaN(B_DIST)) {
+    const bx = baseX + B_DIST * scaleX;
+    const bw = B_WIDTH * scaleX;
+    const bh = B_HEIGHT * scaleY;
+
+    ctx.fillStyle = "gray";
+    ctx.fillRect(bx, baseY - bh, bw, bh);
+    ctx.fillStyle = "black";
+    ctx.font = "12px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`Height = ${B_HEIGHT.toFixed(1)} m.`, bx + bw / 2, baseY - bh / 2 - 7);
+    ctx.fillText(`Width = ${B_WIDTH.toFixed(1)} m.`, bx + bw / 2, baseY - bh / 2 + 10);
+  }
+
+  for (const [key, beam] of Object.entries(beams)) {
+    if (!beam.draw) continue;
+
+    const x = baseX + beam.landing * scaleX;
+    const y = beam.height != null ? baseY - beam.height * scaleY : antennaTopY;
+
+    ctx.beginPath();
+    ctx.moveTo(baseX, antennaTopY);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = beam.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = beam.color;
+    ctx.fillText(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${beam.angle.toFixed(1)}°`, baseX + 40, antennaTopY - 10 + (Object.keys(beams).indexOf(key) * 15));
+
+    if (beam.height === 0) {
+      ctx.fillText(`${beam.landing.toFixed(1)}m`, x, baseY + 12);
+    }
+  }
+}
+</script>
+
+</body>
+</html>
+

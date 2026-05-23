@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSI Beam Observatory v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div class="observatory-shell">
+    <aside class="obs-sidebar">
+      <div class="obs-sidebar-brand">
+        <img
+          class="brand-emblem"
+          src="reference/asset_pack/_clean/observatory-emblem.png"
+          alt=""
+          aria-hidden="true"
+        />
+        <div>
+          <div class="brand-kicker">MSI Console</div>
+          <div class="brand-name">Beam Observatory</div>
+        </div>
+      </div>
+
+      <nav class="obs-nav" aria-label="Primary">
+        <a class="obs-nav-item" href="#" aria-current="false">
+          <span class="obs-nav-icon">⌂</span>
+          <span>Dashboard</span>
+        </a>
+        <div class="freq-nav-cluster">
+          <button
+            id="frequencyNavTrigger"
+            class="obs-nav-item is-active freq-nav-trigger"
+            type="button"
+            aria-current="page"
+            aria-haspopup="menu"
+            aria-expanded="false"
+          >
+            <span class="obs-nav-icon">◉</span>
+            <span>Frequencies</span>
+          </button>
+
+          <div
+            id="frequencyFlyout"
+            class="frequency-flyout"
+            role="menu"
+            aria-label="Frequency navigation"
+          >
+            <div class="frequency-flyout-head">
+              <span>Frequency Selector</span>
+              <span id="frequencyFlyoutCount">No scan</span>
+            </div>
+            <div id="frequencyFlyoutList" class="frequency-flyout-list">
+              <div class="frequency-empty">Plot a folder to load frequencies.</div>
+            </div>
+          </div>
+        </div>
+        <a class="obs-nav-item" href="#" aria-current="false">
+          <span class="obs-nav-icon">⌖</span>
+          <span>Calibration</span>
+        </a>
+        <a class="obs-nav-item" href="#" aria-current="false">
+          <span class="obs-nav-icon">⇩</span>
+          <span>Exports</span>
+        </a>
+        <a class="obs-nav-item" href="#" aria-current="false">
+          <span class="obs-nav-icon">⚙</span>
+          <span>Settings</span>
+        </a>
+        <a class="obs-nav-item" href="#" aria-current="false">
+          <span class="obs-nav-icon">i</span>
+          <span>About</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-astrolabe" aria-hidden="true"></div>
+    </aside>
+
+    <main class="obs-main">
+      <header class="obs-hero">
+        <div class="hero-left">
+          <h1 class="hero-title">MSI BEAM OBSERVATORY</h1>
+          <p>Antenna Radiation Pattern Analysis Console</p>
+        </div>
+
+        <img
+          class="hero-mark"
+          src="reference/asset_pack/_clean/target-crosshair-symbol.png"
+          alt=""
+          aria-hidden="true"
+        />
+
+        <div class="hero-right">
+          <div class="hero-chip status-chip">
+            <div class="chip-label">Observatory Status</div>
+            <div id="observatoryStatusText" class="chip-value is-good">Nominal</div>
+          </div>
+
+          <div class="hero-chip scan-chip">
+            <div class="chip-label">Last Scan</div>
+            <div id="scanSummaryText" class="chip-value scan-value">No scan loaded</div>
+            <div id="scanUpdatedText" class="chip-subvalue">Awaiting folder</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="command-deck">
+        <div class="deck-grid">
+          <div class="deck-field wide">
+            <label for="folderInput">Data Source</label>
+            <div class="folder-picker-row">
+              <input
+                id="folderInput"
+                class="folder-input-native"
+                type="file"
+                webkitdirectory
+                directory
+                multiple
+                accept=".msi,.txt"
+              />
+              <label for="folderInput" class="folder-picker-trigger">Select MSI Folder</label>
+              <span id="folderSelectionInfo" class="folder-selection-info">No folder selected</span>
+            </div>
+            <small>Select the top folder. Subfolders are parsed automatically.</small>
+            <small class="folder-access-note">Files are read locally. Browser confirmation may appear.</small>
+          </div>
+
+          <div class="deck-field">
+            <label for="rotateToggle">Auto Adjust Tilt</label>
+            <label class="toggle-row">
+              <input id="rotateToggle" type="checkbox" checked />
+              <span>Rotate vertical plot by detected tilt</span>
+            </label>
+            <small>If no numeric tilt is detected, the trace remains unrotated.</small>
+          </div>
+
+          <div class="deck-field tilt-filter-box">
+            <label>Tilt Filter</label>
+            <div class="tilt-toolbar">
+              <button id="tiltFilterBtn" type="button" class="small-btn">Select Tilt</button>
+              <span id="tiltHint" class="filter-hint">All tilts</span>
+            </div>
+            <div id="tiltPanel" class="tilt-panel hidden">
+              <div class="tilt-panel-actions">
+                <button id="tiltAllBtn" type="button" class="small-btn">All</button>
+                <button id="tiltNoneBtn" type="button" class="small-btn">None</button>
+              </div>
+              <div id="tiltList" class="tilt-list">
+                <div class="tilt-empty">No tilt values yet</div>
+              </div>
+            </div>
+            <small>Select which tilt values should be plotted.</small>
+          </div>
+
+          <div class="deck-field action-field">
+            <label>&nbsp;</label>
+            <button id="plotBtn" type="button">Replot Folder</button>
+          </div>
+        </div>
+
+        <div class="deck-readout">
+          <div id="globalSummary" class="global-summary hidden" aria-label="Scan telemetry">
+            <span id="status" class="scan-status-token">WAITING FOR FOLDER</span>
+            <span class="summary-item">
+              <span class="summary-key">Selected</span>
+              <span class="summary-value" id="sumSelected">0</span>
+            </span>
+            <span class="summary-item">
+              <span class="summary-key">MSI Used</span>
+              <span class="summary-value" id="sumUsed">0</span>
+            </span>
+            <span class="summary-item">
+              <span class="summary-key">Frequencies</span>
+              <span class="summary-value" id="sumFreq">0</span>
+            </span>
+            <span class="summary-item">
+              <span class="summary-key">Plots</span>
+              <span class="summary-value" id="sumPlots">0</span>
+            </span>
+            <span class="summary-item">
+              <span class="summary-key">Tilt</span>
+              <span class="summary-value" id="sumTilt">All tilts</span>
+            </span>
+          </div>
+
+          <details class="ops-note">
+            <summary>
+              <span class="ops-note-label">Notes</span>
+              <span class="ops-note-hint">▾</span>
+            </summary>
+            <ul>
+              <li>Tilt detection priority: <b>TILT field -> COMMENT(S) -> NAME -> filename</b>.</li>
+              <li>Clipboard export fallback is automatic if browser permission blocks direct copy.</li>
+              <li>Copy PNG exports white-background plots with no legend and includes manual read lines.</li>
+            </ul>
+          </details>
+        </div>
+      </section>
+
+      <section id="plotsContainer" class="plots-container"></section>
+    </main>
+  </div>
+
+  <script src="js/parser.js"></script>
+  <script src="js/plotter.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

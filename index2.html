@@ -3,33 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cinematic Hero</title>
+  <title>ORBITAL DATA COMMAND</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index2.css">
 </head>
 <body>
-  <main class="hero">
-    <video autoplay loop muted playsinline class="hero-video">
-      <source src="https://res.cloudinary.com/dfonotyfb/video/upload/v1775585556/dds3_1_rqhg7x.mp4" type="video/mp4">
-    </video>
+  <div class="bg-layers" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="orbits"></div>
+    <div class="grid"></div>
+    <div class="drift"></div>
+  </div>
 
-    <div class="hero-overlay"></div>
-    <div class="hero-vignette"></div>
-    <div class="hero-grain"></div>
+  <div class="app-shell">
+    <header class="command-bar reveal" style="--d:0ms">
+      <div class="command-left">
+        <div class="logo-mark">ODC</div>
+        <div>
+          <p class="tiny-label">Orbital Interface</p>
+          <h1 class="brand-title">ORBITAL DATA COMMAND</h1>
+        </div>
+      </div>
+      <nav class="command-nav" aria-label="Primary">
+        <button class="tab active">Overview</button>
+        <button class="tab">Revenue</button>
+        <button class="tab">Traffic</button>
+        <button class="tab">Systems</button>
+        <button class="tab">Forecast</button>
+      </nav>
+      <div class="command-right">
+        <span class="status-badge"><span class="pulse"></span>Live Link</span>
+        <span class="timestamp" id="timestamp">--:--:-- UTC</span>
+        <div class="operator">CN</div>
+      </div>
+    </header>
 
-    <section class="hero-content">
-      <p class="eyebrow">Cinematic Experience</p>
-      <h1>Crafted For A Premium First Impression</h1>
-      <p class="description">
-        A full-screen dark hero with layered light, motion depth, and an intentional visual rhythm.
-      </p>
-      <div class="actions">
-        <a href="#" class="btn btn-primary">Enter Experience</a>
-        <a href="#" class="btn btn-secondary">View Story</a>
+    <section class="hero-strip panel reveal" style="--d:100ms">
+      <div>
+        <p class="tiny-label">Real-time analytics from the edge of the atmosphere.</p>
+        <h2>Mission Analytics Overview</h2>
+        <p class="hero-copy">A precision console for tracking telemetry-grade business performance under orbital operating conditions.</p>
+      </div>
+      <div class="hero-actions">
+        <div class="chips">
+          <span class="chip ok">Signal Stable</span>
+          <span class="chip info">Data Sync 99.98%</span>
+          <span class="chip warn">Orbit Window Active</span>
+        </div>
+        <button class="btn-primary">Run Scan</button>
       </div>
     </section>
-  </main>
+
+    <section class="kpi-grid reveal" style="--d:180ms" id="kpiGrid"></section>
+
+    <section class="main-grid reveal" style="--d:260ms">
+      <article class="panel panel-active chart-main">
+        <div class="panel-head">
+          <div>
+            <p class="tiny-label">Revenue + Users Trajectory</p>
+            <h3>Orbital Trendline</h3>
+          </div>
+          <span class="chip info">Last 12 Months</span>
+        </div>
+        <div class="chart-wrap">
+          <svg id="trendChart" viewBox="0 0 900 340" role="img" aria-label="Revenue and users trend chart"></svg>
+        </div>
+      </article>
+
+      <aside class="side-stack">
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Channel Distribution</h3>
+          </div>
+          <div id="channelBars" class="channel-bars"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Anomaly Detection</h3>
+            <span class="chip crit">3 Alerts</span>
+          </div>
+          <ul class="anomaly-list" id="anomalyList"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Forecast Confidence</h3>
+          </div>
+          <div class="confidence-wrap">
+            <div class="ring" id="confidenceRing"><span>91%</span></div>
+            <p class="muted">Model confidence remains stable with low volatility drift over the next 30 days.</p>
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="secondary-grid reveal" style="--d:360ms">
+      <article class="panel">
+        <div class="panel-head">
+          <h3>Regional Performance</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Region</th><th>Revenue</th><th>Users</th><th>Conv.</th></tr>
+            </thead>
+            <tbody id="regionTable"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h3>System Health Matrix</h3>
+        </div>
+        <div class="health-matrix" id="healthMatrix"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h3>Mission Event Log</h3>
+        </div>
+        <ul class="event-log" id="eventLog"></ul>
+      </article>
+    </section>
+
+    <footer class="status-rail reveal" style="--d:460ms">
+      <span><i class="dot ok"></i>Connection: Secure Relay</span>
+      <span>Latency: 42ms</span>
+      <span>Last Sync: 12s ago</span>
+      <span>Model: ODC-Nav 2.7</span>
+      <span>Env: Simulation</span>
+    </footer>
+  </div>
+
+  <script src="index2.js"></script>
 </body>
 </html>

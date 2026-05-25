@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coverage Planning — Radio Engineering Archive</title>
+    <link rel="icon" type="image/x-icon" href="icon/tower.ico">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF46XXJ5V7"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-JF46XXJ5V7');
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="main_page_style.css">
+</head>
+
+<body>
+
+    <!-- ═══════ FIXED ATMOSPHERIC LAYERS ═══════ -->
+    <div class="atmosphere" aria-hidden="true">
+        <div class="atmo-gradient"></div>
+        <div class="atmo-texture"></div>
+
+        <!-- Star Field -->
+        <div class="star-field" id="starField"></div>
+
+        <!-- Nebula Clouds -->
+        <div class="nebula nebula-purple"></div>
+        <div class="nebula nebula-rose"></div>
+        <div class="nebula nebula-teal"></div>
+        <div class="nebula nebula-gold"></div>
+
+        <!-- Grand Background Clock -->
+        <div class="grand-clock" id="grandClock">
+            <div class="gc-ring gc-ring-1"></div>
+            <div class="gc-ring gc-ring-2"></div>
+            <div class="gc-ring gc-ring-3"></div>
+            <div class="gc-ring gc-ring-4"></div>
+            <div class="gc-center"></div>
+            <div class="gc-hand gc-hand-hour"></div>
+            <div class="gc-hand gc-hand-minute"></div>
+        </div>
+
+        <!-- Sunbeams -->
+        <div class="sunbeam sunbeam-1"></div>
+        <div class="sunbeam sunbeam-2"></div>
+
+        <!-- Dust Particles -->
+        <div class="dust-field" id="dustField"></div>
+    </div>
+
+    <!-- ═══════ FLOATING ORBITAL NAV ═══════ -->
+    <nav class="orbital-nav" id="orbitalNav" aria-label="Section navigation">
+        <button class="onav-core" type="button" aria-label="Toggle section navigation" aria-expanded="false" aria-controls="onavMenu">
+            <div class="onav-ring onav-ring-1"></div>
+            <div class="onav-ring onav-ring-2"></div>
+            <div class="onav-center-dot"></div>
+        </button>
+        <div class="onav-current-label" id="onavCurrentLabel">Archive Entrance</div>
+        <div class="onav-menu" id="onavMenu">
+            <a href="#hero" class="onav-item" data-nav="hero">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Archive Entrance</span>
+            </a>
+            <a href="#planning" class="onav-item" data-nav="planning">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Planning Instruments</span>
+            </a>
+            <a href="#supplementary" class="onav-item" data-nav="supplementary">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Supplementary Tools</span>
+            </a>
+            <a href="#process" class="onav-item" data-nav="process">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Operating Flow</span>
+            </a>
+            <a href="#experimental" class="onav-item" data-nav="experimental">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Experimental Bench</span>
+            </a>
+            <a href="#timeline" class="onav-item" data-nav="timeline">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Version Timeline</span>
+            </a>
+            <a href="#archive" class="onav-item" data-nav="archive">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Archive Console</span>
+            </a>
+            <a href="#cta" class="onav-item" data-nav="cta">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Launch Console</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ═══════ SCROLL CONTAINER ═══════ -->
+    <div class="scroll-container">
+
+        <!-- ═══════ SECTION 1: HERO ═══════ -->
+        <section class="scroll-section hero-section" id="hero" data-section="hero">
+            <div class="section-content">
+
+                <!-- 3D Orbital System -->
+                <div class="orbital-system">
+                    <div class="orbital-core"></div>
+                    <div class="orbital-plane">
+                        <div class="orbital-orbit">
+                            <div class="orbital-satellite"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-eyebrow">
+                    <span class="eyebrow-glyph">&#9200;</span>
+                    Radio Engineering Archive
+                </div>
+
+                <h1 class="hero-title">
+                    Coverage<br>
+                    <span class="hero-accent">Planning Tools</span>
+                </h1>
+
+                <p class="hero-subtitle">Precision instruments for cell coverage analysis,<br>antenna visualization, and RF network planning</p>
+
+                <div class="hero-cta-row">
+                    <a href="#planning" class="btn-brass">
+                        <span class="btn-shine"></span>
+                        <span class="btn-text"><span class="btn-glyph">&#9656;</span> Enter the Archive</span>
+                    </a>
+                </div>
+
+                <div class="quick-dock" aria-label="Quick launch">
+                    <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="quick-dock-item">
+                        <span class="qd-code">TILT</span>
+                        <span class="qd-name">Tilt V5</span>
+                    </a>
+                    <a href="tools/antenna-msi-plotter/msi_plotter.html" class="quick-dock-item">
+                        <span class="qd-code">MSI</span>
+                        <span class="qd-name">MSI Plotter</span>
+                    </a>
+                    <a href="tools/custom-tools/map_doodle.html" class="quick-dock-item">
+                        <span class="qd-code">MAP</span>
+                        <span class="qd-name">Map Drawing</span>
+                    </a>
+                    <a href="tools/power-calculator/Power Unit Converter.html" class="quick-dock-item">
+                        <span class="qd-code">PWR</span>
+                        <span class="qd-name">Power Convert</span>
+                    </a>
+                </div>
+
+                <div class="hero-meta">
+                    <span class="meta-item"><span class="meta-dot dot-live"></span> 4 Live</span>
+                    <span class="meta-sep">&#8226;</span>
+                    <span class="meta-item"><span class="meta-dot dot-dev"></span> 5 In Development</span>
+                    <span class="meta-sep">&#8226;</span>
+                    <span class="meta-item"><span class="meta-dot dot-legacy"></span> 4 Legacy</span>
+                </div>
+            </div>
+
+            <div class="scroll-hint">
+                <span class="scroll-line"></span>
+                <span class="scroll-text">Scroll to explore</span>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 2: PLANNING INSTRUMENTS ═══════ -->
+        <section class="scroll-section instruments-section" id="planning" data-section="planning">
+            <div class="section-content">
+
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Planning Instruments</span>
+                </div>
+                <h2 class="section-title">Core Calculation Tools</h2>
+
+                <div class="featured-instrument">
+                    <div class="fi-orbit" aria-hidden="true">
+                        <span class="fi-beam"></span>
+                        <span class="fi-building"></span>
+                    </div>
+                    <div class="fi-copy">
+                        <span class="fi-kicker">Featured stable instrument</span>
+                        <h3>Tilt Calculator V5</h3>
+                        <p>Primary beam-landing calculator for HBW, site geometry, and building-front coverage checks.</p>
+                        <div class="fi-actions">
+                            <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html">Open Stable</a>
+                            <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html">Try V6.1</a>
+                            <a href="#timeline">View Versions</a>
+                        </div>
+                    </div>
+                    <div class="fi-status">
+                        <span class="fi-status-label">Current channel</span>
+                        <span class="fi-status-value">STABLE</span>
+                    </div>
+                </div>
+
+                <div class="instrument-grid instrument-grid-primary">
+                    <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="instr-card instr-primary">
+                        <div class="ic-glow"></div>
+                        <div class="card-schematic schematic-tilt" aria-hidden="true">
+                            <span class="schem-line schem-line-a"></span>
+                            <span class="schem-line schem-line-b"></span>
+                            <span class="schem-node schem-node-a"></span>
+                            <span class="schem-node schem-node-b"></span>
+                            <span class="schem-block"></span>
+                        </div>
+                        <div class="ic-top">
+                            <div class="ic-icon icon-brass">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+                            </div>
+                            <div class="ic-badge badge-stable"><span class="badge-pip"></span>Stable</div>
+                        </div>
+                        <h3 class="ic-title">Tilt Calculator <span class="ic-ver">V5</span></h3>
+                        <p class="ic-desc">Calculate beam width landing on building front using HBW and building dimensions</p>
+                        <div class="ic-footer"><span class="ic-action">Open Instrument</span><span class="ic-arrow">&#8594;</span></div>
+                    </a>
+
+                    <a href="tools/antenna-msi-plotter/msi_plotter.html" class="instr-card instr-primary">
+                        <div class="ic-glow"></div>
+                        <div class="card-schematic schematic-polar" aria-hidden="true">
+                            <svg class="polar-svg" viewBox="0 0 132 82" focusable="false">
+                                <defs>
+                                    <radialGradient id="msiBeamFill" cx="50%" cy="50%" r="60%">
+                                        <stop offset="0%" stop-color="rgb(255, 210, 90)" stop-opacity="0.42"></stop>
+                                        <stop offset="55%" stop-color="rgb(80, 220, 210)" stop-opacity="0.20"></stop>
+                                        <stop offset="100%" stop-color="rgb(80, 220, 210)" stop-opacity="0.04"></stop>
+                                    </radialGradient>
+                                    <filter id="msiSoftGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="1.2" result="blur"></feGaussianBlur>
+                                        <feMerge>
+                                            <feMergeNode in="blur"></feMergeNode>
+                                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                                        </feMerge>
+                                    </filter>
+                                    <clipPath id="msiChartClip">
+                                        <circle cx="66" cy="45" r="36"></circle>
+                                    </clipPath>
+                                </defs>
+                                <g transform="translate(66 45)">
+                                    <circle class="polar-svg-ring polar-svg-ring-a" r="36"></circle>
+                                    <circle class="polar-svg-ring polar-svg-ring-b" r="25"></circle>
+                                    <circle class="polar-svg-ring polar-svg-ring-c" r="13"></circle>
+                                    <line class="polar-svg-axis" x1="-36" y1="0" x2="36" y2="0"></line>
+                                    <line class="polar-svg-axis" x1="0" y1="-36" x2="0" y2="36"></line>
+                                    <line class="polar-svg-guide" x1="0" y1="0" x2="-25" y2="-25"></line>
+                                    <line class="polar-svg-guide" x1="0" y1="0" x2="25" y2="-25"></line>
+                                    <g clip-path="url(#msiChartClip)">
+                                        <path class="polar-svg-beam" d="M 0 0 C -6 -4, -15 -15, -25 -25 C -32 -18, -35 -8, -29 1 C -19 7, -8 4, 0 0 Z"></path>
+                                        <path class="polar-svg-beam" d="M 0 0 C 6 -4, 15 -15, 25 -25 C 32 -18, 35 -8, 29 1 C 19 7, 8 4, 0 0 Z"></path>
+                                    </g>
+                                    <circle class="polar-svg-dash-ring" r="20"></circle>
+                                    <circle class="polar-svg-origin-halo" r="4.4"></circle>
+                                    <circle class="polar-svg-origin" r="2.1"></circle>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="ic-top">
+                            <div class="ic-icon icon-brass">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                            </div>
+                            <div class="ic-badge badge-stable"><span class="badge-pip"></span>Stable</div>
+                        </div>
+                        <h3 class="ic-title">Antenna MSI Plotter</h3>
+                        <p class="ic-desc">Visualize antenna radiation patterns from MSI file data with precision plotting</p>
+                        <div class="ic-footer"><span class="ic-action">Open Instrument</span><span class="ic-arrow">&#8594;</span></div>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 3: SUPPLEMENTARY INSTRUMENTS ═══════ -->
+        <section class="scroll-section supplementary-section" id="supplementary" data-section="supplementary">
+            <div class="section-content">
+
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Supplementary Instruments</span>
+                </div>
+                <h2 class="section-title">Support Utilities</h2>
+
+                <div class="instrument-grid instrument-grid-secondary">
+                    <a href="tools/custom-tools/map_doodle.html" class="instr-card instr-compact">
+                        <div class="mini-schematic mini-map" aria-hidden="true"></div>
+                        <div class="ic-icon icon-teal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                        </div>
+                        <div class="ic-body">
+                            <h3 class="ic-title-sm">Satellite Map Drawing</h3>
+                            <p class="ic-desc-sm">Drawing &amp; measurement with color palette and ruler</p>
+                        </div>
+                        <div class="ic-badge badge-stable badge-sm"><span class="badge-pip"></span>Stable</div>
+                    </a>
+
+                    <a href="tools/power-calculator/Power Unit Converter.html" class="instr-card instr-compact">
+                        <div class="mini-schematic mini-power" aria-hidden="true"></div>
+                        <div class="ic-icon icon-teal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        </div>
+                        <div class="ic-body">
+                            <h3 class="ic-title-sm">Power Unit Converter</h3>
+                            <p class="ic-desc-sm">dBm to watts and watts to dBm conversion</p>
+                        </div>
+                        <div class="ic-badge badge-stable badge-sm"><span class="badge-pip"></span>Stable</div>
+                    </a>
+
+                    <a href="https://5g-tools.com/4g-lte-throughput-calculator/" class="instr-card instr-compact" target="_blank" rel="noopener">
+                        <div class="mini-schematic mini-grid" aria-hidden="true"></div>
+                        <div class="ic-icon icon-cyan">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+                        </div>
+                        <div class="ic-body">
+                            <h3 class="ic-title-sm">LTE NR TP Calculator</h3>
+                            <p class="ic-desc-sm">External throughput calculator — opens new tab</p>
+                        </div>
+                        <div class="ic-badge badge-ext badge-sm"><span class="badge-pip"></span>External</div>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 4: THE PROCESS ═══════ -->
+        <section class="scroll-section process-section" id="process" data-section="process">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Operating Flow</span>
+                </div>
+                <h2 class="section-title">From Field Question to Planning Evidence</h2>
+
+                <div class="process-flow">
+                    <div class="process-step" data-step="1">
+                        <div class="ps-marker">
+                            <span class="ps-num">I</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Choose Instrument</h3>
+                            <p class="ps-desc">Start from the calculator that matches the engineering question: tilt, pattern, map, or power unit.</p>
+                        </div>
+                        <div class="ps-line"></div>
+                    </div>
+                    <div class="process-step" data-step="2">
+                        <div class="ps-marker">
+                            <span class="ps-num">II</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Enter Parameters</h3>
+                            <p class="ps-desc">Load site data, antenna settings, building dimensions, or MSI inputs without leaving the local tool hub.</p>
+                        </div>
+                        <div class="ps-line"></div>
+                    </div>
+                    <div class="process-step" data-step="3">
+                        <div class="ps-marker">
+                            <span class="ps-num">III</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Compare Output</h3>
+                            <p class="ps-desc">Check beam landing, radiation shape, path-loss behavior, or map markup against the planning assumption.</p>
+                        </div>
+                        <div class="ps-line"></div>
+                    </div>
+                    <div class="process-step" data-step="4">
+                        <div class="ps-marker">
+                            <span class="ps-num">IV</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Document Decision</h3>
+                            <p class="ps-desc">Carry the result into planning notes, field discussion, or a versioned experiment for later comparison.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 5: EXPERIMENTAL ═══════ -->
+        <section class="scroll-section experimental-section" id="experimental" data-section="experimental">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Experimental Bench</span>
+                </div>
+                <h2 class="section-title">In Development</h2>
+
+                <div class="dev-list">
+                    <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html" class="dev-row">
+                        <span class="dev-ver">V6.1</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Tilt Calculator V6.1</span>
+                            <span class="dev-detail">Pixel RF Scope Console redesign with retro instrument styling</span>
+                        </div>
+                        <span class="ic-badge badge-exp badge-sm"><span class="badge-pip"></span>Experimental</span>
+                    </a>
+                    <a href="tools/tilt-calculator/v6/cell_coverage_calculator_v6.html" class="dev-row">
+                        <span class="dev-ver">V6</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Tilt Calculator V6</span>
+                            <span class="dev-detail">Radar Scope Planner for antenna tilt and 2D coverage</span>
+                        </div>
+                        <span class="ic-badge badge-prev badge-sm"><span class="badge-pip"></span>Preview</span>
+                    </a>
+                    <a href="tools/antenna-msi-plotter/v2/msi_plotter.html" class="dev-row">
+                        <span class="dev-ver">V2</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Antenna MSI Plotter V2</span>
+                            <span class="dev-detail">MSI Beam Observatory with refined radiation pattern workflow</span>
+                        </div>
+                        <span class="ic-badge badge-prev badge-sm"><span class="badge-pip"></span>Preview</span>
+                    </a>
+                    <a href="tools/power-calculator/Frequency_FSPL_Comparator.html" class="dev-row">
+                        <span class="dev-ver">FSPL</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Frequency FSPL Calculator</span>
+                            <span class="dev-detail">Free-space path loss comparison tool — active research</span>
+                        </div>
+                        <span class="ic-badge badge-wip badge-sm"><span class="badge-pip"></span>In Progress</span>
+                    </a>
+                    <a href="tools/custom-tools/test_python.html" class="dev-row">
+                        <span class="dev-ver">PY</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Test Python Page</span>
+                            <span class="dev-detail">Python integration testing — experimental stage</span>
+                        </div>
+                        <span class="ic-badge badge-wip badge-sm"><span class="badge-pip"></span>In Progress</span>
+                    </a>
+                    <a href="underdevelopment_blank.html" class="dev-row">
+                        <span class="dev-ver">--</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Reserved Sandbox</span>
+                            <span class="dev-detail">Development sandbox for upcoming tool concepts</span>
+                        </div>
+                        <span class="ic-badge badge-wip badge-sm"><span class="badge-pip"></span>In Progress</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 6: VERSION TIMELINE ═══════ -->
+        <section class="scroll-section timeline-section" id="timeline" data-section="timeline">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Version Timeline</span>
+                </div>
+                <h2 class="section-title">Instrument Lineage</h2>
+
+                <div class="timeline-stack">
+                    <div class="timeline-lane">
+                        <div class="timeline-lane-head">
+                            <span>Tilt Calculator</span>
+                            <span>beam landing / coverage geometry</span>
+                        </div>
+                        <div class="version-timeline timeline-tilt">
+                            <a href="tools/tilt-calculator/v1/cell_coverage_calculator_v1.html" class="timeline-node">
+                                <span class="tl-ver">V1</span>
+                                <span class="tl-copy">Initial release</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v2/cell_coverage_calculator_v2.html" class="timeline-node">
+                                <span class="tl-ver">V2</span>
+                                <span class="tl-copy">Scaling fix</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v3/cell_coverage_calculator_v3.html" class="timeline-node">
+                                <span class="tl-ver">V3</span>
+                                <span class="tl-copy">Dark UI branch</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v4/cell_coverage_calculator_v4.html" class="timeline-node">
+                                <span class="tl-ver">V4</span>
+                                <span class="tl-copy">Adaptive picture scaling</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="timeline-node tl-stable">
+                                <span class="tl-ver">V5</span>
+                                <span class="tl-copy">Stable calculator</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v6/cell_coverage_calculator_v6.html" class="timeline-node tl-preview">
+                                <span class="tl-ver">V6</span>
+                                <span class="tl-copy">Radar scope planner</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html" class="timeline-node tl-exp">
+                                <span class="tl-ver">V6.1</span>
+                                <span class="tl-copy">Pixel RF console</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="timeline-lane">
+                        <div class="timeline-lane-head">
+                            <span>MSI Plotter</span>
+                            <span>antenna radiation pattern visualization</span>
+                        </div>
+                        <div class="version-timeline timeline-msi">
+                            <a href="tools/antenna-msi-plotter/msi_plotter.html" class="timeline-node tl-stable">
+                                <span class="tl-ver">V1</span>
+                                <span class="tl-copy">Stable polar plotter</span>
+                            </a>
+                            <a href="tools/antenna-msi-plotter/v2/msi_plotter.html" class="timeline-node tl-preview">
+                                <span class="tl-ver">V2</span>
+                                <span class="tl-copy">MSI Beam Observatory</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 7: ARCHIVE & LEGACY ═══════ -->
+        <section class="scroll-section archive-section" id="archive" data-section="archive">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Archive Console</span>
+                </div>
+                <h2 class="section-title">System Status</h2>
+
+                <div class="console-panel">
+                    <div class="console-bar">
+                        <div class="cb-dots"><span class="cb-dot d-amber"></span><span class="cb-dot d-teal"></span><span class="cb-dot d-green"></span></div>
+                        <span class="cb-title">coverage_archive.status</span>
+                    </div>
+                    <div class="console-body">
+                        <div class="cr"><span class="cr-k">SYS.STATUS</span><span class="cr-v v-live">ONLINE</span><span class="cr-bar"><span class="cr-fill cr-fill-full"></span></span></div>
+                        <div class="cr"><span class="cr-k">ACTIVE.INSTR</span><span class="cr-v">4</span><span class="cr-bar"><span class="cr-fill" style="width:66%"></span></span></div>
+                        <div class="cr"><span class="cr-k">DEV.PIPELINE</span><span class="cr-v v-amber">5</span><span class="cr-bar"><span class="cr-fill cr-fill-amber" style="width:40%"></span></span></div>
+                        <div class="cr"><span class="cr-k">LEGACY.VER</span><span class="cr-v v-dim">4</span><span class="cr-bar"><span class="cr-fill cr-fill-dim" style="width:25%"></span></span></div>
+                        <div class="cr-sep"></div>
+                        <div class="cr"><span class="cr-k">TILT.CALC.V5</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">MSI.PLOTTER</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">MAP.DRAW</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">PWR.CONVERT</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                    </div>
+                </div>
+
+                <!-- Legacy Versions -->
+                <div class="legacy-block">
+                    <div class="legacy-header">Legacy Archive</div>
+                    <div class="legacy-list">
+                        <a href="tools/tilt-calculator/v4/cell_coverage_calculator_v4.html" class="legacy-row">
+                            <span class="legacy-ver">V4</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V4</span><span class="legacy-detail">Black Theme UI + Adaptive picture scaling</span></div>
+                        </a>
+                        <a href="tools/tilt-calculator/v3/cell_coverage_calculator_v3.html" class="legacy-row">
+                            <span class="legacy-ver">V3</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V3</span><span class="legacy-detail">Black Theme UI + Adaptive picture scaling</span></div>
+                        </a>
+                        <a href="tools/tilt-calculator/v2/cell_coverage_calculator_v2.html" class="legacy-row">
+                            <span class="legacy-ver">V2</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V2</span><span class="legacy-detail">Drawing scaling fix + Macro/Small Cell switch</span></div>
+                        </a>
+                        <a href="tools/tilt-calculator/v1/cell_coverage_calculator_v1.html" class="legacy-row">
+                            <span class="legacy-ver">V1</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V1</span><span class="legacy-detail">Initial release — rendering glitch resolved in V2</span></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 8: FINAL CTA ═══════ -->
+        <section class="scroll-section cta-section" id="cta" data-section="cta">
+            <div class="section-content">
+                <div class="cta-ornament">
+                    <div class="cta-ring cta-ring-1"></div>
+                    <div class="cta-ring cta-ring-2"></div>
+                    <div class="cta-gem"></div>
+                </div>
+                <h2 class="cta-title">Launch Console Ready</h2>
+                <p class="cta-desc">Start with the stable instruments, or enter the experimental bench when you want to compare new interfaces.</p>
+                <a href="#planning" class="btn-brass">
+                    <span class="btn-shine"></span>
+                    <span class="btn-text"><span class="btn-glyph">&#9656;</span> Browse Instruments</span>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="site-footer">
+        <div class="footer-rule"></div>
+        <div class="footer-inner">
+            <span class="footer-brand">Coverage Planning Tools</span>
+            <span class="footer-copy">&copy; 2026 Cell Coverage Planner Project. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ─── SECTION VISIBILITY OBSERVER ───
+        var sections = document.querySelectorAll('.scroll-section');
+        var sectionObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                } else {
+                    entry.target.classList.remove('in-view');
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '-4% 0px -4% 0px' });
+        sections.forEach(function(s) { sectionObs.observe(s); });
+
+        // ─── GRAND CLOCK TICK MARKS ───
+        var clock = document.getElementById('grandClock');
+        if (clock) {
+            for (var i = 0; i < 12; i++) {
+                var tick = document.createElement('div');
+                tick.className = 'gc-tick';
+                tick.style.transform = 'rotate(' + (i * 30) + 'deg)';
+                clock.appendChild(tick);
+            }
+        }
+
+        // ─── STAR FIELD (CSS-only dots, generated once) ───
+        var starField = document.getElementById('starField');
+        if (starField) {
+            for (var i = 0; i < 80; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = (Math.random() * 100) + '%';
+                star.style.top = (Math.random() * 100) + '%';
+                var size = (0.5 + Math.random() * 2);
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDelay = (Math.random() * 6) + 's';
+                star.style.animationDuration = (2 + Math.random() * 4) + 's';
+                if (Math.random() > 0.7) star.style.background = '#c9a84c';
+                else if (Math.random() > 0.5) star.style.background = '#3db8b8';
+                starField.appendChild(star);
+            }
+        }
+
+        // ─── DUST PARTICLES ───
+        var dustField = document.getElementById('dustField');
+        if (dustField) {
+            for (var i = 0; i < 15; i++) {
+                var p = document.createElement('div');
+                p.className = 'dust';
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.top = (Math.random() * 100) + '%';
+                p.style.animationDelay = (Math.random() * 18) + 's';
+                p.style.animationDuration = (10 + Math.random() * 12) + 's';
+                var s = 1 + Math.random() * 2;
+                p.style.width = s + 'px';
+                p.style.height = s + 'px';
+                dustField.appendChild(p);
+            }
+        }
+
+        // ─── REAL CLOCK HANDS ───
+        function updateClock() {
+            var now = new Date();
+            var h = now.getHours() % 12;
+            var m = now.getMinutes();
+            var hd = (h * 30) + (m * 0.5);
+            var md = m * 6;
+            var hh = document.querySelector('.gc-hand-hour');
+            var mh = document.querySelector('.gc-hand-minute');
+            if (hh) hh.style.transform = 'rotate(' + hd + 'deg)';
+            if (mh) mh.style.transform = 'rotate(' + md + 'deg)';
+        }
+        updateClock();
+        setInterval(updateClock, 60000);
+
+        // ─── ORBITAL NAV ───
+        var onavCore = document.querySelector('.onav-core');
+        var onavMenu = document.getElementById('onavMenu');
+        var onavItems = document.querySelectorAll('.onav-item');
+        var onavCurrentLabel = document.getElementById('onavCurrentLabel');
+        var navOpen = false;
+
+        // Toggle menu on core click
+        if (onavCore && onavMenu) {
+            onavCore.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navOpen = !navOpen;
+                onavMenu.classList.toggle('onav-open', navOpen);
+                onavCore.classList.toggle('onav-active', navOpen);
+                onavCore.setAttribute('aria-expanded', navOpen ? 'true' : 'false');
+            });
+
+            // Close on outside click
+            document.addEventListener('click', function(e) {
+                if (navOpen && !onavMenu.contains(e.target) && !onavCore.contains(e.target)) {
+                    navOpen = false;
+                    onavMenu.classList.remove('onav-open');
+                    onavCore.classList.remove('onav-active');
+                    onavCore.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Close after clicking a nav item
+            onavItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    navOpen = false;
+                    onavMenu.classList.remove('onav-open');
+                    onavCore.classList.remove('onav-active');
+                    onavCore.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        // Highlight active section in nav
+        var navObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                var sectionId = entry.target.getAttribute('data-section');
+                var navLink = document.querySelector('.onav-item[data-nav="' + sectionId + '"]');
+                if (navLink) {
+                    if (entry.isIntersecting) {
+                        navLink.classList.add('onav-current');
+                        if (onavCurrentLabel) {
+                            onavCurrentLabel.textContent = navLink.querySelector('.onav-label').textContent;
+                        }
+                    } else {
+                        navLink.classList.remove('onav-current');
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(function(s) { navObserver.observe(s); });
+
+    })();
+    </script>
+
+</body>
+</html>

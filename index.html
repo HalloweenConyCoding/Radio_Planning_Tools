@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coverage Planning</title>
-    <link rel="icon" type="image/x-icon" href="icon/tower.ico">
+    <title>Coverage Planning — Radio Engineering Archive</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='4' fill='%23c9a84c'/%3E%3Cpath d='M8.5 23.5C5 20 5 12 8.5 8.5' stroke='%23c9a84c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M23.5 8.5C27 12 27 20 23.5 23.5' stroke='%23c9a84c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF46XXJ5V7"></script>
@@ -19,9 +19,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Sora:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="main_page_style.css">
@@ -29,399 +27,716 @@
 
 <body>
 
-    <!-- Floating blobs background -->
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
-    <div class="bg-blob blob-3"></div>
+    <!-- ═══════ FIXED ATMOSPHERIC LAYERS ═══════ -->
+    <div class="atmosphere" aria-hidden="true">
+        <div class="atmo-gradient"></div>
+        <div class="atmo-texture"></div>
 
-    <div class="app-container">
+        <!-- Star Field -->
+        <div class="star-field" id="starField"></div>
 
-        <!-- HERO -->
-        <header class="hero">
-            <div class="hero-eyebrow">
-                <span class="eyebrow-dot"></span>
-                Radio Engineering Pack
+        <!-- Nebula Clouds -->
+        <div class="nebula nebula-purple"></div>
+        <div class="nebula nebula-rose"></div>
+        <div class="nebula nebula-teal"></div>
+        <div class="nebula nebula-gold"></div>
+
+        <!-- Grand Background Clock -->
+        <div class="grand-clock" id="grandClock">
+            <div class="gc-ring gc-ring-1"></div>
+            <div class="gc-ring gc-ring-2"></div>
+            <div class="gc-ring gc-ring-3"></div>
+            <div class="gc-ring gc-ring-4"></div>
+            <div class="gc-center"></div>
+            <div class="gc-hand gc-hand-hour"></div>
+            <div class="gc-hand gc-hand-minute"></div>
+        </div>
+
+        <!-- Sunbeams -->
+        <div class="sunbeam sunbeam-1"></div>
+        <div class="sunbeam sunbeam-2"></div>
+
+        <!-- Dust Particles -->
+        <div class="dust-field" id="dustField"></div>
+    </div>
+
+    <!-- ═══════ FLOATING ORBITAL NAV ═══════ -->
+    <nav class="orbital-nav" id="orbitalNav" aria-label="Section navigation">
+        <button class="onav-core" type="button" aria-label="Toggle section navigation" aria-expanded="false" aria-controls="onavMenu">
+            <div class="onav-ring onav-ring-1"></div>
+            <div class="onav-ring onav-ring-2"></div>
+            <div class="onav-center-dot"></div>
+        </button>
+        <div class="onav-current-label" id="onavCurrentLabel">Archive Entrance</div>
+        <div class="onav-menu" id="onavMenu">
+            <a href="#hero" class="onav-item" data-nav="hero">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Archive Entrance</span>
+            </a>
+            <a href="#planning" class="onav-item" data-nav="planning">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Planning Instruments</span>
+            </a>
+            <a href="#supplementary" class="onav-item" data-nav="supplementary">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Supplementary Tools</span>
+            </a>
+            <a href="#process" class="onav-item" data-nav="process">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Operating Flow</span>
+            </a>
+            <a href="#experimental" class="onav-item" data-nav="experimental">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Experimental Bench</span>
+            </a>
+            <a href="#timeline" class="onav-item" data-nav="timeline">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Version Timeline</span>
+            </a>
+            <a href="#archive" class="onav-item" data-nav="archive">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Archive Console</span>
+            </a>
+            <a href="#cta" class="onav-item" data-nav="cta">
+                <span class="onav-orb"></span>
+                <span class="onav-label">Launch Console</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ═══════ SCROLL CONTAINER ═══════ -->
+    <div class="scroll-container">
+
+        <!-- ═══════ SECTION 1: HERO ═══════ -->
+        <section class="scroll-section hero-section" id="hero" data-section="hero" data-theme="hero">
+            <div class="section-content">
+
+                <!-- 3D Orbital System -->
+                <div class="orbital-system">
+                    <div class="orbital-core"></div>
+                    <div class="orbital-plane">
+                        <div class="orbital-orbit">
+                            <div class="orbital-satellite"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-eyebrow">
+                    <span class="eyebrow-glyph"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.4"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.4"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></span>
+                    Radio Engineering Archive
+                </div>
+
+                <h1 class="hero-title">
+                    Coverage<br>
+                    <span class="hero-accent">Planning Tools</span>
+                </h1>
+
+                <p class="hero-subtitle">Precision instruments for cell coverage analysis,<br>antenna visualization, and RF network planning</p>
+
+                <div class="hero-cta-row">
+                    <a href="#planning" class="btn-brass">
+                        <span class="btn-shine"></span>
+                        <span class="btn-text"><span class="btn-glyph">&#9656;</span> Enter the Archive</span>
+                    </a>
+                </div>
+
+                <div class="quick-dock" aria-label="Quick launch">
+                    <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="quick-dock-item">
+                        <span class="qd-code">TILT</span>
+                        <span class="qd-name">Tilt V5</span>
+                    </a>
+                    <a href="tools/antenna-msi-plotter/msi_plotter.html" class="quick-dock-item">
+                        <span class="qd-code">MSI</span>
+                        <span class="qd-name">MSI Plotter</span>
+                    </a>
+                    <a href="tools/custom-tools/map_doodle.html" class="quick-dock-item">
+                        <span class="qd-code">MAP</span>
+                        <span class="qd-name">Map Drawing</span>
+                    </a>
+                    <a href="tools/power-calculator/Power Unit Converter.html" class="quick-dock-item">
+                        <span class="qd-code">PWR</span>
+                        <span class="qd-name">Power Convert</span>
+                    </a>
+                </div>
+
+                <div class="hero-meta">
+                    <span class="meta-item"><span class="meta-dot dot-live"></span> 4 Live</span>
+                    <span class="meta-sep">&#8226;</span>
+                    <span class="meta-item"><span class="meta-dot dot-dev"></span> 5 In Development</span>
+                    <span class="meta-sep">&#8226;</span>
+                    <span class="meta-item"><span class="meta-dot dot-legacy"></span> 4 Legacy</span>
+                </div>
             </div>
-            <h1 class="hero-title">Coverage Planning<br><span class="hero-title-accent">Tools</span></h1>
-            <p class="hero-subtitle">Visualization tools for cell coverage planning by Beer</p>
 
-            <div class="hero-image-frame">
-                <img src="images/BSandANT.png" alt="Base Station and Antenna Radiation" class="header-image">
-                <div class="image-shimmer"></div>
+            <div class="scroll-hint">
+                <span class="scroll-line"></span>
+                <span class="scroll-text">Scroll to explore</span>
             </div>
+        </section>
 
-            <div class="hero-meta">
-                <div class="meta-chip">
-                    <span class="chip-dot chip-green"></span>
-                    All systems live
+        <!-- ═══════ SECTION 2: PLANNING INSTRUMENTS ═══════ -->
+        <section class="scroll-section instruments-section" id="planning" data-section="planning" data-theme="planning">
+            <div class="section-content">
+
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Planning Instruments</span>
                 </div>
-                <div class="meta-chip">
-                    <span class="chip-dot chip-lavender"></span>
-                    4 active tools
+                <h2 class="section-title">Core Calculation Tools</h2>
+
+                <div class="featured-instrument">
+                    <div class="fi-orbit" aria-hidden="true">
+                        <span class="fi-beam"></span>
+                        <span class="fi-building"></span>
+                    </div>
+                    <div class="fi-copy">
+                        <span class="fi-kicker">Featured stable instrument</span>
+                        <h3>Tilt Calculator V5</h3>
+                        <p>Primary beam-landing calculator for HBW, site geometry, and building-front coverage checks.</p>
+                        <div class="fi-actions">
+                            <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html">Open Stable</a>
+                            <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html">Try V6.1</a>
+                            <a href="#timeline">View Versions</a>
+                        </div>
+                    </div>
+                    <div class="fi-status">
+                        <span class="fi-status-label">Current channel</span>
+                        <span class="fi-status-value">STABLE</span>
+                    </div>
                 </div>
-                <div class="meta-chip">
-                    <span class="chip-dot chip-peach"></span>
-                    5 in development
+
+                <div class="instrument-grid instrument-grid-primary">
+                    <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="instr-card instr-primary">
+                        <div class="ic-glow"></div>
+                        <div class="card-schematic schematic-tilt" aria-hidden="true">
+                            <span class="schem-line schem-line-a"></span>
+                            <span class="schem-line schem-line-b"></span>
+                            <span class="schem-node schem-node-a"></span>
+                            <span class="schem-node schem-node-b"></span>
+                            <span class="schem-block"></span>
+                        </div>
+                        <div class="ic-top">
+                            <div class="ic-icon icon-brass">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+                            </div>
+                            <div class="ic-badge badge-stable"><span class="badge-pip"></span>Stable</div>
+                        </div>
+                        <h3 class="ic-title">Tilt Calculator <span class="ic-ver">V5</span></h3>
+                        <p class="ic-desc">Calculate beam width landing on building front using HBW and building dimensions</p>
+                        <div class="ic-footer"><span class="ic-action">Open Instrument</span><span class="ic-arrow">&#8594;</span></div>
+                    </a>
+
+                    <a href="tools/antenna-msi-plotter/msi_plotter.html" class="instr-card instr-primary">
+                        <div class="ic-glow"></div>
+                        <div class="card-schematic schematic-polar" aria-hidden="true">
+                            <svg class="polar-svg" viewBox="0 0 132 82" focusable="false">
+                                <defs>
+                                    <radialGradient id="msiBeamFill" cx="50%" cy="50%" r="60%">
+                                        <stop offset="0%" stop-color="rgb(255, 210, 90)" stop-opacity="0.42"></stop>
+                                        <stop offset="55%" stop-color="rgb(80, 220, 210)" stop-opacity="0.20"></stop>
+                                        <stop offset="100%" stop-color="rgb(80, 220, 210)" stop-opacity="0.04"></stop>
+                                    </radialGradient>
+                                    <filter id="msiSoftGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="1.2" result="blur"></feGaussianBlur>
+                                        <feMerge>
+                                            <feMergeNode in="blur"></feMergeNode>
+                                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <g transform="translate(66 45)">
+                                    <circle class="polar-svg-ring polar-svg-ring-a" r="36"></circle>
+                                    <circle class="polar-svg-ring polar-svg-ring-b" r="25"></circle>
+                                    <circle class="polar-svg-ring polar-svg-ring-c" r="13"></circle>
+                                    <line class="polar-svg-axis" x1="-36" y1="0" x2="36" y2="0"></line>
+                                    <line class="polar-svg-axis" x1="0" y1="-36" x2="0" y2="36"></line>
+                                    <line class="polar-svg-guide" x1="0" y1="0" x2="-25" y2="-25"></line>
+                                    <line class="polar-svg-guide" x1="0" y1="0" x2="25" y2="-25"></line>
+                                    <path class="polar-svg-beam" d="M 0 0 C -4.8 -4.8, -11.4 -12.7, -19.3 -21.1 C -25.5 -27.7, -32.9 -21.9, -34.7 -13.6 C -36.9 -2.2, -29.0 4.4, -18.4 5.7 C -10.5 6.6, -4.0 3.5, 0 0 Z" fill="url(#msiBeamFill)" fill-opacity="0.95" stroke="rgba(245, 201, 107, 0.78)" stroke-width="1.4"></path>
+                                    <path class="polar-svg-beam" d="M 0 0 C 4.8 -4.8, 11.4 -12.7, 19.3 -21.1 C 25.5 -27.7, 32.9 -21.9, 34.7 -13.6 C 36.9 -2.2, 29.0 4.4, 18.4 5.7 C 10.5 6.6, 4.0 3.5, 0 0 Z" fill="url(#msiBeamFill)" fill-opacity="0.95" stroke="rgba(245, 201, 107, 0.78)" stroke-width="1.4"></path>
+                                    <circle class="polar-svg-dash-ring" r="20"></circle>
+                                    <circle class="polar-svg-origin-halo" r="4.4"></circle>
+                                    <circle class="polar-svg-origin" r="2.1"></circle>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="ic-top">
+                            <div class="ic-icon icon-brass">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                            </div>
+                            <div class="ic-badge badge-stable"><span class="badge-pip"></span>Stable</div>
+                        </div>
+                        <h3 class="ic-title">Antenna MSI Plotter</h3>
+                        <p class="ic-desc">Visualize antenna radiation patterns from MSI file data with precision plotting</p>
+                        <div class="ic-footer"><span class="ic-action">Open Instrument</span><span class="ic-arrow">&#8594;</span></div>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 3: SUPPLEMENTARY INSTRUMENTS ═══════ -->
+        <section class="scroll-section supplementary-section" id="supplementary" data-section="supplementary" data-theme="supplementary">
+            <div class="section-content">
+
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Supplementary Instruments</span>
+                </div>
+                <h2 class="section-title">Support Utilities</h2>
+
+                <div class="instrument-grid instrument-grid-secondary">
+                    <a href="tools/custom-tools/map_doodle.html" class="instr-card instr-compact">
+                        <div class="mini-schematic mini-map" aria-hidden="true"></div>
+                        <div class="ic-icon icon-teal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                        </div>
+                        <div class="ic-body">
+                            <h3 class="ic-title-sm">Satellite Map Drawing</h3>
+                            <p class="ic-desc-sm">Drawing &amp; measurement with color palette and ruler</p>
+                        </div>
+                        <div class="ic-badge badge-stable badge-sm"><span class="badge-pip"></span>Stable</div>
+                    </a>
+
+                    <a href="tools/power-calculator/Power Unit Converter.html" class="instr-card instr-compact">
+                        <div class="mini-schematic mini-power" aria-hidden="true"></div>
+                        <div class="ic-icon icon-teal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        </div>
+                        <div class="ic-body">
+                            <h3 class="ic-title-sm">Power Unit Converter</h3>
+                            <p class="ic-desc-sm">dBm to watts and watts to dBm conversion</p>
+                        </div>
+                        <div class="ic-badge badge-stable badge-sm"><span class="badge-pip"></span>Stable</div>
+                    </a>
+
+                    <a href="https://5g-tools.com/4g-lte-throughput-calculator/" class="instr-card instr-compact" target="_blank" rel="noopener">
+                        <div class="mini-schematic mini-grid" aria-hidden="true"></div>
+                        <div class="ic-icon icon-cyan">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+                        </div>
+                        <div class="ic-body">
+                            <h3 class="ic-title-sm">LTE NR TP Calculator</h3>
+                            <p class="ic-desc-sm">External throughput calculator — opens new tab</p>
+                        </div>
+                        <div class="ic-badge badge-ext badge-sm"><span class="badge-pip"></span>External</div>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 4: THE PROCESS ═══════ -->
+        <section class="scroll-section process-section" id="process" data-section="process" data-theme="process">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Operating Flow</span>
+                </div>
+                <h2 class="section-title">From Field Question to Planning Evidence</h2>
+
+                <div class="process-flow">
+                    <div class="process-step" data-step="1">
+                        <div class="ps-marker">
+                            <span class="ps-num">I</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Choose Instrument</h3>
+                            <p class="ps-desc">Start from the calculator that matches the engineering question: tilt, pattern, map, or power unit.</p>
+                        </div>
+                        <div class="ps-line"></div>
+                    </div>
+                    <div class="process-step" data-step="2">
+                        <div class="ps-marker">
+                            <span class="ps-num">II</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Enter Parameters</h3>
+                            <p class="ps-desc">Load site data, antenna settings, building dimensions, or MSI inputs without leaving the local tool hub.</p>
+                        </div>
+                        <div class="ps-line"></div>
+                    </div>
+                    <div class="process-step" data-step="3">
+                        <div class="ps-marker">
+                            <span class="ps-num">III</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Compare Output</h3>
+                            <p class="ps-desc">Check beam landing, radiation shape, path-loss behavior, or map markup against the planning assumption.</p>
+                        </div>
+                        <div class="ps-line"></div>
+                    </div>
+                    <div class="process-step" data-step="4">
+                        <div class="ps-marker">
+                            <span class="ps-num">IV</span>
+                            <div class="ps-ring"></div>
+                        </div>
+                        <div class="ps-body">
+                            <h3 class="ps-title">Document Decision</h3>
+                            <p class="ps-desc">Carry the result into planning notes, field discussion, or a versioned experiment for later comparison.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </header>
+        </section>
 
-        <!-- MAIN -->
-        <main>
-
-            <!-- Planning Tools -->
-            <section class="tool-section" data-animate>
-                <div class="section-header">
-                    <div class="section-label"><span class="label-icon">⚡</span> Planning Tools</div>
-                    <p class="section-desc">Core calculation and visualization tools for radio network planning.</p>
+        <!-- ═══════ SECTION 5: EXPERIMENTAL ═══════ -->
+        <section class="scroll-section experimental-section" id="experimental" data-section="experimental" data-theme="experimental">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Experimental Bench</span>
                 </div>
-                <div class="cards-grid">
+                <h2 class="section-title">In Development</h2>
 
-                    <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="tool-card card-primary">
-                        <div class="card-glow"></div>
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-green">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
-                                        <path d="M13 13l6 6" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
-                            </div>
-                            <h2 class="card-title">Tilt Calculator <span class="version-tag">V5</span></h2>
-                            <p class="card-description">Add HBW/Building width to calculate beam width landing on the
-                                building front.</p>
-                            <div class="card-arrow">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
+                <div class="dev-list">
+                    <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html" class="dev-row">
+                        <span class="dev-ver">V6.1</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Tilt Calculator V6.1</span>
+                            <span class="dev-detail">Pixel RF Scope Console redesign with retro instrument styling</span>
                         </div>
+                        <span class="ic-badge badge-exp badge-sm"><span class="badge-pip"></span>Experimental</span>
                     </a>
-
-                    <a href="tools/antenna-msi-plotter/msi_plotter.html" class="tool-card card-primary">
-                        <div class="card-glow"></div>
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-lavender">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                                        <path d="M2 12h20" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
-                            </div>
-                            <h2 class="card-title">Antenna MSI Plotter</h2>
-                            <p class="card-description">Add HBW/Building width to calculate beam width landing on the
-                                building front.</p>
-                            <div class="card-arrow">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
+                    <a href="tools/tilt-calculator/v6/cell_coverage_calculator_v6.html" class="dev-row">
+                        <span class="dev-ver">V6</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Tilt Calculator V6</span>
+                            <span class="dev-detail">Radar Scope Planner for antenna tilt and 2D coverage</span>
                         </div>
+                        <span class="ic-badge badge-prev badge-sm"><span class="badge-pip"></span>Preview</span>
                     </a>
-
+                    <a href="tools/antenna-msi-plotter/v2/msi_plotter.html" class="dev-row">
+                        <span class="dev-ver">V2</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Antenna MSI Plotter V2</span>
+                            <span class="dev-detail">MSI Beam Observatory with refined radiation pattern workflow</span>
+                        </div>
+                        <span class="ic-badge badge-prev badge-sm"><span class="badge-pip"></span>Preview</span>
+                    </a>
+                    <a href="tools/power-calculator/Frequency_FSPL_Comparator.html" class="dev-row">
+                        <span class="dev-ver">FSPL</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Frequency FSPL Calculator</span>
+                            <span class="dev-detail">Free-space path loss comparison tool — active research</span>
+                        </div>
+                        <span class="ic-badge badge-wip badge-sm"><span class="badge-pip"></span>In Progress</span>
+                    </a>
+                    <a href="tools/custom-tools/test_python.html" class="dev-row">
+                        <span class="dev-ver">PY</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Test Python Page</span>
+                            <span class="dev-detail">Python integration testing — experimental stage</span>
+                        </div>
+                        <span class="ic-badge badge-wip badge-sm"><span class="badge-pip"></span>In Progress</span>
+                    </a>
+                    <a href="underdevelopment_blank.html" class="dev-row">
+                        <span class="dev-ver">--</span>
+                        <div class="dev-info">
+                            <span class="dev-name">Reserved Sandbox</span>
+                            <span class="dev-detail">Development sandbox for upcoming tool concepts</span>
+                        </div>
+                        <span class="ic-badge badge-wip badge-sm"><span class="badge-pip"></span>In Progress</span>
+                    </a>
                 </div>
-            </section>
-            <br>
-            <!-- Extra Tools -->
-            <section class="tool-section" data-animate>
-                <div class="section-header">
-                    <div class="section-label"><span class="label-icon">🛠</span> Extra Tools</div>
-                    <p class="section-desc">Supplementary utilities to power your workflow.</p>
-                </div>
-                <div class="cards-grid">
-
-                    <a href="tools/custom-tools/map_doodle.html" class="tool-card">
-                        <div class="card-glow"></div>
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-peach">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="3 11 22 2 13 21 11 13 3 11" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
-                            </div>
-                            <h2 class="card-title">Satellite Map Drawing</h2>
-                            <p class="card-description">Drawing & measurement tools with color palette, pen, ruler, and
-                                custom styling.</p>
-                            <div class="card-arrow">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="tools/power-calculator/Power Unit Converter.html" class="tool-card">
-                        <div class="card-glow"></div>
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-sky">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-stable"><span class="badge-dot"></span>Stable</div>
-                            </div>
-                            <h2 class="card-title">Power Unit Converter</h2>
-                            <p class="card-description">Precision tool for dBm to watts and watts to dBm power
-                                conversion.</p>
-                            <div class="card-arrow">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://5g-tools.com/4g-lte-throughput-calculator/" class="tool-card card-external"
-                        target="_blank" rel="noopener">
-                        <div class="card-glow card-glow-mint"></div>
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-mint">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect width="18" height="18" x="3" y="3" rx="2" />
-                                        <path d="M9 3v18M15 3v18M3 9h18M3 15h18" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-external"><span class="badge-dot"></span>External</div>
-                            </div>
-                            <h2 class="card-title">LTE NR TP Calculator</h2>
-                            <p class="card-description">Easy LTE/NR throughput calculator for single cell planning.
-                                Opens in new tab.</p>
-                            <div class="card-arrow card-arrow-external">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path
-                                        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
-                                </svg>
-                            </div>
-                        </div>
-                    </a>
-
-                </div>
-            </section>
-
-            <!-- Under Development -->
-            <br>
-            <section class="tool-section" data-animate>
-                <div class="section-header">
-                    <div class="section-label"><span class="label-icon">🔬</span> Under Development</div>
-                    <p class="section-desc">Tools currently being researched and engineered.</p>
-                </div>
-                <div class="cards-grid cards-grid-dev">
-
-                    <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html" class="tool-card card-dev">
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-amber">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 12h18" />
-                                        <path d="M6 7v10M12 4v16M18 8v8" />
-                                        <circle cx="6" cy="12" r="1.5" />
-                                        <circle cx="18" cy="12" r="1.5" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-dev"><span class="badge-dot"></span>Experimental</div>
-                            </div>
-                            <h2 class="card-title">Tilt Calculator <span class="version-tag">V6_1</span></h2>
-                            <p class="card-description">Pixel RF Scope Console redesign experiment with retro instrument
-                                styling and 2D planning workflow.</p>
-                        </div>
-                    </a>
-
-                    <a href="tools/tilt-calculator/v6/cell_coverage_calculator_v6.html" class="tool-card card-dev">
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-amber">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="3" />
-                                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-                                        <path d="M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M19.07 4.93l-2.12 2.12M7.05 16.95l-2.12 2.12" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-dev"><span class="badge-dot"></span>Preview</div>
-                            </div>
-                            <h2 class="card-title">Tilt Calculator <span class="version-tag">V6</span></h2>
-                            <p class="card-description">Radar Scope Planner preview for antenna tilt and 2D coverage
-                                visualization.</p>
-                        </div>
-                    </a>
-
-                    <a href="tools/antenna-msi-plotter/v2/msi_plotter.html" class="tool-card card-dev">
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-amber">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="9" />
-                                        <path d="M12 3v18M3 12h18" />
-                                        <path d="M7 7l10 10M17 7L7 17" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-dev"><span class="badge-dot"></span>Preview</div>
-                            </div>
-                            <h2 class="card-title">Antenna MSI Plotter <span class="version-tag">V2</span></h2>
-                            <p class="card-description">MSI Beam Observatory preview with celestial instrument styling and
-                                refined radiation pattern workflow.</p>
-                        </div>
-                    </a>
-
-                    <a href="tools/power-calculator/Frequency_FSPL_Comparator.html" class="tool-card card-dev">
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-amber">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path
-                                            d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-dev"><span class="badge-dot"></span>In Progress</div>
-                            </div>
-                            <h2 class="card-title">Frequency FSPL Calculator</h2>
-                            <p class="card-description">Power config calculation tool ? under active research and
-                                development.</p>
-                        </div>
-                    </a>
-
-                    <a href="tools/custom-tools/test_python.html" class="tool-card card-dev">
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-amber">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="16 18 22 12 16 6" />
-                                        <polyline points="8 6 2 12 8 18" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-dev"><span class="badge-dot"></span>In Progress</div>
-                            </div>
-                            <h2 class="card-title">Test Python Page</h2>
-                            <p class="card-description">Python integration testing environment ? experimental stage.</p>
-                        </div>
-                    </a>
-
-                    <a href="underdevelopment_blank.html" class="tool-card card-dev">
-                        <div class="card-inner">
-                            <div class="card-top">
-                                <div class="card-icon-wrap icon-amber">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                                        <line x1="3" x2="21" y1="9" y2="9" />
-                                        <line x1="3" x2="21" y1="15" y2="15" />
-                                        <line x1="9" x2="9" y1="3" y2="21" />
-                                        <line x1="15" x2="15" y1="3" y2="21" />
-                                    </svg>
-                                </div>
-                                <div class="card-badge badge-dev"><span class="badge-dot"></span>In Progress</div>
-                            </div>
-                            <h2 class="card-title">Blank Page 2</h2>
-                            <p class="card-description">Reserved development sandbox for upcoming tool concepts.</p>
-                        </div>
-                    </a>
-
-                </div>
-            </section>
-            <br>
-            <!-- Legacy -->
-            <section class="tool-section" data-animate>
-                <div class="section-header">
-                    <div class="section-label"><span class="label-icon">🗂</span> Legacy Versions</div>
-                    <p class="section-desc">Older versions kept for reference and backward compatibility.</p>
-                </div>
-                <div class="legacy-list">
-
-                    <a href="tools/tilt-calculator/v4/cell_coverage_calculator_v4.html" class="legacy-card">
-                        <div class="legacy-left">
-                            <span class="legacy-version">V4</span>
-                            <div>
-                                <div class="legacy-title">Tilt Calculator V4</div>
-                                <div class="legacy-desc">Black Theme UI + Adaptive picture scaling to site type.</div>
-                            </div>
-                        </div>
-                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
-                    </a>
-
-                    <a href="tools/tilt-calculator/v3/cell_coverage_calculator_v3.html" class="legacy-card">
-                        <div class="legacy-left">
-                            <span class="legacy-version">V3</span>
-                            <div>
-                                <div class="legacy-title">Tilt Calculator V3</div>
-                                <div class="legacy-desc">Black Theme UI + Adaptive picture scaling to site type.</div>
-                            </div>
-                        </div>
-                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
-                    </a>
-
-                    <a href="tools/tilt-calculator/v2/cell_coverage_calculator_v2.html" class="legacy-card">
-                        <div class="legacy-left">
-                            <span class="legacy-version">V2</span>
-                            <div>
-                                <div class="legacy-title">Tilt Calculator V2</div>
-                                <div class="legacy-desc">Fix drawing scaling + New UI + Macro/Small Cell switch button.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
-                    </a>
-
-                    <a href="tools/tilt-calculator/v1/cell_coverage_calculator_v1.html" class="legacy-card">
-                        <div class="legacy-left">
-                            <span class="legacy-version">V1</span>
-                            <div>
-                                <div class="legacy-title">Tilt Calculator V1</div>
-                                <div class="legacy-desc">Initial release ? picture rendering glitch resolved in V2.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-badge badge-legacy"><span class="badge-dot"></span>Legacy</div>
-                    </a>
-
-                </div>
-            </section>
-
-        </main>
-
-        <footer>
-            <div class="footer-inner">
-                <div class="footer-brand">Coverage Planning Tools</div>
-                <p class="footer-copy">&copy; 2026 Cell Coverage Planner Project. All rights reserved.</p>
             </div>
-        </footer>
+        </section>
+
+        <!-- ═══════ SECTION 6: VERSION TIMELINE ═══════ -->
+        <section class="scroll-section timeline-section" id="timeline" data-section="timeline" data-theme="timeline">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Version Timeline</span>
+                </div>
+                <h2 class="section-title">Instrument Lineage</h2>
+
+                <div class="timeline-stack">
+                    <div class="timeline-lane">
+                        <div class="timeline-lane-head">
+                            <span>Tilt Calculator</span>
+                            <span>beam landing / coverage geometry</span>
+                        </div>
+                        <div class="version-timeline timeline-tilt">
+                            <a href="tools/tilt-calculator/v1/cell_coverage_calculator_v1.html" class="timeline-node">
+                                <span class="tl-ver">V1</span>
+                                <span class="tl-copy">Initial release</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v2/cell_coverage_calculator_v2.html" class="timeline-node">
+                                <span class="tl-ver">V2</span>
+                                <span class="tl-copy">Scaling fix</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v3/cell_coverage_calculator_v3.html" class="timeline-node">
+                                <span class="tl-ver">V3</span>
+                                <span class="tl-copy">Dark UI branch</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v4/cell_coverage_calculator_v4.html" class="timeline-node">
+                                <span class="tl-ver">V4</span>
+                                <span class="tl-copy">Adaptive picture scaling</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v5/cell_coverage_calculator_v5.html" class="timeline-node tl-stable">
+                                <span class="tl-ver">V5</span>
+                                <span class="tl-copy">Stable calculator</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v6/cell_coverage_calculator_v6.html" class="timeline-node tl-preview">
+                                <span class="tl-ver">V6</span>
+                                <span class="tl-copy">Radar scope planner</span>
+                            </a>
+                            <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html" class="timeline-node tl-exp">
+                                <span class="tl-ver">V6.1</span>
+                                <span class="tl-copy">Pixel RF console</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="timeline-lane">
+                        <div class="timeline-lane-head">
+                            <span>MSI Plotter</span>
+                            <span>antenna radiation pattern visualization</span>
+                        </div>
+                        <div class="version-timeline timeline-msi">
+                            <a href="tools/antenna-msi-plotter/msi_plotter.html" class="timeline-node tl-stable">
+                                <span class="tl-ver">V1</span>
+                                <span class="tl-copy">Stable polar plotter</span>
+                            </a>
+                            <a href="tools/antenna-msi-plotter/v2/msi_plotter.html" class="timeline-node tl-preview">
+                                <span class="tl-ver">V2</span>
+                                <span class="tl-copy">MSI Beam Observatory</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 7: ARCHIVE & LEGACY ═══════ -->
+        <section class="scroll-section archive-section" id="archive" data-section="archive" data-theme="archive">
+            <div class="section-content">
+                <div class="section-label">
+                    <span class="label-glyph">&#9881;</span>
+                    <span>Archive Console</span>
+                </div>
+                <h2 class="section-title">System Status</h2>
+
+                <div class="console-panel">
+                    <div class="console-bar">
+                        <div class="cb-dots"><span class="cb-dot d-amber"></span><span class="cb-dot d-teal"></span><span class="cb-dot d-green"></span></div>
+                        <span class="cb-title">coverage_archive.status</span>
+                    </div>
+                    <div class="console-body">
+                        <div class="cr"><span class="cr-k">SYS.STATUS</span><span class="cr-v v-live">ONLINE</span><span class="cr-bar"><span class="cr-fill cr-fill-full"></span></span></div>
+                        <div class="cr"><span class="cr-k">ACTIVE.INSTR</span><span class="cr-v">4</span><span class="cr-bar"><span class="cr-fill" style="width:66%"></span></span></div>
+                        <div class="cr"><span class="cr-k">DEV.PIPELINE</span><span class="cr-v v-amber">5</span><span class="cr-bar"><span class="cr-fill cr-fill-amber" style="width:40%"></span></span></div>
+                        <div class="cr"><span class="cr-k">LEGACY.VER</span><span class="cr-v v-dim">4</span><span class="cr-bar"><span class="cr-fill cr-fill-dim" style="width:25%"></span></span></div>
+                        <div class="cr-sep"></div>
+                        <div class="cr"><span class="cr-k">TILT.CALC.V5</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">MSI.PLOTTER</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">MAP.DRAW</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">PWR.CONVERT</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                    </div>
+                </div>
+
+                <!-- Legacy Versions -->
+                <div class="legacy-block">
+                    <div class="legacy-header">Legacy Archive</div>
+                    <div class="legacy-list">
+                        <a href="tools/tilt-calculator/v4/cell_coverage_calculator_v4.html" class="legacy-row">
+                            <span class="legacy-ver">V4</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V4</span><span class="legacy-detail">Black Theme UI + Adaptive picture scaling</span></div>
+                        </a>
+                        <a href="tools/tilt-calculator/v3/cell_coverage_calculator_v3.html" class="legacy-row">
+                            <span class="legacy-ver">V3</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V3</span><span class="legacy-detail">Black Theme UI + Adaptive picture scaling</span></div>
+                        </a>
+                        <a href="tools/tilt-calculator/v2/cell_coverage_calculator_v2.html" class="legacy-row">
+                            <span class="legacy-ver">V2</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V2</span><span class="legacy-detail">Drawing scaling fix + Macro/Small Cell switch</span></div>
+                        </a>
+                        <a href="tools/tilt-calculator/v1/cell_coverage_calculator_v1.html" class="legacy-row">
+                            <span class="legacy-ver">V1</span>
+                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V1</span><span class="legacy-detail">Initial release — rendering glitch resolved in V2</span></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SECTION 8: FINAL CTA ═══════ -->
+        <section class="scroll-section cta-section" id="cta" data-section="cta" data-theme="cta">
+            <div class="section-content">
+                <div class="cta-ornament">
+                    <div class="cta-ring cta-ring-1"></div>
+                    <div class="cta-ring cta-ring-2"></div>
+                    <div class="cta-gem"></div>
+                </div>
+                <h2 class="cta-title">Launch Console Ready</h2>
+                <p class="cta-desc">Start with the stable instruments, or enter the experimental bench when you want to compare new interfaces.</p>
+                <a href="#planning" class="btn-brass">
+                    <span class="btn-shine"></span>
+                    <span class="btn-text"><span class="btn-glyph">&#9656;</span> Browse Instruments</span>
+                </a>
+            </div>
+        </section>
 
     </div>
 
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="site-footer">
+        <div class="footer-rule"></div>
+        <div class="footer-inner">
+            <span class="footer-brand">Coverage Planning Tools</span>
+            <span class="footer-sep">|</span>
+            <span class="footer-copy">&copy; 2026 Cell Coverage Planner Project. All rights reserved.</span>
+        </div>
+    </footer>
+
     <script>
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+    (function() {
+        'use strict';
+
+        // ─── SECTION VISIBILITY OBSERVER + ZONE TRANSITIONS ───
+        var sections = document.querySelectorAll('.scroll-section');
+        var atmoGradient = document.querySelector('.atmo-gradient');
+        var currentTheme = 'hero';
+
+        // Theme color map for atmospheric shifts
+        var themeColors = {
+            hero:         'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(15,25,50,0.9) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(45,138,138,0.04) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 20% 70%, rgba(201,168,76,0.03) 0%, transparent 60%)',
+            planning:     'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(232,149,46,0.05) 0%, transparent 60%)',
+            supplementary:'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(45,138,138,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(61,184,184,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(45,138,138,0.04) 0%, transparent 60%)',
+            process:      'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(120,60,180,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(200,60,100,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(120,60,180,0.05) 0%, transparent 60%)',
+            experimental: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232,149,46,0.12) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(212,146,10,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(232,149,46,0.05) 0%, transparent 60%)',
+            timeline:     'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(56,189,248,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(45,138,138,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(56,189,248,0.04) 0%, transparent 60%)',
+            archive:      'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(52,211,153,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(45,138,138,0.04) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(52,211,153,0.04) 0%, transparent 60%)',
+            cta:          'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(226,198,109,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(201,168,76,0.04) 0%, transparent 60%)'
+        };
+
+        // Warp flash element
+        var warpFlash = document.createElement('div');
+        warpFlash.className = 'warp-flash';
+        warpFlash.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(warpFlash);
+
+        var sectionObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+                    entry.target.classList.add('in-view');
+                    // Zone transition: shift atmospheric color
+                    var theme = entry.target.getAttribute('data-theme');
+                    if (theme && theme !== currentTheme && atmoGradient) {
+                        // Fire warp flash
+                        warpFlash.classList.remove('warp-fire');
+                        void warpFlash.offsetWidth; // reflow
+                        warpFlash.classList.add('warp-fire');
+                        currentTheme = theme;
+                        atmoGradient.style.background = themeColors[theme] || themeColors.hero;
+                    }
+                } else {
+                    entry.target.classList.remove('in-view');
                 }
             });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+        }, { threshold: 0.12, rootMargin: '-4% 0px -4% 0px' });
+        sections.forEach(function(s) { sectionObs.observe(s); });
+
+        // Smooth atmosphere gradient transitions
+        if (atmoGradient) {
+            atmoGradient.style.transition = 'background 1.2s cubic-bezier(0.25,0.46,0.45,0.94)';
+        }
+
+        // ─── GRAND CLOCK TICK MARKS ───
+        var clock = document.getElementById('grandClock');
+        if (clock) {
+            for (var i = 0; i < 12; i++) {
+                var tick = document.createElement('div');
+                tick.className = 'gc-tick';
+                tick.style.transform = 'rotate(' + (i * 30) + 'deg)';
+                clock.appendChild(tick);
+            }
+        }
+
+        // ─── STAR FIELD (CSS-only dots, generated once) ───
+        var starField = document.getElementById('starField');
+        if (starField) {
+            for (var i = 0; i < 80; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = (Math.random() * 100) + '%';
+                star.style.top = (Math.random() * 100) + '%';
+                var size = (0.5 + Math.random() * 2);
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDelay = (Math.random() * 6) + 's';
+                star.style.animationDuration = (2 + Math.random() * 4) + 's';
+                if (Math.random() > 0.7) star.style.background = '#c9a84c';
+                else if (Math.random() > 0.5) star.style.background = '#3db8b8';
+                starField.appendChild(star);
+            }
+        }
+
+        // ─── DUST PARTICLES ───
+        var dustField = document.getElementById('dustField');
+        if (dustField) {
+            for (var i = 0; i < 15; i++) {
+                var p = document.createElement('div');
+                p.className = 'dust';
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.top = (Math.random() * 100) + '%';
+                p.style.animationDelay = (Math.random() * 18) + 's';
+                p.style.animationDuration = (10 + Math.random() * 12) + 's';
+                var s = 1 + Math.random() * 2;
+                p.style.width = s + 'px';
+                p.style.height = s + 'px';
+                dustField.appendChild(p);
+            }
+        }
+
+        // ─── REAL CLOCK HANDS ───
+        function updateClock() {
+            var now = new Date();
+            var h = now.getHours() % 12;
+            var m = now.getMinutes();
+            var hd = (h * 30) + (m * 0.5);
+            var md = m * 6;
+            var hh = document.querySelector('.gc-hand-hour');
+            var mh = document.querySelector('.gc-hand-minute');
+            if (hh) hh.style.transform = 'rotate(' + hd + 'deg)';
+            if (mh) mh.style.transform = 'rotate(' + md + 'deg)';
+        }
+        updateClock();
+        setInterval(updateClock, 60000);
+
+        // ─── ORBITAL NAV (hover-based) ───
+        var onavItems = document.querySelectorAll('.onav-item');
+        var onavCurrentLabel = document.getElementById('onavCurrentLabel');
+
+        // Nav is now purely CSS hover-based - no click needed
+        // Just keep the nav observer for section highlighting
+
+        // Highlight active section in nav
+        var navObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                var sectionId = entry.target.getAttribute('data-section');
+                var navLink = document.querySelector('.onav-item[data-nav="' + sectionId + '"]');
+                if (navLink) {
+                    if (entry.isIntersecting) {
+                        navLink.classList.add('onav-current');
+                        if (onavCurrentLabel) {
+                            onavCurrentLabel.textContent = navLink.querySelector('.onav-label').textContent;
+                        }
+                    } else {
+                        navLink.classList.remove('onav-current');
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(function(s) { navObserver.observe(s); });
+
+    })();
     </script>
 
 </body>
-
 </html>

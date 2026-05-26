@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coverage Planning — Radio Engineering Archive</title>
-    <link rel="icon" type="image/x-icon" href="icon/tower.ico">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='4' fill='%23c9a84c'/%3E%3Cpath d='M8.5 23.5C5 20 5 12 8.5 8.5' stroke='%23c9a84c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M23.5 8.5C27 12 27 20 23.5 23.5' stroke='%23c9a84c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF46XXJ5V7"></script>
@@ -108,7 +108,7 @@
     <div class="scroll-container">
 
         <!-- ═══════ SECTION 1: HERO ═══════ -->
-        <section class="scroll-section hero-section" id="hero" data-section="hero">
+        <section class="scroll-section hero-section" id="hero" data-section="hero" data-theme="hero">
             <div class="section-content">
 
                 <!-- 3D Orbital System -->
@@ -122,7 +122,7 @@
                 </div>
 
                 <div class="hero-eyebrow">
-                    <span class="eyebrow-glyph">&#9200;</span>
+                    <span class="eyebrow-glyph"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.4"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.4"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></span>
                     Radio Engineering Archive
                 </div>
 
@@ -175,7 +175,7 @@
         </section>
 
         <!-- ═══════ SECTION 2: PLANNING INSTRUMENTS ═══════ -->
-        <section class="scroll-section instruments-section" id="planning" data-section="planning">
+        <section class="scroll-section instruments-section" id="planning" data-section="planning" data-theme="planning">
             <div class="section-content">
 
                 <div class="section-label">
@@ -243,9 +243,6 @@
                                             <feMergeNode in="SourceGraphic"></feMergeNode>
                                         </feMerge>
                                     </filter>
-                                    <clipPath id="msiChartClip">
-                                        <circle cx="66" cy="45" r="36"></circle>
-                                    </clipPath>
                                 </defs>
                                 <g transform="translate(66 45)">
                                     <circle class="polar-svg-ring polar-svg-ring-a" r="36"></circle>
@@ -255,10 +252,8 @@
                                     <line class="polar-svg-axis" x1="0" y1="-36" x2="0" y2="36"></line>
                                     <line class="polar-svg-guide" x1="0" y1="0" x2="-25" y2="-25"></line>
                                     <line class="polar-svg-guide" x1="0" y1="0" x2="25" y2="-25"></line>
-                                    <g clip-path="url(#msiChartClip)">
-                                        <path class="polar-svg-beam" d="M 0 0 C -6 -4, -15 -15, -25 -25 C -32 -18, -35 -8, -29 1 C -19 7, -8 4, 0 0 Z"></path>
-                                        <path class="polar-svg-beam" d="M 0 0 C 6 -4, 15 -15, 25 -25 C 32 -18, 35 -8, 29 1 C 19 7, 8 4, 0 0 Z"></path>
-                                    </g>
+                                    <path class="polar-svg-beam" d="M 0 0 C -4.8 -4.8, -11.4 -12.7, -19.3 -21.1 C -25.5 -27.7, -32.9 -21.9, -34.7 -13.6 C -36.9 -2.2, -29.0 4.4, -18.4 5.7 C -10.5 6.6, -4.0 3.5, 0 0 Z" fill="url(#msiBeamFill)" fill-opacity="0.95" stroke="rgba(245, 201, 107, 0.78)" stroke-width="1.4"></path>
+                                    <path class="polar-svg-beam" d="M 0 0 C 4.8 -4.8, 11.4 -12.7, 19.3 -21.1 C 25.5 -27.7, 32.9 -21.9, 34.7 -13.6 C 36.9 -2.2, 29.0 4.4, 18.4 5.7 C 10.5 6.6, 4.0 3.5, 0 0 Z" fill="url(#msiBeamFill)" fill-opacity="0.95" stroke="rgba(245, 201, 107, 0.78)" stroke-width="1.4"></path>
                                     <circle class="polar-svg-dash-ring" r="20"></circle>
                                     <circle class="polar-svg-origin-halo" r="4.4"></circle>
                                     <circle class="polar-svg-origin" r="2.1"></circle>
@@ -281,7 +276,7 @@
         </section>
 
         <!-- ═══════ SECTION 3: SUPPLEMENTARY INSTRUMENTS ═══════ -->
-        <section class="scroll-section supplementary-section" id="supplementary" data-section="supplementary">
+        <section class="scroll-section supplementary-section" id="supplementary" data-section="supplementary" data-theme="supplementary">
             <div class="section-content">
 
                 <div class="section-label">
@@ -332,7 +327,7 @@
         </section>
 
         <!-- ═══════ SECTION 4: THE PROCESS ═══════ -->
-        <section class="scroll-section process-section" id="process" data-section="process">
+        <section class="scroll-section process-section" id="process" data-section="process" data-theme="process">
             <div class="section-content">
                 <div class="section-label">
                     <span class="label-glyph">&#9881;</span>
@@ -389,7 +384,7 @@
         </section>
 
         <!-- ═══════ SECTION 5: EXPERIMENTAL ═══════ -->
-        <section class="scroll-section experimental-section" id="experimental" data-section="experimental">
+        <section class="scroll-section experimental-section" id="experimental" data-section="experimental" data-theme="experimental">
             <div class="section-content">
                 <div class="section-label">
                     <span class="label-glyph">&#9881;</span>
@@ -451,7 +446,7 @@
         </section>
 
         <!-- ═══════ SECTION 6: VERSION TIMELINE ═══════ -->
-        <section class="scroll-section timeline-section" id="timeline" data-section="timeline">
+        <section class="scroll-section timeline-section" id="timeline" data-section="timeline" data-theme="timeline">
             <div class="section-content">
                 <div class="section-label">
                     <span class="label-glyph">&#9881;</span>
@@ -518,7 +513,7 @@
         </section>
 
         <!-- ═══════ SECTION 7: ARCHIVE & LEGACY ═══════ -->
-        <section class="scroll-section archive-section" id="archive" data-section="archive">
+        <section class="scroll-section archive-section" id="archive" data-section="archive" data-theme="archive">
             <div class="section-content">
                 <div class="section-label">
                     <span class="label-glyph">&#9881;</span>
@@ -570,7 +565,7 @@
         </section>
 
         <!-- ═══════ SECTION 8: FINAL CTA ═══════ -->
-        <section class="scroll-section cta-section" id="cta" data-section="cta">
+        <section class="scroll-section cta-section" id="cta" data-section="cta" data-theme="cta">
             <div class="section-content">
                 <div class="cta-ornament">
                     <div class="cta-ring cta-ring-1"></div>
@@ -593,6 +588,7 @@
         <div class="footer-rule"></div>
         <div class="footer-inner">
             <span class="footer-brand">Coverage Planning Tools</span>
+            <span class="footer-sep">|</span>
             <span class="footer-copy">&copy; 2026 Cell Coverage Planner Project. All rights reserved.</span>
         </div>
     </footer>
@@ -601,18 +597,54 @@
     (function() {
         'use strict';
 
-        // ─── SECTION VISIBILITY OBSERVER ───
+        // ─── SECTION VISIBILITY OBSERVER + ZONE TRANSITIONS ───
         var sections = document.querySelectorAll('.scroll-section');
+        var atmoGradient = document.querySelector('.atmo-gradient');
+        var currentTheme = 'hero';
+
+        // Theme color map for atmospheric shifts
+        var themeColors = {
+            hero:         'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(15,25,50,0.9) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(45,138,138,0.04) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 20% 70%, rgba(201,168,76,0.03) 0%, transparent 60%)',
+            planning:     'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(232,149,46,0.05) 0%, transparent 60%)',
+            supplementary:'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(45,138,138,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(61,184,184,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(45,138,138,0.04) 0%, transparent 60%)',
+            process:      'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(120,60,180,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(200,60,100,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(120,60,180,0.05) 0%, transparent 60%)',
+            experimental: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232,149,46,0.12) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(212,146,10,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(232,149,46,0.05) 0%, transparent 60%)',
+            timeline:     'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(56,189,248,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(45,138,138,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(56,189,248,0.04) 0%, transparent 60%)',
+            archive:      'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(52,211,153,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(45,138,138,0.04) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(52,211,153,0.04) 0%, transparent 60%)',
+            cta:          'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(226,198,109,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(201,168,76,0.04) 0%, transparent 60%)'
+        };
+
+        // Warp flash element
+        var warpFlash = document.createElement('div');
+        warpFlash.className = 'warp-flash';
+        warpFlash.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(warpFlash);
+
         var sectionObs = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('in-view');
+                    // Zone transition: shift atmospheric color
+                    var theme = entry.target.getAttribute('data-theme');
+                    if (theme && theme !== currentTheme && atmoGradient) {
+                        // Fire warp flash
+                        warpFlash.classList.remove('warp-fire');
+                        void warpFlash.offsetWidth; // reflow
+                        warpFlash.classList.add('warp-fire');
+                        currentTheme = theme;
+                        atmoGradient.style.background = themeColors[theme] || themeColors.hero;
+                    }
                 } else {
                     entry.target.classList.remove('in-view');
                 }
             });
         }, { threshold: 0.12, rootMargin: '-4% 0px -4% 0px' });
         sections.forEach(function(s) { sectionObs.observe(s); });
+
+        // Smooth atmosphere gradient transitions
+        if (atmoGradient) {
+            atmoGradient.style.transition = 'background 1.2s cubic-bezier(0.25,0.46,0.45,0.94)';
+        }
 
         // ─── GRAND CLOCK TICK MARKS ───
         var clock = document.getElementById('grandClock');
@@ -676,43 +708,12 @@
         updateClock();
         setInterval(updateClock, 60000);
 
-        // ─── ORBITAL NAV ───
-        var onavCore = document.querySelector('.onav-core');
-        var onavMenu = document.getElementById('onavMenu');
+        // ─── ORBITAL NAV (hover-based) ───
         var onavItems = document.querySelectorAll('.onav-item');
         var onavCurrentLabel = document.getElementById('onavCurrentLabel');
-        var navOpen = false;
 
-        // Toggle menu on core click
-        if (onavCore && onavMenu) {
-            onavCore.addEventListener('click', function(e) {
-                e.stopPropagation();
-                navOpen = !navOpen;
-                onavMenu.classList.toggle('onav-open', navOpen);
-                onavCore.classList.toggle('onav-active', navOpen);
-                onavCore.setAttribute('aria-expanded', navOpen ? 'true' : 'false');
-            });
-
-            // Close on outside click
-            document.addEventListener('click', function(e) {
-                if (navOpen && !onavMenu.contains(e.target) && !onavCore.contains(e.target)) {
-                    navOpen = false;
-                    onavMenu.classList.remove('onav-open');
-                    onavCore.classList.remove('onav-active');
-                    onavCore.setAttribute('aria-expanded', 'false');
-                }
-            });
-
-            // Close after clicking a nav item
-            onavItems.forEach(function(item) {
-                item.addEventListener('click', function() {
-                    navOpen = false;
-                    onavMenu.classList.remove('onav-open');
-                    onavCore.classList.remove('onav-active');
-                    onavCore.setAttribute('aria-expanded', 'false');
-                });
-            });
-        }
+        // Nav is now purely CSS hover-based - no click needed
+        // Just keep the nav observer for section highlighting
 
         // Highlight active section in nav
         var navObserver = new IntersectionObserver(function(entries) {

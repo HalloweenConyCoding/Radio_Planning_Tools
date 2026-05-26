@@ -276,39 +276,49 @@ body {
     width: 100%;
     max-width: 1000px;
     opacity: 0;
-    transform: translateY(60px);
-    transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out);
+    transform: translateY(80px) scale(0.97);
+    transition: opacity 1s var(--ease-out), transform 1s var(--ease-out), filter 0.8s ease;
+    filter: blur(4px);
 }
 
-/* IN: slide up & fade in */
+/* IN: dramatic scale+blur reveal */
 .scroll-section.in-view .section-content {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
 }
 
-/* OUT: slide up & fade out */
+/* OUT: scale down + blur out */
 .scroll-section:not(.in-view) .section-content {
     opacity: 0;
-    transform: translateY(-40px);
-    transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+    transform: translateY(-50px) scale(0.96);
+    filter: blur(3px);
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), filter 0.5s ease;
 }
 
 .scroll-section:target .section-content {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
 }
 
-/* Section divider line between sections */
+/* Section divider: ornamental transition line */
 .scroll-section::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 80px;
+    width: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--brass-border), transparent);
-    opacity: 0.5;
+    background: linear-gradient(90deg, transparent, var(--brass-bright), var(--brass), transparent);
+    opacity: 0;
+    transition: width 1.2s var(--ease-out) 0.3s, opacity 0.8s ease 0.3s;
+}
+
+.scroll-section.in-view::after {
+    width: 120px;
+    opacity: 0.6;
 }
 
 .cta-section::after { display: none; }
@@ -414,16 +424,17 @@ body {
 }
 
 .eyebrow-glyph {
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
     color: var(--lantern);
-    text-shadow: 0 0 6px var(--lantern-glow);
+    filter: drop-shadow(0 0 4px var(--lantern-glow));
 }
 
 .hero-title {
     font-family: var(--font-display);
     font-size: clamp(3.2rem, 8vw, 6rem);
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     letter-spacing: -0.02em;
     color: var(--parchment);
     margin-bottom: 28px;
@@ -1489,7 +1500,9 @@ body {
     margin-right: auto;
 }
 
-.footer-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.footer-inner { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+.footer-sep { color: var(--text-dim); font-size: 0.6rem; opacity: 0.4; }
 
 .footer-brand { font-family: var(--font-tech); font-weight: 600; font-size: 0.75rem; color: var(--text-sec); letter-spacing: 0.15em; text-transform: uppercase; }
 .footer-copy { font-size: 0.72rem; color: var(--text-dim); }
@@ -1584,25 +1597,47 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Nav Menu (hidden by default) */
+/* Nav Menu (hover-based popup) */
 .onav-menu {
     position: absolute;
     left: 44px;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) translateX(-12px);
     display: flex;
     flex-direction: column;
     gap: 6px;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.35s var(--ease-out), visibility 0.35s;
+    transition: opacity 0.3s var(--ease-out), visibility 0.3s, transform 0.3s var(--ease-out);
 }
 
+/* Show on hover over the entire nav container */
+.orbital-nav:hover .onav-menu,
+.orbital-nav:focus-within .onav-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* Also activate the core dot when hovering */
+.orbital-nav:hover .onav-center-dot {
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.7);
+}
+
+/* Hide current label when menu is open */
+.orbital-nav:hover .onav-current-label {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+/* Legacy click-based open (keep for mobile) */
 .onav-menu.onav-open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
 }
 
 .onav-current-label {
@@ -1626,10 +1661,7 @@ body {
     box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
 }
 
-.onav-menu.onav-open + .onav-current-label,
-.onav-core.onav-active + .onav-current-label {
-    opacity: 0;
-}
+/* (hover handles label hiding now) */
 
 .onav-item {
     display: flex;
@@ -1690,21 +1722,44 @@ body {
     color: var(--brass);
 }
 
-/* ─── 24. REDUCED MOTION ─── */
+/* ─── 25. WARP FLASH ─── */
+.warp-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    background: radial-gradient(ellipse at center, rgba(226,198,109,0.15) 0%, transparent 70%);
+}
+
+.warp-flash.warp-fire {
+    animation: warp-pulse 0.8s ease-out forwards;
+}
+
+@keyframes warp-pulse {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ─── 26. REDUCED MOTION ─── */
 @media (prefers-reduced-motion: reduce) {
     .gc-ring, .cta-ring, .dust, .badge-pip, .cr-ind, .cta-gem,
     .orbital-plane, .orbital-orbit, .star, .nebula,
     .onav-ring,
-    .timeline-node::before {
+    .timeline-node::before,
+    .warp-flash {
         animation: none !important;
     }
     .section-content {
         transition: none !important;
         opacity: 1 !important;
         transform: none !important;
+        filter: none !important;
     }
     .scroll-hint { display: none !important; }
     .btn-shine { display: none !important; }
+    .warp-flash { display: none !important; }
 }
 
 /* ─── 24. RESPONSIVE ─── */

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatchon — HalloweenConyCoding</title>
+  <meta name="description" content="Telecom Engineer at AIS. Radio Planner. Developer. Building precision tools for RF network planning.">
+  <link rel="stylesheet" href="profile_style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ATMOSPHERE LAYER — Fixed background that crossfades
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="atmosphere" aria-hidden="true">
+    <!-- Library atmosphere (light) -->
+    <div class="atmosphere-library" id="atmosLib">
+
+      <!-- Deep library shadows & vignette -->
+      <div class="lib-shadows"></div>
+
+      <!-- Architectural arches (left wall) -->
+      <div class="lib-arches">
+        <div class="lib-arch" style="left: 2%; height: 85%;">
+          <div class="arch-window">
+            <div class="arch-light"></div>
+          </div>
+        </div>
+        <div class="lib-arch" style="left: 8%; height: 75%;">
+          <div class="arch-window">
+            <div class="arch-light dim"></div>
+          </div>
+        </div>
+        <div class="lib-arch" style="left: 14%; height: 70%;">
+          <div class="arch-window">
+            <div class="arch-light dim"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grand clock window (center-right) -->
+      <div class="clock-grand" id="clockGrand">
+        <div class="clock-grand-face">
+          <div class="clock-grand-ring"></div>
+          <div class="clock-grand-ring inner"></div>
+          <!-- Roman numeral markers -->
+          <div class="clock-mark m12">XII</div>
+          <div class="clock-mark m3">III</div>
+          <div class="clock-mark m6">VI</div>
+          <div class="clock-mark m9">IX</div>
+          <div class="clock-grand-hand hour"></div>
+          <div class="clock-grand-hand minute"></div>
+          <div class="clock-grand-center"></div>
+          <!-- Gear teeth around the clock -->
+          <div class="clock-gears" id="clockGears"></div>
+        </div>
+        <div class="clock-grand-glow"></div>
+      </div>
+
+      <!-- Dramatic sunbeams through the clock -->
+      <div class="sunbeams" id="sunbeams">
+        <div class="sunbeam main" style="left: 52%; transform: rotate(8deg); width: 160px; filter: blur(35px); opacity: 0.55;"></div>
+        <div class="sunbeam main" style="left: 58%; transform: rotate(12deg); width: 120px; filter: blur(30px); opacity: 0.45;"></div>
+        <div class="sunbeam" style="left: 42%; transform: rotate(-3deg); width: 80px; filter: blur(22px); opacity: 0.3;"></div>
+        <div class="sunbeam" style="left: 66%; transform: rotate(-8deg); width: 70px; filter: blur(20px); opacity: 0.25;"></div>
+        <div class="sunbeam scatter" style="left: 25%; transform: rotate(5deg); width: 50px; filter: blur(18px); opacity: 0.15;"></div>
+        <div class="sunbeam scatter" style="left: 78%; transform: rotate(-6deg); width: 40px; filter: blur(15px); opacity: 0.12;"></div>
+      </div>
+
+      <!-- Hanging lanterns -->
+      <div class="lib-lanterns">
+        <div class="lantern" style="left: 20%; top: 8%;">
+          <div class="lantern-chain"></div>
+          <div class="lantern-body">
+            <div class="lantern-glow"></div>
+          </div>
+        </div>
+        <div class="lantern" style="left: 45%; top: 5%;">
+          <div class="lantern-chain"></div>
+          <div class="lantern-body">
+            <div class="lantern-glow"></div>
+          </div>
+        </div>
+        <div class="lantern" style="left: 70%; top: 10%;">
+          <div class="lantern-chain"></div>
+          <div class="lantern-body">
+            <div class="lantern-glow dim"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Climbing vines -->
+      <div class="lib-vines">
+        <svg class="vine-svg vine-left" viewBox="0 0 200 600" preserveAspectRatio="none">
+          <path d="M180,0 C170,50 150,80 155,130 C160,180 140,200 145,260 C150,320 130,350 140,400 C150,450 135,500 145,600" fill="none" stroke="rgba(60,120,80,0.12)" stroke-width="3"/>
+          <path d="M155,130 C140,140 120,125 110,140" fill="none" stroke="rgba(60,120,80,0.08)" stroke-width="2"/>
+          <path d="M145,260 C125,270 110,255 100,265" fill="none" stroke="rgba(60,120,80,0.08)" stroke-width="2"/>
+          <path d="M140,400 C120,410 105,395 95,405" fill="none" stroke="rgba(60,120,80,0.08)" stroke-width="2"/>
+          <!-- Leaves -->
+          <ellipse cx="110" cy="138" rx="8" ry="4" fill="rgba(60,120,80,0.06)" transform="rotate(-30 110 138)"/>
+          <ellipse cx="100" cy="263" rx="8" ry="4" fill="rgba(60,120,80,0.06)" transform="rotate(-30 100 263)"/>
+          <ellipse cx="95" cy="403" rx="8" ry="4" fill="rgba(60,120,80,0.06)" transform="rotate(-30 95 403)"/>
+        </svg>
+        <svg class="vine-svg vine-right" viewBox="0 0 200 600" preserveAspectRatio="none">
+          <path d="M20,0 C30,60 50,100 45,160 C40,220 60,250 55,310 C50,370 70,400 60,460 C50,520 65,560 55,600" fill="none" stroke="rgba(60,120,80,0.10)" stroke-width="3"/>
+          <path d="M45,160 C65,170 80,155 90,165" fill="none" stroke="rgba(60,120,80,0.06)" stroke-width="2"/>
+          <path d="M55,310 C75,320 90,305 100,315" fill="none" stroke="rgba(60,120,80,0.06)" stroke-width="2"/>
+          <ellipse cx="90" cy="163" rx="8" ry="4" fill="rgba(60,120,80,0.05)" transform="rotate(30 90 163)"/>
+          <ellipse cx="100" cy="313" rx="8" ry="4" fill="rgba(60,120,80,0.05)" transform="rotate(30 100 313)"/>
+        </svg>
+      </div>
+
+      <!-- Bookshelf silhouettes -->
+      <div class="lib-shelves">
+        <div class="shelf shelf-left">
+          <div class="shelf-books">
+            <div class="shelf-book" style="height:55%; background:rgba(120,60,40,0.08);"></div>
+            <div class="shelf-book" style="height:65%; background:rgba(80,40,60,0.06);"></div>
+            <div class="shelf-book" style="height:50%; background:rgba(40,60,100,0.07);"></div>
+            <div class="shelf-book" style="height:70%; background:rgba(100,80,40,0.06);"></div>
+            <div class="shelf-book" style="height:45%; background:rgba(60,100,80,0.05);"></div>
+            <div class="shelf-book" style="height:60%; background:rgba(120,60,40,0.07);"></div>
+          </div>
+        </div>
+        <div class="shelf shelf-right">
+          <div class="shelf-books">
+            <div class="shelf-book" style="height:60%; background:rgba(100,40,40,0.06);"></div>
+            <div class="shelf-book" style="height:50%; background:rgba(40,60,120,0.07);"></div>
+            <div class="shelf-book" style="height:65%; background:rgba(80,80,40,0.05);"></div>
+            <div class="shelf-book" style="height:45%; background:rgba(60,40,80,0.06);"></div>
+            <div class="shelf-book" style="height:55%; background:rgba(120,60,40,0.07);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dust motes (generated by JS) -->
+      <div class="dust-field" id="dustField"></div>
+    </div>
+
+    <!-- Celestial atmosphere (dark) -->
+    <div class="atmosphere-celestial" id="atmosCel">
+      <!-- Star field (generated by JS) -->
+      <div class="star-field" id="starField"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════════════════════════════════ -->
+  <nav class="nav nav--library" id="mainNav" role="navigation" aria-label="Main navigation">
+    <div class="nav-logo">⚙️ HCC</div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#library" class="nav-link active" data-section="library">Library</a>
+      <a href="#celestial" class="nav-link" data-section="celestial">Archive</a>
+      <a href="#uncharted" class="nav-link" data-section="uncharted">Uncharted</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CONTENT
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="content-wrapper">
+
+    <!-- ─────────────────────────────────────────────────────────
+         SECTION 1: THE CLOCKWORK LIBRARY (LIGHT)
+         ───────────────────────────────────────────────────────── -->
+    <section id="library" class="section" aria-label="About Me — The Clockwork Library">
+      <div class="library-inner">
+
+        <!-- Hero -->
+        <div class="hero reveal">
+          <div class="section-label" style="color: var(--lib-golden);">The Clockwork Library</div>
+          <h1 class="hero-name">CHATCHON</h1>
+          <p class="hero-handle">@HalloweenConyCoding</p>
+          <p class="hero-tagline">Telecom Engineer &bull; Radio Planner &bull; Developer</p>
+          <p class="hero-subtitle">Building precision tools where gears meet code</p>
+        </div>
+
+        <!-- My Story -->
+        <div class="lib-card reveal reveal-delay-1">
+          <div class="lib-card-header">
+            <div class="lib-card-icon story">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <h2 class="lib-card-title">My Story</h2>
+          </div>
+          <p class="bio-text">
+            I graduated as a Telecommunication Student and stepped straight into the field I love. Today I work at <span class="highlight">AIS</span> (Advanced Info Service Public Company Limited) in Thailand, one of the country's largest mobile operators, where I focus on <span class="teal">4G and 5G</span> network planning and optimization.
+          </p>
+          <p class="bio-text">
+            My days revolve around cell coverage analysis, antenna configuration, and RF network planning. When I couldn't find tools that fit my team's workflow, I built them myself. That's how the <span class="highlight">Radio Planning Tools</span> project was born, starting from a simple tilt calculator and growing into a full suite of engineering instruments.
+          </p>
+          <p class="bio-text">
+            Beyond telecom, I explore Python development, data visualization with QGIS and Power BI, and experiment with Rust and JavaScript. I believe the best tools come from <span class="teal">people who actually use them</span>.
+          </p>
+        </div>
+
+        <!-- Skills -->
+        <div class="lib-card reveal reveal-delay-2">
+          <div class="lib-card-header">
+            <div class="lib-card-icon skills">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <h2 class="lib-card-title">Skills &amp; Tools</h2>
+          </div>
+          <div class="skills-grid">
+            <div class="skill-item">
+              <span class="skill-label">RF Planning</span>
+              <span class="skill-value">4G/5G Network Planning &amp; Optimization</span>
+            </div>
+            <div class="skill-item">
+              <span class="skill-label">Languages</span>
+              <span class="skill-value">Python, JavaScript, Rust, PowerShell</span>
+            </div>
+            <div class="skill-item">
+              <span class="skill-label">Visualization</span>
+              <span class="skill-value">QGIS, Power BI, TIBCO Spotfire</span>
+            </div>
+            <div class="skill-item">
+              <span class="skill-label">Engineering</span>
+              <span class="skill-value">Cell Coverage &amp; Antenna Analysis</span>
+            </div>
+            <div class="skill-item">
+              <span class="skill-label">Web Dev</span>
+              <span class="skill-value">HTML, CSS, GitHub Pages</span>
+            </div>
+            <div class="skill-item">
+              <span class="skill-label">Workplace</span>
+              <span class="skill-value">AIS — Advanced Info Service, Thailand</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="lib-card reveal reveal-delay-3">
+          <div class="lib-card-header">
+            <div class="lib-card-icon links">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <h2 class="lib-card-title">Connect</h2>
+          </div>
+          <div class="social-links">
+            <a href="https://github.com/HalloweenConyCoding" target="_blank" rel="noopener noreferrer" class="social-link github" aria-label="GitHub profile">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/chatchon-prajayapipatana/" target="_blank" rel="noopener noreferrer" class="social-link linkedin" aria-label="LinkedIn profile">
+              <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────
+         SECTION 2: THE CELESTIAL ARCHIVE (DARK)
+         ───────────────────────────────────────────────────────── -->
+    <section id="celestial" class="section" aria-label="Projects — The Celestial Archive">
+      <div class="celestial-inner">
+
+        <!-- Orbital decoration -->
+        <div class="orbital-system reveal" id="orbitalSystem">
+          <div class="orbital-ring r1"></div>
+          <div class="orbital-ring r2"></div>
+          <div class="orbital-ring r3"></div>
+          <div class="orbital-core"></div>
+          <div class="orbital-dot d1"></div>
+          <div class="orbital-dot d2"></div>
+        </div>
+
+        <div class="celestial-title reveal reveal-delay-1">
+          <div class="section-label" style="color: var(--cel-brass);">The Celestial Archive</div>
+          <h2>Projects</h2>
+        </div>
+
+        <!-- Featured Project -->
+        <div class="project-grid">
+          <div class="cel-card featured reveal reveal-delay-2">
+            <div class="cel-card-header">
+              <h3 class="cel-card-title">Radio Planning Tools</h3>
+              <span class="cel-card-status active">● ACTIVE</span>
+            </div>
+            <p class="cel-card-desc">
+              A comprehensive suite of precision instruments for cell coverage analysis, antenna pattern visualization, and RF network planning. Built from real-world telecom engineering needs.
+            </p>
+            <div class="cel-card-stats">
+              <div class="cel-stat">
+                <span class="cel-stat-dot live"></span>
+                <span class="cel-stat-text">4 Live</span>
+              </div>
+              <div class="cel-stat">
+                <span class="cel-stat-dot dev"></span>
+                <span class="cel-stat-text">5 In Dev</span>
+              </div>
+            </div>
+            <a href="https://halloweenconycoding.github.io/Radio_Planning_Tools/" target="_blank" rel="noopener noreferrer" class="cel-card-link">
+              Explore the Archive
+              <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Dormant Projects -->
+        <div class="dormant-grid">
+          <div class="dormant-card reveal reveal-delay-3">
+            <div class="dormant-card-icon">🔭</div>
+            <div class="dormant-card-title">Project II</div>
+            <div class="dormant-card-text">Awaiting discovery</div>
+          </div>
+          <div class="dormant-card reveal reveal-delay-4">
+            <div class="dormant-card-icon">🧭</div>
+            <div class="dormant-card-title">Project III</div>
+            <div class="dormant-card-text">Charting course</div>
+          </div>
+          <div class="dormant-card reveal reveal-delay-5">
+            <div class="dormant-card-icon">🌌</div>
+            <div class="dormant-card-title">Project IV</div>
+            <div class="dormant-card-text">Beyond the horizon</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────
+         SECTION 3: THE UNCHARTED REALM (MUTED)
+         ───────────────────────────────────────────────────────── -->
+    <section id="uncharted" class="section" aria-label="Entertainment — The Uncharted Realm">
+      <div class="uncharted-inner">
+
+        <div class="uncharted-rings reveal">
+          <div class="uncharted-ring ur1"></div>
+          <div class="uncharted-ring ur2"></div>
+          <div class="uncharted-ring ur3"></div>
+          <div class="uncharted-ring ur4"></div>
+        </div>
+
+        <h2 class="uncharted-title reveal reveal-delay-1">The Uncharted Realm</h2>
+        <div class="uncharted-badge reveal reveal-delay-2">Coming Soon</div>
+        <p class="uncharted-desc reveal reveal-delay-3">
+          This realm lies beyond the mapped stars. A place for creative pursuits, experiments, and entertainment yet to be defined. Return when the constellations align.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────
+         FOOTER
+         ───────────────────────────────────────────────────────── -->
+    <footer class="footer" role="contentinfo">
+      <p class="footer-text">
+        &copy; 2025 <a href="https://github.com/HalloweenConyCoding" target="_blank" rel="noopener noreferrer">HalloweenConyCoding</a>
+        &nbsp;&middot;&nbsp; Crafted with gears &amp; starlight
+      </p>
+    </footer>
+
+  </div><!-- /content-wrapper -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+    'use strict';
+
+    /* ── DOM References ────────────────────────────────────── */
+    const atmosLib    = document.getElementById('atmosLib');
+    const atmosCel    = document.getElementById('atmosCel');
+    const starField   = document.getElementById('starField');
+    const dustField   = document.getElementById('dustField');
+    const mainNav     = document.getElementById('mainNav');
+    const navLinks    = document.getElementById('navLinks');
+    const navToggle   = document.getElementById('navToggle');
+    const clockGrand  = document.getElementById('clockGrand');
+    const clockGears  = document.getElementById('clockGears');
+    const sections    = document.querySelectorAll('.section');
+    const navAnchors  = document.querySelectorAll('.nav-link');
+
+    /* ── Scroll-driven Atmosphere Blend ────────────────────── */
+    // Calculate how much of each atmosphere to show based on scroll position.
+    // The transition happens smoothly over ~40vh around the section boundary.
+
+    let ticking = false;
+
+    function updateAtmosphere() {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+      const docH = document.documentElement.scrollHeight;
+
+      // Determine blend ratio:
+      // 0 = fully library (light), 1 = fully celestial (dark)
+      // We want a smooth transition starting when we're leaving the library
+      // and completing when we're well into the celestial section.
+
+      const libSection  = document.getElementById('library');
+      const celSection  = document.getElementById('celestial');
+      const uncSection  = document.getElementById('uncharted');
+
+      const libBottom   = libSection.offsetTop + libSection.offsetHeight;
+      const celTop      = celSection.offsetTop;
+      const celMid      = celSection.offsetTop + celSection.offsetHeight * 0.4;
+      const uncTop      = uncSection.offsetTop;
+
+      let blend = 0;
+
+      if (scrollY + vh < libBottom - vh * 0.3) {
+        // Deep in library — full light
+        blend = 0;
+      } else if (scrollY < celMid) {
+        // Transition zone — gradually darken
+        const transStart = libBottom - vh * 0.3;
+        const transEnd   = celMid;
+        const progress   = Math.max(0, (scrollY - transStart) / (transEnd - transStart));
+        blend = Math.min(1, Math.max(0, progress));
+        // Use an ease-in-out curve for smoothness
+        blend = blend < 0.5
+          ? 2 * blend * blend
+          : 1 - Math.pow(-2 * blend + 2, 2) / 2;
+      } else {
+        blend = 1;
+      }
+
+      // For the uncharted section, keep dark but slightly shift
+      let unchartedBlend = 0;
+      if (scrollY + vh * 0.5 > uncTop) {
+        unchartedBlend = Math.min(1, (scrollY + vh * 0.5 - uncTop) / (vh * 0.5));
+      }
+
+      atmosLib.style.opacity = 1 - blend;
+      atmosCel.style.opacity = blend;
+
+      // Subtle parallax on grand clock
+      if (clockGrand) {
+        const parallaxY = scrollY * 0.08;
+        const parallaxX = scrollY * 0.03;
+        clockGrand.style.transform = `translate(${parallaxX}px, ${parallaxY}px)`;
+      }
+
+      // Subtle parallax on sunbeams
+      const sunbeams = document.getElementById('sunbeams');
+      if (sunbeams) {
+        sunbeams.style.transform = `translateY(${scrollY * 0.08}px)`;
+      }
+
+      ticking = false;
+    }
+
+    function requestAtmosphereUpdate() {
+      if (!ticking) {
+        requestAnimationFrame(updateAtmosphere);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', requestAtmosphereUpdate, { passive: true });
+    window.addEventListener('resize', requestAtmosphereUpdate, { passive: true });
+
+    /* ── Star Field Generation ─────────────────────────────── */
+    function generateStars(count) {
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 2.5 + 0.5;
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const duration = Math.random() * 4 + 2;
+        const delay = Math.random() * 5;
+        star.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}%;
+          top: ${y}%;
+          opacity: ${Math.random() * 0.5 + 0.2};
+          animation: twinkle ${duration}s ease-in-out ${delay}s infinite;
+        `;
+        frag.appendChild(star);
+      }
+      starField.appendChild(frag);
+    }
+
+    generateStars(120);
+
+    /* ── Dust Mote Generation ──────────────────────────────── */
+    function generateDustMotes(count) {
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < count; i++) {
+        const mote = document.createElement('div');
+        mote.className = 'dust-mote';
+        const size = Math.random() * 4 + 2;
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const dx = (Math.random() - 0.5) * 80;
+        const dy = -(Math.random() * 60 + 20);
+        const duration = Math.random() * 12 + 8;
+        const delay = Math.random() * 10;
+        mote.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}%;
+          top: ${y}%;
+          --dx: ${dx}px;
+          --dy: ${dy}px;
+          animation: dust-float ${duration}s ease-in-out ${delay}s infinite;
+        `;
+        frag.appendChild(mote);
+      }
+      dustField.appendChild(frag);
+    }
+
+    generateDustMotes(60);
+
+    /* ── Clock Gear Teeth Generation ───────────────────────── */
+    function generateGears() {
+      if (!clockGears) return;
+      const count = 24;
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < count; i++) {
+        const gear = document.createElement('div');
+        gear.className = 'gear-tooth';
+        const angle = (360 / count) * i;
+        gear.style.transform = `rotate(${angle}deg)`;
+        frag.appendChild(gear);
+      }
+      clockGears.appendChild(frag);
+    }
+
+    generateGears();
+
+    /* ── IntersectionObserver — Section Detection ──────────── */
+    const sectionColors = {
+      library:   'nav--library',
+      celestial: 'nav--celestial',
+      uncharted: 'nav--uncharted'
+    };
+
+    let currentSection = 'library';
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          if (id && sectionColors[id]) {
+            currentSection = id;
+            // Update nav class
+            mainNav.className = 'nav ' + sectionColors[id];
+            // Update active link
+            navAnchors.forEach(a => {
+              a.classList.toggle('active', a.dataset.section === id);
+            });
+          }
+        }
+      });
+    }, {
+      threshold: 0.3,
+      rootMargin: '-10% 0px -10% 0px'
+    });
+
+    sections.forEach(s => sectionObserver.observe(s));
+
+    /* ── Scroll-reveal (IntersectionObserver) ──────────────── */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    /* ── Smooth Scroll for Nav Links ───────────────────────── */
+    navAnchors.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = a.getAttribute('href').slice(1);
+        const target = document.getElementById(targetId);
+        if (target) {
+          const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 64;
+          const y = target.offsetTop - navH;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+        // Close mobile nav
+        navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    /* ── Mobile Nav Toggle ─────────────────────────────────── */
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    /* ── Initial Call ──────────────────────────────────────── */
+    updateAtmosphere();
+
+  })();
+  </script>
+
+</body>
+</html>

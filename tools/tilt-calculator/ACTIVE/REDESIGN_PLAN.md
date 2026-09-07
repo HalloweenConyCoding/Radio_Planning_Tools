@@ -1,6 +1,6 @@
 # TILT_CAL editorial redesign proposal
 
-Status: Stage 2 background correction approved and in implementation. Stop before any Stage 3 work.
+Status: Stage 3 implementation complete and awaiting final user visual review. Idle-motion visibility issue is recorded and deferred by user; Stage 3 remains the final implementation stage.
 
 ## Approval and dispatch log
 
@@ -8,11 +8,13 @@ Status: Stage 2 background correction approved and in implementation. Stop befor
 - 2026-09-07: User approved Stage 2 with “nice go”. ORIN dispatched Stage 2 implementation to Luna under Astra supervision. Stage 3 remains pending.
 - 2026-09-07: User requested a targeted Stage 2 background correction: replace the nearly invisible cream layer with visible multilayer editorial components moving at distinct bounded scroll rates. Correction is approved within Stage 2; no browser work is authorized under the existing URL security block.
 - 2026-09-07: User approved a bounded Stage 2 ambient/refinement pass: add calm idle drift to at most two decorative layers, pause it when hidden or reduced, add calculate arrow feedback and a neutral one-shot results update cue, and keep Stage 3 paused.
+- 2026-09-08: User approved Stage 3 (“continue Stage3”) and explicitly deferred the user-observed lack of visible idle motion. ORIN dispatched responsive polish and final static verification to Luna under Astra supervision; no idle-motion tuning is included in this stage.
 - Scope guard: edit only `cell_coverage_calculator.html`, `cell_coverage_calculator_style.css`, presentation-only `tilt_calculator_motion.js`, this plan, and Stage 1/Stage 2 QA/baseline artifacts within `ACTIVE`.
 - Stage 2 checklist before implementation: preserve Stage 1 edits and baseline; keep all original inline analytics/application scripts byte-for-byte unchanged; preserve IDs, input defaults/steps, radios, `onclick="calculate()"`, `#results`, and 800x500 canvas; add only presentation-only motion behavior; keep content visible if JS fails; respect reduced motion and normal scrolling; add actual-control hover/focus states without false result/documentation affordances.
 - Stage 2 completion gate: verify motion script syntax and DOM contracts, exercise reduced-motion and observer/scheduling fallback stubs, record browser visual review limitation, then pause for Stage 3 approval.
 - Stage 2 correction checklist before implementation: preserve V7 title/shiny8s and Stage 1 baseline; keep all original inline scripts byte-for-byte unchanged; retain passive normal scroll; add 2–3 visible pointer-transparent background layers with distinct rates, safe overscan, and no text obstruction; keep reduced-motion composition static; verify layer shifts and limits with stubs.
 - Stage 2 ambient checklist before implementation: compose idle drift on nested decorative pseudo-elements so parallax transforms remain intact; cap idle motion to two background layers and a few pixels over 18–30 seconds; pause on hidden/reduced states; keep button feedback keyboard-equivalent; observe `#results` presentation-only with one coalesced neutral cue and no output mutation; verify observer cleanup and preference/visibility toggles.
+- Stage 3 checklist before implementation: preserve V7/Shiny 8s, Stage 1/2 visual direction, all inline scripts, exact input/radio defaults and steps, `onclick`, and 800x500 canvas; fix <=390/320 masthead and switch containment; preserve tablet field pairs; ensure mobile numeric text is at least 16px and touch targets/focus remain clear; wrap long results; keep canvas aspect ratio/scaling and overflow safe; record idle visibility as unresolved/deferred; run static/Node DOM and contract checks without browser claims.
 - Stage 1 checklist before implementation: preserve/hash originals; capture default result; keep inline app script byte-for-byte unchanged; preserve IDs, input defaults/steps, radios, `onclick="calculate()"`, `#results`, and 800x500 canvas; add local Shiny Text hook; implement editorial tokens, typography, hierarchy, responsive foundation, and basic focus usability.
 - Stage 1 completion gate: capture desktop 1440px and mobile 390px screenshots, inspect overflow, verify representative Macro/Small/building/invalid-height behavior, record evidence below, then pause for Stage 2 approval.
 
@@ -81,4 +83,13 @@ Tune breakpoints, canvas scaling, long-result wrapping, mobile order, contrast, 
 - Content remains visible if the motion script fails, IntersectionObserver is unavailable or throws, or reduced motion is enabled/toggled. The lower documentation section is the only progressive reveal target; keyboard focus within it forces visibility.
 - Both original inline scripts, protected DOM/input/canvas contracts, and Stage 1 calculator behavior remain unchanged. No browser visual confirmation was performed under the established URL security policy.
 - 2026-09-07 targeted Stage 2 background correction: strengthened the backdrop into visible grain, offset paper planes, cobalt contour arcs, and drafting ticks with distinct bounded rates. The stronger composition is awaiting user visual review; no Stage 3 work has started.
+- 2026-09-08 targeted Stage 2 ambient refinement: added calm idle drift to exactly two nested paper shapes, paused on hidden/reduced states; added calculate arrow feedback and one neutral coalesced results cue with timer cleanup. Existing parallax composition remains intact. Node stubs pass; browser visual confirmation remains pending.
 - Resume instructions: obtain explicit Stage 3 approval, reread this plan and `QA_STAGE2.md`, inspect current edits, then perform only Stage 3 responsive polish and final verification. Do not begin Stage 3 yet.
+
+## Stage 3 completion evidence
+
+- 2026-09-08: User approved Stage 3 and explicitly deferred the reported lack of visible idle motion. Responsive polish and final static verification are complete; detailed evidence is in `QA_STAGE3.md`.
+- Tablet and mobile safeguards now cover paired fields at 681–900px, stacked 16px inputs with 44px touch targets below 680px, masthead/switch containment at 390px/320px, long-result wrapping, and aspect-safe canvas scaling.
+- Both original inline scripts, exact input tags, exact canvas tag, V7/Shiny 8s title, and Stage 2 presentation behavior remain unchanged. CSS structure and Node syntax checks pass. Existing baseline-vs-final calculator harness evidence remains in `QA_STAGE1.md`.
+- Browser visual confirmation remains unavailable under the established URL security policy, so final desktop/mobile appearance awaits user review. No idle-motion tuning or other work beyond Stage 3 responsive/accessibility polish was performed.
+- Final resume state: review `QA_STAGE3.md` and the current `ACTIVE` files, then obtain final user visual sign-off. Stage 3 is complete; no further implementation stage is planned.

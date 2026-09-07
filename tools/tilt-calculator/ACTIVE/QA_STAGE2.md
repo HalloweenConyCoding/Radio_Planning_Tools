@@ -22,3 +22,13 @@ Date: 2026-09-07
 
 - Browser visual confirmation remains pending. Per the established browser policy, no localhost/file workaround or further browser automation was used in Stage 2. The user should review desktop and mobile motion, hover, and reduced-motion appearance.
 - Stage 2 is complete and awaiting review. Final visual confirmation of the stronger layered composition remains pending. Stage 3 responsive polish and final verification remain pending explicit approval.
+
+## Ambient/component refinement
+
+Date: 2026-09-08
+
+- Work resumed from clean tracked `HEAD98d6e01` after the prior Stage 2 commit. The idle CSS drift and component feedback code were already saved; this resumed pass validated that code and updated the evidence, rather than claiming new code edits. It confirms exactly two recognizable paper plane pseudo-elements, 26s and 22s, with 9–10px motion and intact outer parallax transforms.
+- Calculate arrow feedback is keyboard-equivalent across focus/press and fine-pointer hover. Results use one neutral 240ms `results-updated` cue driven by a presentation-only `MutationObserver`; result content and inline output HTML are never changed.
+- Node stubs verify one cue per coalesced mutation batch, rapid update timer cancellation, hidden-state ambient pause and pending-frame cancellation, reduced-motion initialization/toggle cleanup, and observer recreation after motion resumes.
+- Astra independently reran the Node VM stubs and confirmed the same behavior: batched results produce one timer, rapid callbacks replace the prior timer, hidden visibility clears timer/class and pauses ambient motion, hidden callbacks produce no cue, visibility resume allows cues, and reduced-motion toggling disconnects observers, clears cues, and removes scroll handling.
+- Idle drift is disabled by reduced-motion CSS/class state and ambient animations pause when the document is hidden. Browser visual confirmation remains pending under the established URL security policy. Stage 3 remains paused.

@@ -1,0 +1,18 @@
+import CurvedLoop from './CurvedLoop';
+
+// Basic usage
+<CurvedLoop marqueeText="Welcome to React Bits ✦" />
+
+// With custom props
+<CurvedLoop 
+  marqueeText="Be ✦ Creative ✦ With ✦ React ✦ Bits ✦"
+  speed={0.5}
+  curveAmount={120}
+  direction="right"
+  interactive
+  className="custom-text-style"
+/>
+
+// Non-interactive with slower speed
+<CurvedLoop 
+/>

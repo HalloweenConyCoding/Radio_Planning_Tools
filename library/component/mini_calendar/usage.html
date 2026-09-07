@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cony Mini Calendar Usage</title>
+  <link rel="stylesheet" href="./mini-calendar.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #0f0f10;
+      color: #f3f3f3;
+      font: 14px/1.5 "Segoe UI", sans-serif;
+    }
+
+    .demo-shell {
+      width: min(520px, calc(100vw - 32px));
+      padding: 24px;
+      border: 1px solid #2b2b2b;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #1a1a1b, #121213);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .demo-shell h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .demo-shell p {
+      margin: 0 0 18px;
+      color: #b5b5b5;
+    }
+
+    .demo-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .demo-actions button {
+      border: 1px solid #3d3d3d;
+      border-radius: 999px;
+      background: #202022;
+      color: #f3f3f3;
+      padding: 9px 14px;
+      cursor: pointer;
+    }
+
+    pre {
+      margin: 16px 0 0;
+      padding: 12px;
+      border-radius: 14px;
+      background: #111112;
+      border: 1px solid #252527;
+      color: #d6d6d6;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-shell">
+    <h1>Cony Mini Calendar</h1>
+    <p>Local file usage example for <code>window.ConyMiniCalendar.mount(...)</code>.</p>
+    <div id="mini-calendar-host"></div>
+    <div class="demo-actions">
+      <button id="read-value" type="button">Read getValue()</button>
+      <button id="set-value" type="button">Set 2026-07-16 23:59</button>
+      <button id="destroy-value" type="button">Destroy</button>
+    </div>
+    <pre id="output">Waiting for changes…</pre>
+  </div>
+
+  <script src="./mini-calendar.js"></script>
+  <script>
+    const output = document.getElementById('output');
+    const host = document.getElementById('mini-calendar-host');
+
+    const controller = window.ConyMiniCalendar.mount(host, {
+      date: '2026-07-16',
+      time: '09:30',
+      onChange(value) {
+        output.textContent = 'onChange: ' + JSON.stringify(value, null, 2);
+      }
+    });
+
+    document.getElementById('read-value').addEventListener('click', () => {
+      output.textContent = 'getValue: ' + JSON.stringify(controller.getValue(), null, 2);
+    });
+
+    document.getElementById('set-value').addEventListener('click', () => {
+      controller.setValue({ date: '2026-07-16', time: '23:59' });
+      output.textContent = 'setValue: ' + JSON.stringify(controller.getValue(), null, 2);
+    });
+
+    document.getElementById('destroy-value').addEventListener('click', () => {
+      controller.destroy();
+      output.textContent = 'destroy(): host cleared';
+    });
+  </script>
+</body>
+</html>

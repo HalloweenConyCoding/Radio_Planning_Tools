@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Border Glow — Single Card</title>
+<style>
+  :root {
+    --page-bg: #08060b;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--page-bg);
+    color: #fff;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Stage layout — center the card on a big empty canvas so you can
+     move the cursor around it from any side. */
+  .stage {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 6rem 2rem;
+  }
+
+  .hint {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.45);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ============================================================
+     BorderGlow card
+     ============================================================ */
+  .border-glow-card {
+    /* Runtime CSS vars (driven by JS) */
+    --edge-proximity: 0;          /* 0..100, 100 = on the border */
+    --cursor-angle: 45deg;        /* direction from card center to cursor */
+
+    /* Tunable config (mirror the React props) */
+    --edge-sensitivity: 30;       /* distance (in px-ish units) over which glow fades */
+    --color-sensitivity: calc(var(--edge-sensitivity) + 20);
+    --border-radius: 28px;
+    --glow-padding: 40px;
+    --cone-spread: 25;
+    --fill-opacity: 0.5;
+
+    --card-bg: #120F17;
+
+    position: relative;
+    border-radius: var(--border-radius);
+    isolation: isolate;
+    transform: translate3d(0, 0, 0.01px);
+    display: grid;
+    border: 1px solid rgb(255 255 255 / 15%);
+    background: var(--card-bg);
+    overflow: visible;
+    box-shadow:
+      rgba(0,0,0,0.10) 0px 1px 2px,
+      rgba(0,0,0,0.10) 0px 2px 4px,
+      rgba(0,0,0,0.10) 0px 4px 8px,
+      rgba(0,0,0,0.10) 0px 8px 16px,
+      rgba(0,0,0,0.10) 0px 16px 32px,
+      rgba(0,0,0,0.10) 0px 32px 64px;
+
+    width: min(440px, 90vw);
+  }
+
+  /* Three layering pseudo-elements, same as the React version */
+  .border-glow-card::before,
+  .border-glow-card::after,
+  .border-glow-card > .edge-light {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transition: opacity 0.25s ease-out;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Fade out gently when proximity is ~0 */
+  .border-glow-card.idle::before,
+  .border-glow-card.idle::after,
+  .border-glow-card.idle > .edge-light {
+    opacity: 0;
+    transition: opacity 0.75s ease-in-out;
+  }
+
+  /* ---------- Layer 1: colored mesh-gradient BORDER ---------- */
+  .border-glow-card::before {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--card-bg) 0 100%) padding-box,
+      linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
+      var(--gradient-one,   radial-gradient(at 80% 55%, #c084fc 0px, transparent 50%)) border-box,
+      var(--gradient-two,   radial-gradient(at 69% 34%, #f472b6 0px, transparent 50%)) border-box,
+      var(--gradient-three, radial-gradient(at 8% 6%,   #34d399 0px, transparent 50%)) border-box,
+      var(--gradient-four,  radial-gradient(at 41% 38%, #38bdf8 0px, transparent 50%)) border-box,
+      var(--gradient-five,  radial-gradient(at 86% 85%, #22d3ee 0px, transparent 50%)) border-box,
+      var(--gradient-six,   radial-gradient(at 82% 18%, #facc15 0px, transparent 50%)) border-box,
+      var(--gradient-seven, radial-gradient(at 51% 4%,  #fb7185 0px, transparent 50%)) border-box,
+      var(--gradient-base,  linear-gradient(#c299ff 0 100%)) border-box;
+
+    opacity: calc(
+      (var(--edge-proximity) - var(--color-sensitivity)) /
+      (100 - var(--color-sensitivity))
+    );
+
+    mask-image:
+      conic-gradient(
+        from var(--cursor-angle) at center,
+        black calc(var(--cone-spread) * 1%),
+        transparent calc((var(--cone-spread) + 15) * 1%),
+        transparent calc((100 - var(--cone-spread) - 15) * 1%),
+        black calc((100 - var(--cone-spread)) * 1%)
+      );
+  }
+
+  /* ---------- Layer 2: colored mesh-gradient FILL near edges ---------- */
+  .border-glow-card::after {
+    border: 1px solid transparent;
+    background:
+      var(--gradient-one,   radial-gradient(at 80% 55%, #c084fc 0px, transparent 50%)) padding-box,
+      var(--gradient-two,   radial-gradient(at 69% 34%, #f472b6 0px, transparent 50%)) padding-box,
+      var(--gradient-three, radial-gradient(at 8% 6%,   #34d399 0px, transparent 50%)) padding-box,
+      var(--gradient-four,  radial-gradient(at 41% 38%, #38bdf8 0px, transparent 50%)) padding-box,
+      var(--gradient-five,  radial-gradient(at 86% 85%, #22d3ee 0px, transparent 50%)) padding-box,
+      var(--gradient-six,   radial-gradient(at 82% 18%, #facc15 0px, transparent 50%)) padding-box,
+      var(--gradient-seven, radial-gradient(at 51% 4%,  #fb7185 0px, transparent 50%)) padding-box,
+      var(--gradient-base,  linear-gradient(#c299ff 0 100%)) padding-box;
+
+    mask-image:
+      linear-gradient(to bottom, black, black),
+      radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
+      radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%),
+      radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%),
+      radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%),
+      radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%),
+      conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
+
+    mask-composite: subtract, add, add, add, add, add;
+    opacity: calc(
+      var(--fill-opacity) *
+      (var(--edge-proximity) - var(--color-sensitivity)) /
+      (100 - var(--color-sensitivity))
+    );
+    mix-blend-mode: soft-light;
+  }
+
+  /* ---------- Layer 3: outer GLOW halo ---------- */
+  .border-glow-card > .edge-light {
+    inset: calc(var(--glow-padding) * -1);
+    z-index: 1;
+
+    mask-image:
+      conic-gradient(
+        from var(--cursor-angle) at center,
+        black 2.5%, transparent 10%, transparent 90%, black 97.5%
+      );
+
+    opacity: calc(
+      (var(--edge-proximity) - var(--edge-sensitivity)) /
+      (100 - var(--edge-sensitivity))
+    );
+    mix-blend-mode: plus-lighter;
+  }
+
+  .border-glow-card > .edge-light::before {
+    content: "";
+    position: absolute;
+    inset: var(--glow-padding);
+    border-radius: inherit;
+    box-shadow:
+      inset 0 0 0 1px   var(--glow-color,    hsl(40deg 80% 80% / 100%)),
+      inset 0 0 1px 0   var(--glow-color-60, hsl(40deg 80% 80% / 60%)),
+      inset 0 0 3px 0   var(--glow-color-50, hsl(40deg 80% 80% / 50%)),
+      inset 0 0 6px 0   var(--glow-color-40, hsl(40deg 80% 80% / 40%)),
+      inset 0 0 15px 0  var(--glow-color-30, hsl(40deg 80% 80% / 30%)),
+      inset 0 0 25px 2px var(--glow-color-20, hsl(40deg 80% 80% / 20%)),
+      inset 0 0 50px 2px var(--glow-color-10, hsl(40deg 80% 80% / 10%)),
+      0 0 1px 0   var(--glow-color-60, hsl(40deg 80% 80% / 60%)),
+      0 0 3px 0   var(--glow-color-50, hsl(40deg 80% 80% / 50%)),
+      0 0 6px 0   var(--glow-color-40, hsl(40deg 80% 80% / 40%)),
+      0 0 15px 0  var(--glow-color-30, hsl(40deg 80% 80% / 30%)),
+      0 0 25px 2px var(--glow-color-20, hsl(40deg 80% 80% / 20%)),
+      0 0 50px 2px var(--glow-color-10, hsl(40deg 80% 80% / 10%));
+  }
+
+  /* ---------- Inner content ---------- */
+  .border-glow-inner {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: auto;
+    z-index: 1;
+    padding: 2em;
+  }
+
+  .border-glow-inner h2 {
+    margin: 0 0 0.5em;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .border-glow-inner p {
+    margin: 0;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 1.25rem;
+    width: fit-content;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px #34d399;
+  }
+</style>
+</head>
+<body>
+  <div class="hint">Move your cursor anywhere — near the card, on the border, or far away.</div>
+
+  <div class="stage">
+    <div class="border-glow-card idle" id="card">
+      <span class="edge-light"></span>
+      <div class="border-glow-inner">
+        <span class="badge"><span class="dot"></span> Border Glow Demo</span>
+        <h2>Move toward the edge</h2>
+        <p>
+          The glow follows your cursor around the perimeter. Proximity is measured
+          from the nearest point on the border, so it peaks when you touch the edge —
+          whether you approach from inside or outside the card.
+        </p>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  const card = document.getElementById('card');
+
+  // ---- Tunable parameters (mirror the React props) ----
+  const GLOW_COLOR_HSL = '40 80 80';   // "h s% l%" — used by buildGlowVars
+  const GLOW_INTENSITY = 3;            // multiplies the per-layer opacity
+  const SENSITIVITY    = 45;           // px range over which proximity fades from 100 -> 0
+  // Note: the CSS uses --edge-sensitivity and --color-sensitivity as
+  // "threshold values 0..100" for the opacity calc(), NOT as pixel distances.
+  // We keep them at sensible defaults and drive everything via --edge-proximity.
+
+  // ---- buildGlowVars: sets --glow-color, --glow-color-60 ... --glow-color-10 ----
+  function parseHSL(str) {
+    const m = String(str).match(/([\d.]+)\s+([\d.]+)%?\s+([\d.]+)%?/);
+    if (!m) return { h: 40, s: 80, l: 80 };
+    return { h: parseFloat(m[1]), s: parseFloat(m[2]), l: parseFloat(m[3]) };
+  }
+
+  function applyGlowVars(el, hslStr, intensity) {
+    const { h, s, l } = parseHSL(hslStr);
+    const base = `${h}deg ${s}% ${l}%`;
+    const ops  = [100, 60, 50, 40, 30, 20, 10];
+    const keys = ['', '-60', '-50', '-40', '-30', '-20', '-10'];
+    for (let i = 0; i < ops.length; i++) {
+      const v = Math.min(ops[i] * intensity, 100);
+      el.style.setProperty(`--glow-color${keys[i]}`, `hsl(${base} / ${v}%)`);
+    }
+  }
+
+  applyGlowVars(card, GLOW_COLOR_HSL, GLOW_INTENSITY);
+
+  // ---- Pointer tracking (window-wide, works inside AND outside the card) ----
+  // For any cursor position, compute:
+  //   - distance to the nearest point on the card's border rectangle
+  //   - angle from card center to cursor (for the conic-gradient mask)
+  //
+  // Proximity = 100 when cursor is exactly on the border,
+  //             0   when cursor is farther than SENSITIVITY px away.
+  function updateFromPointer(clientX, clientY) {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width  / 2;
+    const cy = rect.top  + rect.height / 2;
+
+    // Nearest point on the rectangle perimeter to the cursor.
+    const nx = Math.max(rect.left, Math.min(clientX, rect.right));
+    const ny = Math.max(rect.top,  Math.min(clientY, rect.bottom));
+
+    // Distance from cursor to that nearest perimeter point.
+    const dx = clientX - nx;
+    const dy = clientY - ny;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // Map distance -> proximity (100 at border, 0 at SENSITIVITY px away).
+    let proximity = 100 * (1 - dist / SENSITIVITY);
+    if (proximity < 0)   proximity = 0;
+    if (proximity > 100) proximity = 100;
+
+    // Angle from card center to cursor (0deg = top, clockwise).
+    const adx = clientX - cx;
+    const ady = clientY - cy;
+    let angle = (adx === 0 && ady === 0)
+      ? 0
+      : Math.atan2(ady, adx) * (180 / Math.PI) + 90;
+    if (angle < 0) angle += 360;
+
+    card.style.setProperty('--edge-proximity', proximity.toFixed(3));
+    card.style.setProperty('--cursor-angle',   angle.toFixed(3) + 'deg');
+
+    // Toggle idle class so the fade-out transition kicks in when far away.
+    if (proximity < 0.5) card.classList.add('idle');
+    else                 card.classList.remove('idle');
+  }
+
+  // Use pointermove on window so we catch cursor movement everywhere on the page.
+  window.addEventListener('pointermove', (e) => {
+    updateFromPointer(e.clientX, e.clientY);
+  }, { passive: true });
+
+  // Touch fallback: when the finger lifts, fade out.
+  window.addEventListener('pointerup', () => {
+    // small delay so the last move still registers
+    requestAnimationFrame(() => updateFromPointer(-9999, -9999));
+  });
+
+  // Initialize at zero.
+  updateFromPointer(-9999, -9999);
+})();
+</script>
+</body>
+</html>

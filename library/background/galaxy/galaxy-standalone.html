@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Standalone Galaxy Background</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body,
+    #galaxy-bg {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow: hidden;
+      background: #020207;
+    }
+
+    #galaxy-bg {
+      position: fixed;
+      inset: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="galaxy-bg"></div>
+
+  <script src="./galaxy-bg.js"></script>
+  <script>
+    ConyGalaxy.create("#galaxy-bg", {
+      starSpeed: 0,
+      density: 1,
+      hueShift: 30,
+      speed: 0.6,
+      glowIntensity: 0.2,
+      saturation: 0.15,
+      mouseRepulsion: true,
+      repulsionStrength: 1,
+      twinkleIntensity: 0.1,
+      rotationSpeed: 0.1,
+      transparent: false
+    });
+  </script>
+</body>
+</html>

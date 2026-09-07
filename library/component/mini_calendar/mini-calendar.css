@@ -1,0 +1,301 @@
+.cony-mini-calendar,
+.cony-mini-calendar-panel {
+  --cony-mini-calendar-surface: #171717;
+  --cony-mini-calendar-surface-2: #1f1f1f;
+  --cony-mini-calendar-surface-3: #2a2a2a;
+  --cony-mini-calendar-border: #2b2b2b;
+  --cony-mini-calendar-border-2: #3d3d3d;
+  --cony-mini-calendar-text: #f3f3f3;
+  --cony-mini-calendar-text-2: #c7c7c7;
+  --cony-mini-calendar-text-3: #8c8c8c;
+  --cony-mini-calendar-accent: #e9e3d0;
+  --cony-mini-calendar-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  --cony-mini-calendar-radius: 12px;
+  --cony-mini-calendar-font-mono: "Cascadia Code", Consolas, monospace;
+  color: var(--cony-mini-calendar-text);
+  font: 13px/1.4 "Segoe UI", sans-serif;
+}
+
+.cony-mini-calendar [hidden] {
+  display: none !important;
+}
+
+.cony-mini-calendar-panel[hidden] {
+  display: none !important;
+}
+
+.cony-mini-calendar-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cony-mini-calendar-field {
+  min-width: 0;
+}
+
+.cony-mini-calendar-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--cony-mini-calendar-text-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cony-mini-calendar-control {
+  position: relative;
+}
+
+.cony-mini-calendar-time-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.cony-mini-calendar-time-actions .cony-mini-calendar-trigger {
+  flex: 1 1 auto;
+}
+
+.cony-mini-calendar-trigger {
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 12px;
+  border: 1px solid var(--cony-mini-calendar-border);
+  border-radius: var(--cony-mini-calendar-radius);
+  background: var(--cony-mini-calendar-surface);
+  color: var(--cony-mini-calendar-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.14s, background 0.14s, transform 0.14s;
+}
+
+.cony-mini-calendar-trigger:hover {
+  background: var(--cony-mini-calendar-surface-2);
+  border-color: var(--cony-mini-calendar-border-2);
+}
+
+.cony-mini-calendar-trigger.is-empty .cony-mini-calendar-trigger-text {
+  color: var(--cony-mini-calendar-text-3);
+  font-family: inherit;
+}
+
+.cony-mini-calendar-trigger-text {
+  color: var(--cony-mini-calendar-text);
+  font-family: var(--cony-mini-calendar-font-mono);
+}
+
+.cony-mini-calendar-clear {
+  min-width: 38px;
+  border: 1px solid var(--cony-mini-calendar-border);
+  border-radius: var(--cony-mini-calendar-radius);
+  background: var(--cony-mini-calendar-surface);
+  color: var(--cony-mini-calendar-text-2);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--cony-mini-calendar-font-mono);
+  font-weight: 600;
+  line-height: 1;
+  padding: 0 10px;
+  flex: 0 0 auto;
+  transition: border-color 0.14s, background 0.14s, color 0.14s;
+}
+
+.cony-mini-calendar-clear:hover {
+  color: var(--cony-mini-calendar-text);
+  background: var(--cony-mini-calendar-surface-2);
+  border-color: var(--cony-mini-calendar-border-2);
+}
+
+.cony-mini-calendar-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1400;
+  border: 1px solid var(--cony-mini-calendar-border-2);
+  border-radius: var(--cony-mini-calendar-radius);
+  background: var(--cony-mini-calendar-surface-2);
+  box-shadow: var(--cony-mini-calendar-shadow);
+}
+
+.cony-mini-calendar-date-panel {
+  width: min(236px, calc(100vw - 32px));
+  padding: 10px;
+}
+
+.cony-mini-calendar-date-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cony-mini-calendar-title {
+  color: var(--cony-mini-calendar-text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.cony-mini-calendar-nav {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--cony-mini-calendar-border);
+  border-radius: 6px;
+  background: var(--cony-mini-calendar-surface);
+  color: var(--cony-mini-calendar-text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cony-mini-calendar-nav:hover {
+  background: var(--cony-mini-calendar-surface-3);
+  color: var(--cony-mini-calendar-text);
+  border-color: var(--cony-mini-calendar-border-2);
+}
+
+.cony-mini-calendar-weekdays,
+.cony-mini-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cony-mini-calendar-weekdays {
+  margin-bottom: 4px;
+}
+
+.cony-mini-calendar-weekdays span {
+  text-align: center;
+  color: var(--cony-mini-calendar-text-3);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.cony-mini-calendar-day {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cony-mini-calendar-text-2);
+  cursor: pointer;
+  font-family: var(--cony-mini-calendar-font-mono);
+  font-size: 11px;
+  padding: 6px 0;
+  text-align: center;
+  transition: background 0.12s, color 0.12s, transform 0.12s;
+}
+
+.cony-mini-calendar-day:hover {
+  background: var(--cony-mini-calendar-surface-3);
+  color: var(--cony-mini-calendar-text);
+}
+
+.cony-mini-calendar-day.is-other {
+  color: var(--cony-mini-calendar-text-3);
+  opacity: 0.55;
+}
+
+.cony-mini-calendar-day.is-today {
+  border: 1px solid var(--cony-mini-calendar-border-2);
+}
+
+.cony-mini-calendar-day.is-selected {
+  background: var(--cony-mini-calendar-accent);
+  color: #111;
+  font-weight: 600;
+}
+
+.cony-mini-calendar-day:disabled,
+.cony-mini-calendar-timeopt:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cony-mini-calendar-time-panel {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 6px;
+}
+
+.cony-mini-calendar-timecol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 54px;
+  max-height: 168px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cony-mini-calendar-timecol::-webkit-scrollbar {
+  display: none;
+}
+
+.cony-mini-calendar-separator {
+  display: flex;
+  align-items: center;
+  color: var(--cony-mini-calendar-text-3);
+  font-family: var(--cony-mini-calendar-font-mono);
+  padding: 0 1px;
+}
+
+.cony-mini-calendar-timeopt {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cony-mini-calendar-text-2);
+  cursor: pointer;
+  font-family: var(--cony-mini-calendar-font-mono);
+  font-size: 12px;
+  padding: 5px 0;
+  text-align: center;
+  transition: background 0.12s, color 0.12s;
+}
+
+.cony-mini-calendar-timeopt:hover {
+  background: var(--cony-mini-calendar-surface-3);
+  color: var(--cony-mini-calendar-text);
+}
+
+.cony-mini-calendar-timeopt.is-selected {
+  background: var(--cony-mini-calendar-accent);
+  color: #111;
+  font-weight: 600;
+}
+
+.cony-mini-calendar-trigger:focus-visible,
+.cony-mini-calendar-nav:focus-visible,
+.cony-mini-calendar-day:focus-visible,
+.cony-mini-calendar-timeopt:focus-visible,
+.cony-mini-calendar-clear:focus-visible {
+  outline: 2px solid var(--cony-mini-calendar-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .cony-mini-calendar-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .cony-mini-calendar-date-panel,
+  .cony-mini-calendar-time-panel {
+    width: min(100%, calc(100vw - 32px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cony-mini-calendar-trigger,
+  .cony-mini-calendar-day,
+  .cony-mini-calendar-timeopt {
+    transition: none;
+  }
+}

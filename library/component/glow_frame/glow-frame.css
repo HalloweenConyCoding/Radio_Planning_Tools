@@ -1,0 +1,58 @@
+@property --cony-glow-frame-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.cony-glow-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.cony-glow-frame::before,
+.cony-glow-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cony-glow-frame::before {
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(103, 232, 249, 0.04);
+}
+
+.cony-glow-frame::after {
+  z-index: 2;
+  border: 1px solid transparent;
+  opacity: 0.82;
+  padding: 1px;
+  background: conic-gradient(from var(--cony-glow-frame-angle) at center, transparent 0deg, rgba(103, 232, 249, 0.9) 44deg, rgba(167, 139, 250, 0.62) 58deg, transparent 98deg);
+  filter: drop-shadow(0 0 5px rgba(103, 232, 249, 0.72)) drop-shadow(0 0 12px rgba(167, 139, 250, 0.28));
+  animation: cony-glow-frame-sweep 7.2s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.cony-glow-frame[data-glow-mode="cursor"]::after {
+  animation: none;
+  opacity: var(--cony-glow-frame-opacity, 0);
+}
+
+@keyframes cony-glow-frame-sweep {
+  to { --cony-glow-frame-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cony-glow-frame::after {
+    animation: none;
+    opacity: 0.58;
+  }
+
+  .cony-glow-frame[data-glow-mode="cursor"]::after {
+    opacity: var(--cony-glow-frame-opacity, 0);
+  }
+}

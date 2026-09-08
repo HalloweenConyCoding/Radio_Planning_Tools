@@ -1,6 +1,6 @@
 # TILT_CAL editorial redesign proposal
 
-Status: Stage 3 implementation complete and awaiting final user visual review. Idle-motion visibility issue is recorded and deferred by user; Stage 3 remains the final implementation stage.
+Status: Final approved visualization intro behavior is implemented; visual fade/motion smoothness remains unverified because browser review is blocked.
 
 ## Approval and dispatch log
 
@@ -9,7 +9,10 @@ Status: Stage 3 implementation complete and awaiting final user visual review. I
 - 2026-09-07: User requested a targeted Stage 2 background correction: replace the nearly invisible cream layer with visible multilayer editorial components moving at distinct bounded scroll rates. Correction is approved within Stage 2; no browser work is authorized under the existing URL security block.
 - 2026-09-07: User approved a bounded Stage 2 ambient/refinement pass: add calm idle drift to at most two decorative layers, pause it when hidden or reduced, add calculate arrow feedback and a neutral one-shot results update cue, and keep Stage 3 paused.
 - 2026-09-08: User approved Stage 3 (“continue Stage3”) and explicitly deferred the user-observed lack of visible idle motion. ORIN dispatched responsive polish and final static verification to Luna under Astra supervision; no idle-motion tuning is included in this stage.
-- Scope guard: edit only `cell_coverage_calculator.html`, `cell_coverage_calculator_style.css`, presentation-only `tilt_calculator_motion.js`, this plan, and Stage 1/Stage 2 QA/baseline artifacts within `ACTIVE`.
+- 2026-09-08: User approved the final background revision: replace the failed cream/rectangle motif with visible radio-wave fields, beam wedges, drafting marks, stronger bounded parallax, and small fine-pointer response. ORIN dispatched the presentation-only revision to Luna under Astra supervision; the foreground calculator and protected application contracts remain unchanged.
+- 2026-09-08: User approved moving the existing `Tilt_Calculation.png` reference image from the masthead into the visualization as a fixed intro overlay. It fades only after valid nonempty results, remains above the initial canvas without reflow, and has reduced-motion/missing-image fallbacks.
+- 2026-09-08: User approved a bounded breathing revision after reporting the ambient waves appeared static: the existing two wave groups now use out-of-phase 7s/8s scale-opacity cycles, with hidden/reduced-motion pause safeguards retained. No JavaScript scheduler or foreground transforms changed.
+- Scope guard: edit only `cell_coverage_calculator.html`, `cell_coverage_calculator_style.css`, presentation-only `tilt_calculator_motion.js`, this plan, and stage QA/baseline artifacts within `ACTIVE`.
 - Stage 2 checklist before implementation: preserve Stage 1 edits and baseline; keep all original inline analytics/application scripts byte-for-byte unchanged; preserve IDs, input defaults/steps, radios, `onclick="calculate()"`, `#results`, and 800x500 canvas; add only presentation-only motion behavior; keep content visible if JS fails; respect reduced motion and normal scrolling; add actual-control hover/focus states without false result/documentation affordances.
 - Stage 2 completion gate: verify motion script syntax and DOM contracts, exercise reduced-motion and observer/scheduling fallback stubs, record browser visual review limitation, then pause for Stage 3 approval.
 - Stage 2 correction checklist before implementation: preserve V7 title/shiny8s and Stage 1 baseline; keep all original inline scripts byte-for-byte unchanged; retain passive normal scroll; add 2–3 visible pointer-transparent background layers with distinct rates, safe overscan, and no text obstruction; keep reduced-motion composition static; verify layer shifts and limits with stubs.
@@ -93,3 +96,21 @@ Tune breakpoints, canvas scaling, long-result wrapping, mobile order, contrast, 
 - Both original inline scripts, exact input tags, exact canvas tag, V7/Shiny 8s title, and Stage 2 presentation behavior remain unchanged. CSS structure and Node syntax checks pass. Existing baseline-vs-final calculator harness evidence remains in `QA_STAGE1.md`.
 - Browser visual confirmation remains unavailable under the established URL security policy, so final desktop/mobile appearance awaits user review. No idle-motion tuning or other work beyond Stage 3 responsive/accessibility polish was performed.
 - Final resume state: review `QA_STAGE3.md` and the current `ACTIVE` files, then obtain final user visual sign-off. Stage 3 is complete; no further implementation stage is planned.
+
+## Final background revision evidence
+
+- 2026-09-08: Replaced the prior paper-plane/rectangle backdrop with three pointer-transparent radio-wave layers: cropped cobalt and graphite arcs, translucent pale-blue beam wedges, and sparse drafting marks. The dashboard alone receives a lightly opaque continuous working surface so the masthead, margins, and section gaps still expose the background.
+- Scroll and fine-pointer updates share one event-driven requestAnimationFrame scheduler. Scroll range and viewport dimensions are cached and refreshed on resize/ResizeObserver callbacks; pointer offsets are clamped to 6px and scaled by layer. No perpetual loop, scroll hijack, blur/filter, or large animated background is used.
+- Exactly two bounded ambient shape animations run at 13s and 16s with 22px maximum translation; hidden and reduced-motion states pause or clear transforms, and reduced motion leaves the static radio-wave composition visible. The existing results cue and title sweep remain intact.
+- Final syntax, DOM contract, and presentation scheduler checks are recorded in `QA_BACKGROUND.md`. Browser visual review remains blocked by the established local-file/localhost URL security policy, so the final composition still requires user visual confirmation. Stage 3 responsive polish remains retained; no further stage is planned.
+
+## Visualization intro evidence
+
+- 2026-09-08: The single existing `Tilt_Calculation.png` image now lives inside `.canvas-wrapper` as `.canvas-intro`; the top masthead image placement was removed. The canvas remains intrinsic `800x500` and visible underneath the absolute overlay.
+- A separate presentation-only observer watches `#results` for nonempty output. Invalid input leaves the empty-results intro visible; valid output adds a one-way dismissal class. A microtask click fallback covers environments without `MutationObserver`, and cached image failures hide the overlay without leaving a broken icon.
+- Final intro behavior checks are recorded in `QA_VISUALIZATION_INTRO.md`. Browser visual confirmation and measured frame smoothness remain pending under the established security policy.
+
+## Final breathing revision evidence
+
+- 2026-09-08: Source inspection found the wave selectors correctly targeted the new `::before` groups; no definite runtime root cause for the earlier static appearance was established. Replaced the prior long alternating drift with clear full breathing cycles: `waveFarBreath` 7s and `waveMidBreath` 8s, out of phase, each using only bounded `transform: scale()` and opacity.
+- Reduced-motion and `ambient-paused` selectors still target both breathing groups; outer scroll/pointer transforms and foreground calculator/photo/canvas behavior remain unchanged. Verification is recorded in `QA_BREATHING.md`; browser visual visibility and smoothness remain unverified.

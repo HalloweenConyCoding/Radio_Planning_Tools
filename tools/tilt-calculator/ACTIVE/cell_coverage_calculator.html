@@ -30,18 +30,13 @@
 <body>
 
     <div class="paper-depth" aria-hidden="true">
-        <span class="paper-plane paper-plane-far"></span>
-        <span class="paper-contours"></span>
-        <span class="paper-plane paper-plane-mid"></span>
-        <span class="paper-drafting"></span>
+        <span class="wave-field wave-field-far"></span>
+        <span class="wave-field wave-field-mid"></span>
+        <span class="wave-field wave-field-near"></span>
     </div>
 
     <div class="app-container">
 
-
-        <div class="header-image-wrap">
-            <img src="../../../images/Tilt_Calculation.png" alt="Tilt Calculation" class="header-image">
-        </div>
 
         <!-- ===== HEADER ===== -->
         <header class="app-header">
@@ -147,6 +142,9 @@
             <div id="right-panel" class="panel vis-panel">
                 <h3 class="panel-title">Visualization</h3>
                 <div class="canvas-wrapper">
+                    <div class="canvas-intro">
+                        <img src="../../../images/Tilt_Calculation.png" alt="Tilt calculation reference diagram" class="canvas-intro-image">
+                    </div>
                     <canvas id="plot" width="800" height="500"></canvas>
                 </div>
             </div>

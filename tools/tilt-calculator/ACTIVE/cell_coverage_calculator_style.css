@@ -4,15 +4,15 @@
 */
 
 :root {
-    --paper: oklch(97.2% 0.016 90);
-    --paper-deep: oklch(93.8% 0.024 90);
-    --surface: oklch(99.2% 0.008 90);
+    --paper: oklch(97.2% 0.012 235);
+    --paper-deep: oklch(93.8% 0.022 235);
+    --surface: oklch(99.2% 0.008 235);
     --surface-tint: oklch(95.9% 0.018 235);
     --ink: oklch(24% 0.026 255);
     --ink-soft: oklch(39% 0.025 255);
     --muted: oklch(51% 0.025 255);
     --faint: oklch(66% 0.021 255);
-    --line: oklch(83% 0.024 90);
+    --line: oklch(83% 0.022 235);
     --line-strong: oklch(67% 0.055 255);
     --cobalt: oklch(48% 0.19 255);
     --cobalt-dark: oklch(36% 0.145 255);
@@ -52,93 +52,129 @@ body {
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
+    background: var(--paper);
     background-image:
-        radial-gradient(circle at 18% 24%, oklch(42% 0.025 90 / 0.2) 0 0.6px, transparent 0.8px),
-        radial-gradient(circle at 72% 68%, oklch(42% 0.025 90 / 0.16) 0 0.7px, transparent 0.9px),
-        repeating-linear-gradient(112deg, transparent 0 32px, oklch(56% 0.03 90 / 0.12) 32px 33px, transparent 33px 78px);
-    background-size: 7px 7px, 11px 11px, 170px 170px;
-    opacity: 0.82;
-    transform: translate3d(0, var(--paper-shift-top, 0px), 0);
+        radial-gradient(circle at 15% 22%, oklch(34% 0.03 255 / 0.16) 0 0.7px, transparent 0.9px),
+        repeating-linear-gradient(112deg, transparent 0 44px, oklch(44% 0.04 255 / 0.1) 44px 45px, transparent 45px 132px);
+    background-size: 9px 9px, 220px 220px;
+    transform: translate3d(var(--paper-pointer-x, 0px), calc(var(--paper-shift-top, 0px) + var(--paper-pointer-y, 0px)), 0);
     will-change: transform;
-}
-
-.paper-depth::after {
-    position: absolute;
-    inset: 0;
-    content: "";
-    opacity: 0.4;
-    background: repeating-radial-gradient(ellipse at 78% 14%, transparent 0 42px, oklch(48% 0.03 90 / 0.16) 42px 43px, transparent 43px 92px);
 }
 
 .paper-depth > span {
     position: absolute;
     display: block;
     pointer-events: none;
+    will-change: transform;
 }
 
-.paper-plane {
-    border: 1px solid oklch(52% 0.045 90 / 0.42);
-    background: oklch(99.2% 0.008 90 / 0.38);
+.wave-field {
+    border: 0;
 }
 
-.paper-plane-far {
-    top: 12%;
-    left: 3%;
-    width: min(29vw, 420px);
-    height: min(52vh, 520px);
-    transform: translate3d(0, var(--paper-shift-far, 0px), 0) rotate(-7deg);
+.wave-field-far {
+    top: 3%;
+    left: -10%;
+    width: min(72vw, 940px);
+    height: min(62vh, 650px);
+    transform: translate3d(calc(var(--paper-shift-far, 0px) + var(--paper-pointer-far-x, 0px)), var(--paper-pointer-far-y, 0px), 0) rotate(-12deg);
 }
 
-.paper-plane-far::after {
+.wave-field-far::before {
     position: absolute;
-    inset: 14px -14px -14px 14px;
-    border: 1px solid oklch(52% 0.045 90 / 0.3);
-    background: oklch(99.2% 0.008 90 / 0.12);
+    inset: -8% -5%;
     content: "";
-    animation: paperFarIdle 26s ease-in-out -7s infinite alternate;
+    border-radius: 50%;
+    background: repeating-radial-gradient(ellipse at 28% 48%, transparent 0 55px, oklch(47% 0.13 255 / 0.48) 56px 59px, transparent 60px 112px);
+    transform-origin: 28% 48%;
+    animation: waveFarBreath 7s ease-in-out -1.75s infinite;
 }
 
-.paper-contours {
-    top: -8%;
-    right: -6%;
-    width: min(52vw, 760px);
-    height: min(70vh, 720px);
-    opacity: 0.88;
-    background: repeating-radial-gradient(ellipse at 56% 44%, transparent 0 58px, oklch(48% 0.12 255 / 0.3) 58px 59px, transparent 59px 112px);
-    transform: translate3d(0, var(--paper-shift-mid, 0px), 0) rotate(8deg);
-}
-
-.paper-plane-mid {
-    right: 4%;
-    bottom: 12%;
-    width: min(25vw, 350px);
-    height: min(42vh, 430px);
-    border-color: oklch(48% 0.12 255 / 0.42);
-    background: oklch(92% 0.035 235 / 0.38);
-    transform: translate3d(0, var(--paper-shift-mid, 0px), 0) rotate(6deg);
-}
-
-.paper-plane-mid::after {
+.wave-field-far::after {
     position: absolute;
-    inset: 16px 16px -16px -16px;
-    border: 1px solid oklch(48% 0.12 255 / 0.36);
-    background: oklch(92% 0.035 235 / 0.14);
+    top: 20%;
+    left: 36%;
+    width: 52%;
+    height: 42%;
     content: "";
-    animation: paperMidIdle 22s ease-in-out -11s infinite alternate;
+    background: oklch(87% 0.065 235 / 0.54);
+    clip-path: polygon(0 42%, 100% 0, 100% 100%);
+    border: 1px solid oklch(46% 0.1 255 / 0.3);
 }
 
-.paper-drafting {
-    right: 9%;
-    bottom: 7%;
-    width: min(31vw, 430px);
-    height: 112px;
-    opacity: 0.72;
+.wave-field-mid {
+    top: 34%;
+    right: -14%;
+    width: min(70vw, 900px);
+    height: min(66vh, 700px);
+    transform: translate3d(calc(var(--paper-shift-mid, 0px) + var(--paper-pointer-mid-x, 0px)), var(--paper-pointer-mid-y, 0px), 0) rotate(9deg);
+}
+
+.wave-field-mid::before {
+    position: absolute;
+    inset: -8%;
+    content: "";
+    border-radius: 50%;
+    background: repeating-radial-gradient(ellipse at 66% 44%, transparent 0 68px, oklch(38% 0.045 255 / 0.34) 69px 71px, transparent 72px 138px);
+    transform-origin: 66% 44%;
+    animation: waveMidBreath 8s ease-in-out -4s infinite;
+}
+
+.wave-field-mid::after {
+    position: absolute;
+    right: 14%;
+    bottom: 18%;
+    width: 42%;
+    height: 38%;
+    content: "";
+    background: oklch(88% 0.055 235 / 0.48);
+    clip-path: polygon(0 0, 100% 44%, 0 100%);
+    border: 1px solid oklch(40% 0.06 255 / 0.32);
+}
+
+.wave-field-near {
+    right: 5%;
+    bottom: 5%;
+    width: min(36vw, 470px);
+    height: 168px;
+    opacity: 0.82;
     background:
-        linear-gradient(90deg, oklch(48% 0.12 255 / 0.4), oklch(48% 0.12 255 / 0.4)) left top / 100% 1px no-repeat,
-        repeating-linear-gradient(90deg, oklch(48% 0.12 255 / 0.35) 0 1px, transparent 1px 16px) left top / 100% 9px no-repeat,
-        linear-gradient(90deg, oklch(48% 0.12 255 / 0.28), oklch(48% 0.12 255 / 0.28)) left 27px / 100% 1px no-repeat,
-        repeating-linear-gradient(90deg, oklch(48% 0.12 255 / 0.25) 0 1px, transparent 1px 24px) left 27px / 100% 8px no-repeat;
-    transform: translate3d(0, var(--paper-shift-near, 0px), 0);
+        linear-gradient(90deg, oklch(40% 0.06 255 / 0.52), oklch(40% 0.06 255 / 0.52)) left 6px / 100% 2px no-repeat,
+        repeating-linear-gradient(90deg, oklch(44% 0.09 255 / 0.48) 0 2px, transparent 2px 18px) left 6px / 100% 12px no-repeat,
+        linear-gradient(90deg, oklch(49% 0.13 255 / 0.45), oklch(49% 0.13 255 / 0.45)) left 52px / 100% 2px no-repeat,
+        repeating-linear-gradient(90deg, oklch(49% 0.13 255 / 0.38) 0 1px, transparent 1px 28px) left 52px / 100% 10px no-repeat;
+    transform: translate3d(calc(var(--paper-shift-near, 0px) + var(--paper-pointer-near-x, 0px)), var(--paper-pointer-near-y, 0px), 0);
+}
+
+.wave-field-near::before,
+.wave-field-near::after {
+    position: absolute;
+    content: "";
+    background: oklch(44% 0.09 255 / 0.52);
+}
+
+.wave-field-near::before {
+    top: 26px;
+    right: 8%;
+    width: 2px;
+    height: 88px;
+}
+
+.wave-field-near::after {
+    top: 70px;
+    right: 2%;
+    width: 82px;
+    height: 2px;
+}
+
+@keyframes waveFarBreath {
+    0%, 100% { transform: scale(0.94); opacity: 0.68; }
+    50% { transform: scale(1.06); opacity: 1; }
+}
+
+@keyframes waveMidBreath {
+    0%, 100% { transform: scale(1.06); opacity: 0.72; }
+    50% { transform: scale(0.94); opacity: 1; }
 }
 
 button,
@@ -156,27 +192,6 @@ button {
     padding: 28px 36px 72px;
     position: relative;
     z-index: 1;
-}
-
-/* A quiet image-led masthead keeps the existing tool identity without making
-   the illustration compete with the calculator. */
-.header-image-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-height: 92px;
-    padding: 0 0 24px;
-    border-bottom: 1px solid var(--line);
-}
-
-.header-image {
-    display: block;
-    width: auto;
-    max-width: min(100%, 560px);
-    max-height: 180px;
-    height: auto;
-    object-fit: contain;
 }
 
 .app-header {
@@ -386,6 +401,10 @@ button {
 .dashboard-grid {
     display: grid;
     min-width: 0;
+    margin-top: 14px;
+    padding: 0 clamp(10px, 2vw, 24px);
+    border-block: 1px solid var(--line);
+    background: oklch(99.2% 0.008 235 / 0.72);
     grid-template-columns: minmax(380px, 0.85fr) minmax(0, 1.65fr);
     gap: 48px;
     align-items: start;
@@ -589,12 +608,43 @@ button {
 }
 
 .canvas-wrapper {
+    position: relative;
     aspect-ratio: 8 / 5;
     width: 100%;
     overflow: hidden;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
     background: var(--surface);
+}
+
+.canvas-intro {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    padding: clamp(16px, 4vw, 42px);
+    background: oklch(99.2% 0.008 235 / 0.88);
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity 320ms ease-out, visibility 0s linear 320ms;
+}
+
+.canvas-intro-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.canvas-intro.is-dismissed,
+.canvas-intro.is-broken {
+    visibility: hidden;
+    opacity: 0;
 }
 
 canvas {
@@ -624,16 +674,6 @@ html.motion-ready .reveal-section.is-visible {
 html.motion-ready .reveal-section:focus-within {
     opacity: 1;
     transform: translateY(0);
-}
-
-@keyframes paperFarIdle {
-    from { transform: translate3d(-4px, 2px, 0) rotate(-0.35deg); }
-    to { transform: translate3d(5px, -3px, 0) rotate(0.35deg); }
-}
-
-@keyframes paperMidIdle {
-    from { transform: translate3d(5px, -2px, 0) rotate(0.3deg); }
-    to { transform: translate3d(-5px, 3px, 0) rotate(-0.3deg); }
 }
 
 @keyframes resultsUpdated {
@@ -753,15 +793,6 @@ input[type="number"]::-webkit-outer-spin-button {
         padding: 18px 16px 54px;
     }
 
-    .header-image-wrap {
-        min-height: 60px;
-        padding-bottom: 16px;
-    }
-
-    .header-image {
-        max-height: 124px;
-    }
-
     .app-header {
         align-items: flex-start;
         flex-direction: column;
@@ -822,6 +853,25 @@ input[type="number"]::-webkit-outer-spin-button {
     .results-container {
         font-size: 0.875rem;
     }
+
+    .wave-field-far {
+        top: 8%;
+        left: -48%;
+        width: 150vw;
+        height: 52vh;
+    }
+
+    .wave-field-mid {
+        top: 42%;
+        right: -54%;
+        width: 148vw;
+        height: 54vh;
+    }
+
+    .wave-field-near {
+        right: -12%;
+        width: 104vw;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -844,8 +894,8 @@ input[type="number"]::-webkit-outer-spin-button {
         transform: none;
     }
 
-    .paper-plane-far::after,
-    .paper-plane-mid::after {
+    .wave-field-far::before,
+    .wave-field-mid::before {
         animation: none;
     }
 
@@ -880,12 +930,18 @@ input[type="number"]::-webkit-outer-spin-button {
     .results-updated {
         animation: none;
     }
+
+    .canvas-intro,
+    .canvas-intro.is-dismissed,
+    .canvas-intro.is-broken {
+        transition: none;
+    }
 }
 
-html.ambient-paused .paper-plane-far::after,
-html.ambient-paused .paper-plane-mid::after,
-html.motion-reduced .paper-plane-far::after,
-html.motion-reduced .paper-plane-mid::after {
+html.ambient-paused .wave-field-far::before,
+html.ambient-paused .wave-field-mid::before,
+html.motion-reduced .wave-field-far::before,
+html.motion-reduced .wave-field-mid::before {
     animation-play-state: paused;
 }
 

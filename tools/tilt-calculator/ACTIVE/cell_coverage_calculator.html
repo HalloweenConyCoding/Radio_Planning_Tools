@@ -188,98 +188,314 @@
             return document.querySelector('input[name="siteType"]:checked').value;
         }
 
+        /* Comparisons should cover floating-point round-off only. A fixed
+           metre-scale epsilon would grow with a distant building and turn
+           a horizontal ray into a false front hit. */
+        const GEOMETRY_EPSILON = Number.EPSILON * 32;
+        const PLOT_CLIP_DISTANCE = 1e6;
+
+        function readInputNumber(id) {
+            const raw = String(document.getElementById(id).value ?? '').trim();
+            return raw === '' ? null : Number(raw);
+        }
+
+        function localTolerance(...values) {
+            let scale = 1;
+            values.forEach((value) => {
+                if (Number.isFinite(value)) scale = Math.max(scale, Math.abs(value));
+            });
+            return GEOMETRY_EPSILON * scale;
+        }
+
+        function validateInputs(raw) {
+            if (!Number.isFinite(raw.ha) || raw.ha <= 0) {
+                return { valid: false, error: "Antenna height must be a finite positive number." };
+            }
+            if (!Number.isFinite(raw.mtilt) || !Number.isFinite(raw.etilt)) {
+                return { valid: false, error: "Mechanical and electrical tilt must be finite numbers." };
+            }
+            if (!Number.isFinite(raw.vbw) || raw.vbw <= 0 || raw.vbw >= 180) {
+                return { valid: false, error: "Vertical beam width must be strictly between 0 and 180 degrees." };
+            }
+            if (!Number.isFinite(raw.hbw) || raw.hbw <= 0 || raw.hbw >= 180) {
+                return { valid: false, error: "Horizontal beam width must be strictly between 0 and 180 degrees." };
+            }
+
+            const totalTilt = raw.mtilt + raw.etilt;
+            const angles = {
+                upper: totalTilt - raw.vbw / 2,
+                main: totalTilt,
+                lower: totalTilt + raw.vbw / 2
+            };
+            for (const angle of Object.values(angles)) {
+                if (!Number.isFinite(angle) || angle <= -90 || angle >= 90) {
+                    return { valid: false, error: "All derived beam angles must be strictly between -90 and 90 degrees." };
+                }
+            }
+
+            let building = null;
+            if (raw.bdistance !== null) {
+                if (!Number.isFinite(raw.bdistance) || raw.bdistance <= 0) {
+                    return { valid: false, error: "Building distance must be a finite positive number when provided." };
+                }
+                if (!Number.isFinite(raw.bheight) || raw.bheight <= 0) {
+                    return { valid: false, error: "Building height must be a finite positive number when a building is enabled." };
+                }
+                if (!Number.isFinite(raw.bdepth) || raw.bdepth <= 0) {
+                    return { valid: false, error: "Building depth must be a finite positive number when a building is enabled." };
+                }
+                const buildingEnd = raw.bdistance + raw.bdepth;
+                if (!Number.isFinite(buildingEnd)) {
+                    return { valid: false, error: "Building geometry is too large to represent safely." };
+                }
+                building = {
+                    distance: raw.bdistance,
+                    height: raw.bheight,
+                    depth: raw.bdepth,
+                    end: buildingEnd
+                };
+            }
+
+            return { valid: true, inputs: raw, angles, building };
+        }
+
+        function calculateRayIntersection(ha, angle, building) {
+            const radians = toRadians(angle);
+            const sin = Math.sin(radians);
+            const cos = Math.cos(radians);
+            if (!Number.isFinite(radians) || !Number.isFinite(sin) || !Number.isFinite(cos)) {
+                return { valid: false, error: "A required beam direction is not representable." };
+            }
+
+            const candidates = [];
+            if (sin > 0) {
+                const t = ha / sin;
+                if (!Number.isFinite(t) || t < 0) {
+                    return { valid: false, error: "A ground intersection is not representable for the supplied values." };
+                }
+                const x = t * cos;
+                if (!Number.isFinite(x)) {
+                    return { valid: false, error: "A ground intersection is not representable for the supplied values." };
+                }
+                candidates.push({ t, x, y: 0, surface: 'ground' });
+            }
+
+            if (building) {
+                const frontT = building.distance / cos;
+                if (!Number.isFinite(frontT) || frontT < 0) {
+                    return { valid: false, error: "A building-front intersection is not representable for the supplied values." };
+                }
+                const frontY = ha - frontT * sin;
+                if (!Number.isFinite(frontY)) {
+                    return { valid: false, error: "A building-front intersection is not representable for the supplied values." };
+                }
+                const frontTolerance = localTolerance(ha, building.height, frontY);
+                if (frontY >= -frontTolerance && frontY <= building.height + frontTolerance) {
+                    candidates.push({
+                        t: frontT,
+                        x: building.distance,
+                        y: Math.min(Math.max(frontY, 0), building.height),
+                        surface: 'front'
+                    });
+                }
+
+                if (sin !== 0) {
+                    const roofT = (ha - building.height) / sin;
+                    if (!Number.isFinite(roofT)) {
+                        return { valid: false, error: "A roof intersection is not representable for the supplied values." };
+                    }
+                    if (roofT >= 0) {
+                        const roofX = roofT * cos;
+                        if (!Number.isFinite(roofX)) {
+                            return { valid: false, error: "A roof intersection is not representable for the supplied values." };
+                        }
+                        const roofTolerance = localTolerance(building.distance, building.end, roofX);
+                        if (roofX >= building.distance - roofTolerance && roofX <= building.end + roofTolerance) {
+                            candidates.push({
+                                t: roofT,
+                                x: Math.min(Math.max(roofX, building.distance), building.end),
+                                y: building.height,
+                                surface: 'roof'
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (candidates.length === 0) {
+                const reason = sin < 0
+                    ? "The beam continues upward without a forward surface intersection."
+                    : "The horizontal beam has no modeled surface intersection.";
+                return {
+                    valid: true,
+                    status: 'no_forward_hit',
+                    surface: null,
+                    hitPoint: null,
+                    rayParameter: null,
+                    reason,
+                    sin,
+                    cos
+                };
+            }
+
+            const nearestT = Math.min(...candidates.map((candidate) => candidate.t));
+            /* Tie only candidates whose ray parameters agree to round-off.
+               Do not use a distant ground x-coordinate to inflate this test. */
+            const tied = candidates
+                .filter((candidate) => Math.abs(candidate.t - nearestT) <= localTolerance(candidate.t, nearestT))
+                .sort((left, right) => ({ front: 0, roof: 1, ground: 2 }[left.surface] - ({ front: 0, roof: 1, ground: 2 }[right.surface])));
+            const chosen = tied[0];
+            return {
+                valid: true,
+                status: 'hit',
+                surface: chosen.surface,
+                hitPoint: { x: chosen.x, y: chosen.y },
+                rayParameter: chosen.t,
+                reason: '',
+                sin,
+                cos
+            };
+        }
+
+        function finitePlotPoint(beam, ha, plotExtent, plotHeight) {
+            if (beam.hitPoint) return { x: beam.hitPoint.x, y: beam.hitPoint.y };
+            let t = plotExtent / beam.cos;
+            if (!Number.isFinite(t) || t <= 0) t = PLOT_CLIP_DISTANCE;
+            t = Math.min(t, PLOT_CLIP_DISTANCE);
+            /* Clip upward no-hit rays to the same finite world-height bound
+               used by draw(), so scaling cannot turn the endpoint infinite. */
+            if (beam.sin < 0 && Number.isFinite(plotHeight)) {
+                const heightT = (ha - plotHeight) / beam.sin;
+                if (Number.isFinite(heightT) && heightT > 0) t = Math.min(t, heightT);
+            }
+            let x = t * beam.cos;
+            let y = ha - t * beam.sin;
+            if (Number.isFinite(x) && Number.isFinite(y)) return { x, y };
+
+            if (beam.sin < 0) {
+                const available = (Number.MAX_VALUE - ha) / (-beam.sin);
+                if (Number.isFinite(available) && available > 0) t = Math.min(t, available / 2);
+            } else if (beam.sin > 0) {
+                const available = (ha + Number.MAX_VALUE) / beam.sin;
+                if (Number.isFinite(available) && available > 0) t = Math.min(t, available / 2);
+            }
+            x = t * beam.cos;
+            y = ha - t * beam.sin;
+            if (Number.isFinite(x) && Number.isFinite(y)) return { x, y };
+            return { x: Math.min(plotExtent, PLOT_CLIP_DISTANCE), y: ha };
+        }
+
+        function calculateCoverage(inputs) {
+            const validation = validateInputs(inputs);
+            if (!validation.valid) return validation;
+
+            const beams = {
+                upper: { angle: validation.angles.upper, color: 'blue' },
+                main: { angle: validation.angles.main, color: 'red' },
+                lower: { angle: validation.angles.lower, color: 'green' }
+            };
+            for (const beam of Object.values(beams)) {
+                const intersection = calculateRayIntersection(inputs.ha, beam.angle, validation.building);
+                if (!intersection.valid) return intersection;
+                Object.assign(beam, intersection);
+            }
+
+            let plotExtent = Math.max(1, inputs.ha);
+            if (validation.building) plotExtent = Math.max(plotExtent, validation.building.end);
+            for (const beam of Object.values(beams)) {
+                if (beam.hitPoint) plotExtent = Math.max(plotExtent, beam.hitPoint.x);
+            }
+            if (!Number.isFinite(plotExtent) || plotExtent <= 0) {
+                return { valid: false, error: "The result is too large to plot safely." };
+            }
+            const maxHeight = validation.building
+                ? Math.max(inputs.ha, validation.building.height)
+                : inputs.ha;
+            const worldMaxX = plotExtent * 1.1;
+            const worldMaxY = maxHeight * 1.1;
+            if (!Number.isFinite(maxHeight) || maxHeight <= 0 ||
+                !Number.isFinite(worldMaxX) || worldMaxX <= 0 ||
+                !Number.isFinite(worldMaxY) || worldMaxY <= 0) {
+                return { valid: false, error: "The result is too large to plot safely." };
+            }
+            /* Match both draw() scaling branches before publishing any text. */
+            const macroScaleX = 700 / worldMaxX;
+            const macroScaleY = 400 / worldMaxY;
+            const smallScale = Math.min(macroScaleX, macroScaleY);
+            const smallBaseY = 50 + (400 - worldMaxY * smallScale) / 2 + worldMaxY * smallScale;
+            if (![macroScaleX, macroScaleY, smallScale, smallBaseY,
+                inputs.ha * macroScaleY, inputs.ha * smallScale].every(Number.isFinite)) {
+                return { valid: false, error: "The result is too large to plot safely." };
+            }
+            for (const beam of Object.values(beams)) beam.plotPoint = finitePlotPoint(beam, inputs.ha, plotExtent, worldMaxY);
+
+            let width = null;
+            if (validation.building) {
+                const main = beams.main;
+                if (main.surface === 'front') {
+                    const projectedWidth = 2 * validation.building.distance *
+                        Math.tan(toRadians(inputs.hbw / 2)) / main.cos;
+                    if (!Number.isFinite(projectedWidth) || projectedWidth < 0) {
+                        return { valid: false, error: "The projected face width is not representable for the supplied values." };
+                    }
+                    width = { available: true, value: projectedWidth, reason: '' };
+                } else {
+                    const reason = main.surface === 'roof'
+                        ? "the main beam reaches the roof before the front face"
+                        : main.surface === 'ground'
+                            ? "the main beam reaches ground before the building"
+                            : "the main beam has no front-face intersection";
+                    width = { available: false, value: null, reason };
+                }
+            }
+
+            return { valid: true, inputs, building: validation.building, beams, plotExtent, width };
+        }
+
+        function clearPlot() {
+            const canvas = document.getElementById("plot");
+            if (!canvas || !canvas.getContext) return;
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
         /* ============================================================
            CALCULATE
         ============================================================ */
         function calculate() {
-            const HA = parseFloat(document.getElementById('ha').value);
-            const M_Tilt = parseFloat(document.getElementById('mtilt').value);
-            const E_Tilt = parseFloat(document.getElementById('etilt').value);
-            const VBW = parseFloat(document.getElementById('vbw').value);
-            const HBW = parseFloat(document.getElementById('hbw').value);
-            const B_DIST = document.getElementById('bdistance').value === ""
-                ? NaN
-                : parseFloat(document.getElementById('bdistance').value);
-            const B_HEIGHT = parseFloat(document.getElementById('bheight').value);
-            const B_DEPTH = parseFloat(document.getElementById('bdepth').value);
-
-            if (isNaN(HA) || HA <= 0) {
-                alert("Antenna height must be a positive number.");
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = '';
+            clearPlot();
+            const inputs = {
+                ha: readInputNumber('ha'),
+                mtilt: readInputNumber('mtilt'),
+                etilt: readInputNumber('etilt'),
+                vbw: readInputNumber('vbw'),
+                hbw: readInputNumber('hbw'),
+                bdistance: readInputNumber('bdistance'),
+                bheight: readInputNumber('bheight'),
+                bdepth: readInputNumber('bdepth')
+            };
+            const result = calculateCoverage(inputs);
+            if (!result.valid) {
+                alert(result.error);
                 return;
             }
 
-            const Total_Tilt = M_Tilt + E_Tilt;
-            const beams = {
-                upper: { angle: Total_Tilt - VBW / 2, color: 'blue' },
-                main: { angle: Total_Tilt, color: 'red' },
-                lower: { angle: Total_Tilt + VBW / 2, color: 'green' }
-            };
-
-            let maxX = 0;
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = '';
-
-            for (const [key, beam] of Object.entries(beams)) {
+            for (const [key, beam] of Object.entries(result.beams)) {
                 const angle = beam.angle;
-                const tan = Math.tan(toRadians(angle));
-                let landingX = 0, landingY = 0, message = '';
                 const capKey = key.charAt(0).toUpperCase() + key.slice(1);
-
-                if (angle > 0) {
-                    const groundDist = HA / tan;
-                    let buildingFrontHeight = Infinity;
-                    if (!isNaN(B_DIST)) buildingFrontHeight = HA - B_DIST * tan;
-
-                    if (!isNaN(B_DIST) && groundDist >= B_DIST) {
-                        if (buildingFrontHeight <= B_HEIGHT) {
-                            landingX = B_DIST;
-                            landingY = HA - B_DIST * tan;
-                            message = `${capKey} beam hits building front at ${landingY.toFixed(2)} [m.] height`;
-                        } else {
-                            landingX = groundDist;
-                            landingY = 0;
-                            message = `${capKey} beam lands on ground at ${landingX.toFixed(2)} [m.]`;
-                        }
-                    } else {
-                        landingX = groundDist;
-                        landingY = 0;
-                        message = `${capKey} beam lands on ground at ${landingX.toFixed(2)} [m.]`;
-                    }
-
-                } else if (angle < 0) {
-                    if (!isNaN(B_DIST)) {
-                        const beamHeightAtBuilding = HA - B_DIST * Math.tan(toRadians(angle));
-                        if (beamHeightAtBuilding <= B_HEIGHT) {
-                            landingX = B_DIST;
-                            landingY = beamHeightAtBuilding;
-                            message = `${capKey} beam hits building front at ${landingY.toFixed(2)} [m.] height`;
-                        } else {
-                            landingX = 0;
-                            landingY = HA;
-                            message = `${capKey} beam flies over building – Not Landing`;
-                        }
-                    } else {
-                        message = `${capKey} beam goes upward – Not Landing`;
-                        landingX = 0;
-                        landingY = HA;
-                    }
-
+                let message;
+                if (beam.status === 'hit' && beam.surface === 'ground') {
+                    message = `${capKey} beam lands on ground at ${beam.hitPoint.x.toFixed(2)} [m.]`;
+                } else if (beam.status === 'hit' && beam.surface === 'front') {
+                    message = `${capKey} beam hits building front at ${beam.hitPoint.y.toFixed(2)} [m.] height`;
+                } else if (beam.status === 'hit' && beam.surface === 'roof') {
+                    message = `${capKey} beam hits building roof at ${beam.hitPoint.x.toFixed(2)} [m.] distance and ${beam.hitPoint.y.toFixed(2)} [m.] height`;
                 } else {
-                    if (!isNaN(B_DIST)) {
-                        landingX = B_DIST;
-                        landingY = HA;
-                        message = `${capKey} beam hits building front at ${landingY.toFixed(2)} [m.] height`;
-                    } else {
-                        landingX = 0;
-                        landingY = HA;
-                        message = `${capKey} beam is horizontal – Not Landing`;
-                    }
+                    message = `${capKey} beam ${beam.angle < 0 ? 'goes upward' : 'is horizontal'} – Not Landing`;
                 }
-
-                beam.landing = landingX;
-                beam.height = landingY;
                 beam.message = message;
-                maxX = Math.max(maxX, landingX, (isNaN(B_DIST) ? 0 : B_DIST + B_DEPTH));
 
                 resultsDiv.innerHTML += `<div style="color:${beam.color}">
                     ${capKey} Beam (Angle: ${angle.toFixed(1)}°)<br>
@@ -287,33 +503,21 @@
                 </div>`;
             }
 
-            /* Beam Width on Building */
-            if (!isNaN(B_DIST)) {
-                const mainAngleRad = toRadians(beams.main.angle);
-                const mainBeamHtAtBuilding = HA - B_DIST * Math.tan(mainAngleRad);
-                const halfHBWRad = toRadians(HBW / 2);
-                let beamWidthOnBuilding;
-
-                if (Math.abs(Math.sin(mainAngleRad)) < 0.0001) {
-                    beamWidthOnBuilding = 2 * B_DIST * Math.tan(halfHBWRad);
-                } else {
-                    beamWidthOnBuilding = 2 *
-                        ((mainBeamHtAtBuilding - HA) / Math.abs(Math.sin(mainAngleRad))) *
-                        Math.tan(halfHBWRad);
-                }
-
+            if (result.width) {
                 resultsDiv.innerHTML += `<div style="color:white; font-weight: bold;">
-                    Beam Width on Building: ${Math.abs(beamWidthOnBuilding).toFixed(2)} [m.]
+                    Projected face width at main-beam height: ${result.width.available
+                        ? `${result.width.value.toFixed(2)} [m.]`
+                        : `unavailable (${result.width.reason})`}
                 </div>`;
             }
 
-            draw(HA, beams, B_DIST, B_HEIGHT, B_DEPTH, maxX);
+            draw(inputs.ha, result.beams, result.building, result.plotExtent);
         }
 
         /* ============================================================
            DRAW
         ============================================================ */
-        function draw(HA, beams, B_DIST, B_HEIGHT, B_DEPTH, maxX) {
+        function draw(HA, beams, building, maxX) {
             const canvas = document.getElementById("plot");
             const ctx = canvas.getContext("2d");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -325,7 +529,7 @@
             let scaleX, scaleY, baseY;
 
             let maxHeight = HA;
-            if (!isNaN(B_HEIGHT)) maxHeight = Math.max(HA, B_HEIGHT);
+            if (building) maxHeight = Math.max(HA, building.height);
 
             if (siteType === "Macro") {
                 scaleX = (canvasW - margin * 2) / (maxX * 1.1);
@@ -376,10 +580,10 @@
             ctx.fillText(`${HA}m`, baseX - 10, antennaTopY + 4);
 
             /* Building */
-            if (!isNaN(B_DIST)) {
-                const bx = baseX + B_DIST * scaleX;
-                const bw = B_DEPTH * scaleX;
-                const bh = B_HEIGHT * scaleY;
+            if (building) {
+                const bx = baseX + building.distance * scaleX;
+                const bw = building.depth * scaleX;
+                const bh = building.height * scaleY;
 
                 /* Building fill */
                 const buildGrad = ctx.createLinearGradient(bx, baseY - bh, bx + bw, baseY);
@@ -397,8 +601,8 @@
                 ctx.fillStyle = "#222";
                 ctx.font = "11px 'IBM Plex Mono', monospace";
                 ctx.textAlign = "center";
-                ctx.fillText(`H=${B_HEIGHT.toFixed(0)}m`, bx + bw / 2, baseY - bh / 2 - 8);
-                ctx.fillText(`D=${B_DEPTH.toFixed(0)}m`, bx + bw / 2, baseY - bh / 2 + 8);
+                ctx.fillText(`H=${building.height.toFixed(0)}m`, bx + bw / 2, baseY - bh / 2 - 8);
+                ctx.fillText(`D=${building.depth.toFixed(0)}m`, bx + bw / 2, baseY - bh / 2 + 8);
             }
 
             /* Beams */
@@ -410,8 +614,8 @@
 
             let labelOffset = 0;
             for (const [key, beam] of Object.entries(beams)) {
-                const x = baseX + beam.landing * scaleX;
-                const y = baseY - beam.height * scaleY;
+                const x = baseX + beam.plotPoint.x * scaleX;
+                const y = baseY - beam.plotPoint.y * scaleY;
                 const c = beamColorMap[beam.color] || { stroke: beam.color, label: beam.color };
 
                 ctx.beginPath();
@@ -421,11 +625,13 @@
                 ctx.lineWidth = 2.5;
                 ctx.stroke();
 
-                /* Beam end dot */
-                ctx.beginPath();
-                ctx.arc(x, y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = c.stroke;
-                ctx.fill();
+                /* Physical hits get an end dot; clipped no-hit rays remain direction-only. */
+                if (beam.hitPoint) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = c.stroke;
+                    ctx.fill();
+                }
 
                 /* Beam label */
                 ctx.fillStyle = c.label;

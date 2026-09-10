@@ -449,6 +449,23 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+.hero-title-shiny {
+    display: inline-block;
+    white-space: normal;
+}
+
+.hero-title-shiny > br {
+    display: block;
+}
+
+.hero-title-shiny .hero-accent {
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    -webkit-text-fill-color: inherit;
+    color: inherit;
+}
+
 .hero-subtitle {
     font-size: 1.1rem;
     font-weight: 300;
@@ -659,12 +676,19 @@ body {
 .label-glyph { font-size: 1.1rem; filter: drop-shadow(0 0 4px var(--brass-glow)); }
 
 .section-title {
+    display: block;
     font-family: var(--font-display);
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 600;
     color: var(--parchment);
     margin-bottom: 40px;
     letter-spacing: -0.01em;
+}
+
+/* The shiny library uses inline-block for generic spans; section topics remain a new row. */
+h2.section-title.shiny-text[data-shiny-text] {
+    display: block;
+    width: 100%;
 }
 
 /* ─── 15. INSTRUMENT CARDS ─── */
@@ -780,6 +804,32 @@ body {
         repeating-linear-gradient(180deg, rgba(226, 198, 109, 0.14) 0 4px, transparent 4px 10px),
         rgba(201, 168, 76, 0.07);
 }
+
+.fi-tilt-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.fi-tilt-svg path,
+.fi-tilt-svg rect,
+.fi-tilt-svg circle {
+    vector-effect: non-scaling-stroke;
+}
+
+.fi-ground { stroke: rgba(85, 112, 128, 0.7); stroke-width: 1; fill: none; }
+.fi-mast { stroke: rgba(154, 154, 132, 0.85); stroke-width: 1.8; fill: none; }
+.fi-antenna { fill: rgba(226, 198, 109, 0.92); stroke: rgba(226, 198, 109, 0.92); }
+.fi-feed { stroke: var(--teal-light); stroke-width: 1.5; fill: none; stroke-linecap: round; }
+.fi-upper-beam { stroke: rgba(63, 182, 237, 0.95); stroke-width: 2; fill: none; }
+.fi-lower-beam { stroke: rgba(85, 216, 208, 0.95); stroke-width: 2; fill: none; }
+.fi-target { fill: rgba(104, 123, 98, 0.26); stroke: rgba(131, 148, 106, 0.85); stroke-width: 1.2; }
+.fi-target-lines { stroke: rgba(131, 148, 106, 0.7); stroke-width: 1; fill: none; }
+.fi-origin { fill: var(--brass-bright); filter: drop-shadow(0 0 4px rgba(226, 198, 109, 0.7)); }
+.fi-hit-upper { fill: rgba(63, 182, 237, 1); }
+.fi-hit-lower { fill: rgba(85, 216, 208, 1); }
 
 .fi-copy,
 .fi-status {
@@ -970,6 +1020,9 @@ body {
     vector-effect: non-scaling-stroke;
 }
 
+.polar-svg-beam-lower { stroke: rgba(85, 216, 208, 0.9); }
+.polar-svg-null { stroke: rgba(226, 198, 109, 0.75); stroke-width: 1; stroke-dasharray: 2 2; }
+
 .polar-svg-ring {
     fill: none;
     stroke: rgba(56, 189, 248, 0.26);
@@ -1084,6 +1137,29 @@ body {
 
 .ic-arrow { color: var(--text-dim); transition: all 0.3s ease; font-size: 1rem; }
 .instr-card:hover .ic-arrow { color: var(--brass-bright); transform: translateX(4px); }
+
+.instr-card-placeholder {
+    cursor: default;
+    border-style: dashed;
+    opacity: 0.72;
+}
+
+.instr-card-placeholder:hover {
+    transform: none;
+    border-color: var(--glass-border);
+    box-shadow: none;
+}
+
+.instr-card-placeholder .ic-glow,
+.instr-card-placeholder .card-schematic {
+    opacity: 0.18;
+}
+
+.instr-card-placeholder .ic-icon {
+    font-family: var(--font-tech);
+    font-size: 1.4rem;
+    line-height: 1;
+}
 
 /* Compact Card */
 .instr-compact {
@@ -1722,33 +1798,12 @@ body {
     color: var(--brass);
 }
 
-/* ─── 25. WARP FLASH ─── */
-.warp-flash {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0;
-    background: radial-gradient(ellipse at center, rgba(226,198,109,0.15) 0%, transparent 70%);
-}
-
-.warp-flash.warp-fire {
-    animation: warp-pulse 0.8s ease-out forwards;
-}
-
-@keyframes warp-pulse {
-    0% { opacity: 0; }
-    15% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-/* ─── 26. REDUCED MOTION ─── */
+/* ─── 25. REDUCED MOTION ─── */
 @media (prefers-reduced-motion: reduce) {
     .gc-ring, .cta-ring, .dust, .badge-pip, .cr-ind, .cta-gem,
     .orbital-plane, .orbital-orbit, .star, .nebula,
     .onav-ring,
-    .timeline-node::before,
-    .warp-flash {
+    .timeline-node::before {
         animation: none !important;
     }
     .section-content {
@@ -1759,10 +1814,9 @@ body {
     }
     .scroll-hint { display: none !important; }
     .btn-shine { display: none !important; }
-    .warp-flash { display: none !important; }
 }
 
-/* ─── 24. RESPONSIVE ─── */
+/* ─── 26. RESPONSIVE ─── */
 @media (max-width: 900px) {
     .instrument-grid-primary { grid-template-columns: 1fr; }
     .instrument-grid-secondary { grid-template-columns: 1fr; }

@@ -1,5 +1,6 @@
 .shiny-text[data-shiny-text] {
   display: inline-block;
+  white-space: normal;
   color: transparent;
   background-image: linear-gradient(
     var(--shiny-spread, 120deg),
@@ -15,6 +16,12 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shinyTextSweep var(--shiny-duration, 2s) linear var(--shiny-delay, 0s) infinite;
+}
+
+/* Preserve authored line breaks when the effect is applied to multi-line text. */
+.shiny-text[data-shiny-text] br {
+  display: block;
+  content: "";
 }
 
 .shiny-text[data-shiny-text][data-shiny-direction="right"] {

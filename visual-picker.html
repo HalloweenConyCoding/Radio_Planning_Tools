@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instrument Visual Picker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { color-scheme: dark; --ink: #07101a; --panel: #0d1724; --panel-2: #111d2b; --line: rgba(226,198,109,.24); --gold: #e2c66d; --cream: #f5ead6; --muted: #9aa6b7; --cyan: #55d8d0; --blue: #3fb6ed; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; color: var(--cream); background: radial-gradient(circle at 18% 12%, rgba(41,107,135,.16), transparent 28rem), radial-gradient(circle at 85% 78%, rgba(125,93,36,.13), transparent 30rem), var(--ink); font-family: Sora, sans-serif; }
+        body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .3; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(to bottom, #000, transparent 90%); }
+        main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 72px 0 90px; }
+        .eyebrow, .meta, .choice-note, button { font: 700 .72rem/1.2 "IBM Plex Mono", monospace; letter-spacing: .16em; text-transform: uppercase; }
+        .eyebrow { color: var(--gold); margin-bottom: 16px; }
+        h1 { margin: 0; max-width: 760px; font-size: clamp(2.1rem, 5vw, 4.4rem); line-height: 1.05; letter-spacing: -.045em; }
+        .intro { max-width: 720px; color: var(--muted); line-height: 1.75; margin: 20px 0 32px; }
+        .status { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--line); background: rgba(13,23,36,.75); color: var(--muted); }
+        .status strong { color: var(--gold); }
+        .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+        section { margin-top: 58px; }
+        .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; border-bottom: 1px solid rgba(226,198,109,.17); padding-bottom: 12px; }
+        h2 { margin: 0; font-size: clamp(1.25rem, 2.4vw, 1.8rem); letter-spacing: -.025em; }
+        .meta { color: var(--gold); font-size: .62rem; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .option { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 10px; border: 1px solid rgba(115,142,164,.25); background: linear-gradient(145deg, rgba(17,29,43,.96), rgba(8,16,26,.96)); cursor: pointer; transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease; }
+        .option:hover, .option:focus-within { border-color: rgba(226,198,109,.65); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.22); }
+        .option:has(input:checked) { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(226,198,109,.2), 0 12px 38px rgba(226,198,109,.12); }
+        .option input { position: absolute; opacity: 0; }
+        .preview { min-height: 220px; display: grid; place-items: center; overflow: hidden; border: 1px solid rgba(85,216,208,.11); background: radial-gradient(circle, rgba(30,69,89,.18), transparent 68%), #08121e; }
+        svg { width: 100%; height: 220px; }
+        .caption { display: flex; justify-content: space-between; gap: 10px; padding: 16px 8px 8px; }
+        .caption strong { font-size: .95rem; }
+        .choice-note { color: var(--muted); font-size: .58rem; letter-spacing: .1em; }
+        .option:has(input:checked) .choice-note { color: var(--cyan); }
+        .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 18px; color: var(--muted); font: .68rem "IBM Plex Mono", monospace; }
+        .legend span::before { content: ""; display: inline-block; width: 18px; height: 2px; margin: 0 7px 3px 0; background: var(--gold); }
+        .legend .upper::before { background: var(--blue); } .legend .lower::before { background: var(--cyan); } .legend .building::before { background: #83946a; }
+        @media (max-width: 760px) { main { width: min(100% - 24px, 520px); padding-top: 42px; } .grid { grid-template-columns: 1fr; } .preview { min-height: 190px; } svg { height: 190px; } .section-head { display: block; } .meta { display: block; margin-top: 8px; } }
+        @media (prefers-reduced-motion: reduce) { .option { transition: none; } }
+    </style>
+</head>
+<body>
+<main>
+    <div class="eyebrow">Coverage Planning Tools / Visual Review</div>
+    <h1>Choose the next instrument drawings</h1>
+    <p class="intro">Six redraws are shown in the same technical visual language as the landing page. Select one option in each group. The production cards remain unchanged until you approve the selections.</p>
+    <div class="status" role="status">Current selection: <strong id="selection">Tilt A / MSI A</strong></div>
+
+    <section>
+        <div class="section-head"><h2>Tilt Calculator</h2><span class="meta">3 beam geometry studies</span></div>
+        <div class="grid">
+            <label class="option"><input type="radio" name="tilt" value="Tilt A"><div class="preview"><svg viewBox="0 0 360 220" aria-label="Tower with antenna and two beams landing on a building"><path d="M62 194h235" stroke="#557080" opacity=".35"/><path d="M78 190L98 46M111 190L98 46M78 154h33M82 116h29M87 78h22" stroke="#9a9a84" stroke-width="3" fill="none"/><rect x="87" y="38" width="22" height="11" rx="2" fill="#e2c66d"/><path d="M98 38V24M91 29h14" stroke="#55d8d0" stroke-width="3" stroke-linecap="round"/><path d="M100 48L226 104L286 104" stroke="#3fb6ed" stroke-width="3" fill="none"/><path d="M100 48L206 174L286 174" stroke="#55d8d0" stroke-width="3" fill="none"/><rect x="224" y="82" width="64" height="92" fill="#687b62" fill-opacity=".24" stroke="#83946a" stroke-width="2"/><path d="M238 102h36M238 120h36M238 138h36M238 156h36" stroke="#83946a" opacity=".45"/><circle cx="100" cy="48" r="5" fill="#e2c66d"/><circle cx="286" cy="104" r="4" fill="#3fb6ed"/><circle cx="286" cy="174" r="4" fill="#55d8d0"/><text x="20" y="211" fill="#9aa6b7" font-size="10" font-family="monospace">BASE STATION</text><text x="234" y="193" fill="#9aa6b7" font-size="10" font-family="monospace">BUILDING</text></svg></div><div class="caption"><strong>A / Site elevation</strong><span class="choice-note">Select</span></div></label>
+            <label class="option"><input type="radio" name="tilt" value="Tilt B" checked><div class="preview"><svg viewBox="0 0 360 220" aria-label="Engineering elevation with antenna at tower top and two beam landing points"><path d="M24 194h310" stroke="#557080" opacity=".45"/><path d="M58 194L82 48M108 194L82 48M63 157h40M69 120h27M75 83h15" stroke="#9a9a84" stroke-width="3" fill="none"/><rect x="67" y="38" width="30" height="12" rx="2" fill="#e2c66d"/><path d="M82 38V22M74 27h16" stroke="#55d8d0" stroke-width="3" stroke-linecap="round"/><path d="M86 50L226 83M86 50L226 167" stroke="#3fb6ed" stroke-width="3" fill="none"/><path d="M226 63h70v131h-70z" fill="#687b62" fill-opacity=".23" stroke="#83946a" stroke-width="2"/><path d="M238 82h46M238 103h46M238 124h46M238 145h46M238 166h46" stroke="#83946a" opacity=".5"/><path d="M226 83h14M226 167h14" stroke="#e2c66d" stroke-width="3"/><path d="M96 50A27 27 0 0 1 116 45" stroke="#e2c66d" fill="none"/><path d="M102 50h25M102 50l16 11" stroke="#e2c66d" opacity=".8"/><circle cx="86" cy="50" r="5" fill="#e2c66d"/><circle cx="226" cy="83" r="4" fill="#3fb6ed"/><circle cx="226" cy="167" r="4" fill="#55d8d0"/><text x="22" y="211" fill="#9aa6b7" font-size="10" font-family="monospace">ANTENNA / 75° TILT</text><text x="240" y="211" fill="#9aa6b7" font-size="10" font-family="monospace">UPPER / LOWER</text></svg></div><div class="caption"><strong>B / Refined angle study</strong><span class="choice-note">Selected</span></div></label>
+            <label class="option"><input type="radio" name="tilt" value="Tilt C"><div class="preview"><svg viewBox="0 0 360 220" aria-label="Blueprint-style base station and building with upper and lower beams"><path d="M25 35h310M25 75h310M25 115h310M25 155h310M25 195h310M45 18v184M95 18v184M145 18v184M195 18v184M245 18v184M295 18v184" stroke="#3fb6ed" opacity=".09"/><path d="M67 192L86 53M103 192L86 53M72 148h29M77 103h20" stroke="#55d8d0" stroke-width="2" fill="none"/><path d="M86 53L230 88M86 53L230 171" stroke="#e2c66d" stroke-width="3" fill="none"/><path d="M226 73h67v119h-67z" fill="#83946a" fill-opacity=".16" stroke="#83946a"/><path d="M238 91h43M238 111h43M238 131h43M238 151h43M238 171h43" stroke="#83946a" opacity=".45"/><path d="M86 53v-19M78 40h16" stroke="#e2c66d" stroke-width="3"/><path d="M102 53A18 18 0 0 1 116 47" stroke="#3fb6ed" fill="none"/><text x="32" y="211" fill="#9aa6b7" font-size="10" font-family="monospace">ELEVATION / HBW</text><text x="238" y="211" fill="#9aa6b7" font-size="10" font-family="monospace">TARGET</text></svg></div><div class="caption"><strong>C / Blueprint</strong><span class="choice-note">Select</span></div></label>
+        </div>
+        <div class="legend"><span class="upper">Upper beam</span><span class="lower">Lower beam</span><span class="building">Building target</span></div>
+    </section>
+
+    <section>
+        <div class="section-head"><h2>Antenna MSI Plotter</h2><span class="meta">3 dual-beam pattern studies</span></div>
+        <div class="grid">
+            <label class="option"><input type="radio" name="msi" value="MSI A"><div class="preview"><svg viewBox="0 0 360 220" aria-label="Symmetric dual lobe antenna pattern"><g transform="translate(180 110)"><circle r="76" fill="none" stroke="#3fb6ed" opacity=".28"/><circle r="52" fill="none" stroke="#3fb6ed" opacity=".2"/><circle r="25" fill="none" stroke="#3fb6ed" opacity=".18"/><path d="M-92 0h184M0-92v184" stroke="#3fb6ed" opacity=".18"/><path d="M0 0C-18-9-31-30-69-35C-90-37-94-14-92 0C-94 14-90 37-69 35C-31 30-18 9 0 0ZM0 0C18-9 31-30 69-35C90-37 94-14 92 0C94 14 90 37 69 35C31 30 18 9 0 0Z" fill="#e2c66d" fill-opacity=".2" stroke="#e2c66d" stroke-width="3"/><circle r="5" fill="#55d8d0"/></g><text x="18" y="24" fill="#9aa6b7" font-size="10" font-family="monospace">DUAL LOBE / 180°</text></svg></div><div class="caption"><strong>A / Symmetric dual lobe</strong><span class="choice-note">Select</span></div></label>
+            <label class="option"><input type="radio" name="msi" value="MSI B" checked><div class="preview"><svg viewBox="0 0 360 220" aria-label="Forward-facing dual beam antenna pattern with two separated lobes and central null"><g transform="translate(158 110)"><path d="M-30 0h176M0-92v184" stroke="#3fb6ed" opacity=".18"/><circle r="76" fill="none" stroke="#3fb6ed" opacity=".24"/><circle r="48" fill="none" stroke="#3fb6ed" opacity=".16"/><path d="M0 0C15-8 28-31 57-61C71-76 96-67 98-48C100-25 78-10 27-2C18-1 12-1 0 0Z" fill="#55d8d0" fill-opacity=".24" stroke="#55d8d0" stroke-width="3"/><path d="M0 0C15 8 28 31 57 61C71 76 96 67 98 48C100 25 78 10 27 2C18 1 12 1 0 0Z" fill="#e2c66d" fill-opacity=".24" stroke="#e2c66d" stroke-width="3"/><path d="M0 0L32-2M0 0L32 2" stroke="#e2c66d" stroke-width="2" stroke-dasharray="3 3"/><circle r="5" fill="#e2c66d"/><path d="M105-76h12M111-82v12" stroke="#e2c66d"/><text x="-28" y="-102" fill="#9aa6b7" font-size="10" font-family="monospace">FORWARD SECTOR</text></g><text x="206" y="205" fill="#9aa6b7" font-size="10" font-family="monospace">UPPER / LOWER LOBE</text></svg></div><div class="caption"><strong>B / Refined forward split</strong><span class="choice-note">Selected</span></div></label>
+            <label class="option"><input type="radio" name="msi" value="MSI C"><div class="preview"><svg viewBox="0 0 360 220" aria-label="Measurement-style dual beam polar chart"><g transform="translate(180 110)"><circle r="82" fill="none" stroke="#3fb6ed" opacity=".3"/><circle r="58" fill="none" stroke="#3fb6ed" opacity=".2" stroke-dasharray="3 5"/><circle r="33" fill="none" stroke="#3fb6ed" opacity=".18"/><path d="M-92 0h184M0-92v184M-65-65L65 65M-65 65L65-65" stroke="#3fb6ed" opacity=".14"/><path d="M0 0C-9-7-18-23-39-49C-52-65-74-62-79-43C-85-20-57-7-17 0C-57 7-85 20-79 43C-74 62-52 65-39 49C-18 23-9 7 0 0ZM0 0C9-7 18-23 39-49C52-65 74-62 79-43C85-20 57-7 17 0C57 7 85 20 79 43C74 62 52 65 39 49C18 23 9 7 0 0Z" fill="#e2c66d" fill-opacity=".2" stroke="#e2c66d" stroke-width="2.5"/><circle r="4" fill="#55d8d0"/><path d="M0-94v-8M94 0h8M0 94v8M-94 0h-8" stroke="#e2c66d"/></g><text x="18" y="24" fill="#9aa6b7" font-size="10" font-family="monospace">POLAR / MEASURED</text></svg></div><div class="caption"><strong>C / Measurement plot</strong><span class="choice-note">Select</span></div></label>
+        </div>
+    </section>
+</main>
+<script>
+    const selection = document.getElementById('selection');
+    const updateSelection = () => {
+        const tilt = document.querySelector('input[name="tilt"]:checked').value;
+        const msi = document.querySelector('input[name="msi"]:checked').value;
+        selection.textContent = `${tilt} / ${msi}`;
+    };
+    document.querySelectorAll('input[type="radio"]').forEach((input) => input.addEventListener('change', updateSelection));
+</script>
+</body>
+</html>

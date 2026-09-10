@@ -23,6 +23,7 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="./main_page_style.css?v=20260526-2">
+    <link rel="stylesheet" href="./library/text/shiny_text/shiny_text.css">
 </head>
 
 <body>
@@ -67,11 +68,11 @@
             <div class="onav-ring onav-ring-2"></div>
             <div class="onav-center-dot"></div>
         </button>
-        <div class="onav-current-label" id="onavCurrentLabel">Archive Entrance</div>
+        <div class="onav-current-label" id="onavCurrentLabel">Tools Home</div>
         <div class="onav-menu" id="onavMenu">
             <a href="#hero" class="onav-item" data-nav="hero">
                 <span class="onav-orb"></span>
-                <span class="onav-label">Archive Entrance</span>
+                <span class="onav-label">Tools Home</span>
             </a>
             <a href="#planning" class="onav-item" data-nav="planning">
                 <span class="onav-orb"></span>
@@ -95,7 +96,7 @@
             </a>
             <a href="#archive" class="onav-item" data-nav="archive">
                 <span class="onav-orb"></span>
-                <span class="onav-label">Archive Console</span>
+                <span class="onav-label">System Status</span>
             </a>
             <a href="#cta" class="onav-item" data-nav="cta">
                 <span class="onav-orb"></span>
@@ -127,8 +128,7 @@
                 </div>
 
                 <h1 class="hero-title">
-                    Coverage<br>
-                    <span class="hero-accent">Planning Tools</span>
+                    <span class="hero-title-shiny" data-shiny-text data-shiny-speed="8" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">Coverage<br><span class="hero-accent">Planning Tools</span></span>
                 </h1>
 
                 <p class="hero-subtitle">Precision instruments for cell coverage analysis,<br>antenna visualization, and RF network planning</p>
@@ -162,9 +162,9 @@
                 <div class="hero-meta">
                     <span class="meta-item"><span class="meta-dot dot-live"></span> 4 Live</span>
                     <span class="meta-sep">&#8226;</span>
-                    <span class="meta-item"><span class="meta-dot dot-dev"></span> 5 In Development</span>
+                    <span class="meta-item"><span class="meta-dot dot-dev"></span> 6 In Development</span>
                     <span class="meta-sep">&#8226;</span>
-                    <span class="meta-item"><span class="meta-dot dot-legacy"></span> 4 Legacy</span>
+                    <span class="meta-item"><span class="meta-dot dot-legacy"></span> 0 Legacy</span>
                 </div>
             </div>
 
@@ -182,12 +182,23 @@
                     <span class="label-glyph">&#9881;</span>
                     <span>Planning Instruments</span>
                 </div>
-                <h2 class="section-title">Core Calculation Tools</h2>
+                <h2 class="section-title" data-shiny-text data-shiny-speed="4.5" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">Core Calculation Tools</h2>
 
                 <div class="featured-instrument">
                     <div class="fi-orbit" aria-hidden="true">
-                        <span class="fi-beam"></span>
-                        <span class="fi-building"></span>
+                        <svg class="fi-tilt-svg" viewBox="0 0 148 112" focusable="false">
+                            <path class="fi-ground" d="M12 96h124"></path>
+                            <path class="fi-mast" d="M30 96L46 28M62 96L46 28M33 78h26M37 59h18M41 40h10"></path>
+                            <rect class="fi-antenna" x="37" y="22" width="18" height="8" rx="1"></rect>
+                            <path class="fi-feed" d="M46 22V12M41 16h10"></path>
+                            <path class="fi-upper-beam" d="M50 30L101 44L130 44"></path>
+                            <path class="fi-lower-beam" d="M50 30L101 86L130 86"></path>
+                            <rect class="fi-target" x="100" y="36" width="30" height="60"></rect>
+                            <path class="fi-target-lines" d="M106 47h18M106 59h18M106 71h18M106 83h18"></path>
+                            <circle class="fi-origin" cx="50" cy="30" r="3"></circle>
+                            <circle class="fi-hit-upper" cx="101" cy="44" r="2.5"></circle>
+                            <circle class="fi-hit-lower" cx="101" cy="86" r="2.5"></circle>
+                        </svg>
                     </div>
                     <div class="fi-copy">
                         <span class="fi-kicker">Featured stable instrument</span>
@@ -195,7 +206,7 @@
                         <p>Primary beam-landing calculator for HBW, site geometry, and building-front coverage checks.</p>
                         <div class="fi-actions">
                             <a href="tools/tilt-calculator/ACTIVE/cell_coverage_calculator.html">Enter Page</a>
-                            <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v5.html">Try Older Version</a>
+                            <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html">Try V6.1</a>
                             <a href="#timeline">View Versions</a>
                         </div>
                     </div>
@@ -206,26 +217,6 @@
                 </div>
 
                 <div class="instrument-grid instrument-grid-primary">
-                    <a href="tools/tilt-calculator/ACTIVE/cell_coverage_calculator.html" class="instr-card instr-primary">
-                        <div class="ic-glow"></div>
-                        <div class="card-schematic schematic-tilt" aria-hidden="true">
-                            <span class="schem-line schem-line-a"></span>
-                            <span class="schem-line schem-line-b"></span>
-                            <span class="schem-node schem-node-a"></span>
-                            <span class="schem-node schem-node-b"></span>
-                            <span class="schem-block"></span>
-                        </div>
-                        <div class="ic-top">
-                            <div class="ic-icon icon-brass">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
-                            </div>
-                            <div class="ic-badge badge-stable"><span class="badge-pip"></span>Stable</div>
-                        </div>
-                        <h3 class="ic-title">Tilt Calculator <span class="ic-ver">V7</span></h3>
-                        <p class="ic-desc">Calculate beam width landing on building front using HBW and building dimensions</p>
-                        <div class="ic-footer"><span class="ic-action">Open Instrument</span><span class="ic-arrow">&#8594;</span></div>
-                    </a>
-
                     <a href="tools/antenna-msi-plotter/msi_plotter.html" class="instr-card instr-primary">
                         <div class="ic-glow"></div>
                         <div class="card-schematic schematic-polar" aria-hidden="true">
@@ -248,12 +239,13 @@
                                     <circle class="polar-svg-ring polar-svg-ring-a" r="36"></circle>
                                     <circle class="polar-svg-ring polar-svg-ring-b" r="25"></circle>
                                     <circle class="polar-svg-ring polar-svg-ring-c" r="13"></circle>
-                                    <line class="polar-svg-axis" x1="-36" y1="0" x2="36" y2="0"></line>
+                                    <line class="polar-svg-axis" x1="-4" y1="0" x2="66" y2="0"></line>
                                     <line class="polar-svg-axis" x1="0" y1="-36" x2="0" y2="36"></line>
-                                    <line class="polar-svg-guide" x1="0" y1="0" x2="-25" y2="-25"></line>
                                     <line class="polar-svg-guide" x1="0" y1="0" x2="25" y2="-25"></line>
-                                    <path class="polar-svg-beam" d="M 0 0 C -4.8 -4.8, -11.4 -12.7, -19.3 -21.1 C -25.5 -27.7, -32.9 -21.9, -34.7 -13.6 C -36.9 -2.2, -29.0 4.4, -18.4 5.7 C -10.5 6.6, -4.0 3.5, 0 0 Z" fill="url(#msiBeamFill)" fill-opacity="0.95" stroke="rgba(245, 201, 107, 0.78)" stroke-width="1.4"></path>
-                                    <path class="polar-svg-beam" d="M 0 0 C 4.8 -4.8, 11.4 -12.7, 19.3 -21.1 C 25.5 -27.7, 32.9 -21.9, 34.7 -13.6 C 36.9 -2.2, 29.0 4.4, 18.4 5.7 C 10.5 6.6, 4.0 3.5, 0 0 Z" fill="url(#msiBeamFill)" fill-opacity="0.95" stroke="rgba(245, 201, 107, 0.78)" stroke-width="1.4"></path>
+                                    <line class="polar-svg-guide" x1="0" y1="0" x2="25" y2="25"></line>
+                                    <path class="polar-svg-beam" d="M 0 0 C 7 -2, 13 -14, 28 -27 C 38 -36, 51 -32, 53 -23 C 55 -13, 42 -5, 16 -1 C 10 0, 5 0, 0 0 Z"></path>
+                                    <path class="polar-svg-beam polar-svg-beam-lower" d="M 0 0 C 7 2, 13 14, 28 27 C 38 36, 51 32, 53 23 C 55 13, 42 5, 16 1 C 10 0, 5 0, 0 0 Z"></path>
+                                    <line class="polar-svg-null" x1="0" y1="0" x2="31" y2="0"></line>
                                     <circle class="polar-svg-dash-ring" r="20"></circle>
                                     <circle class="polar-svg-origin-halo" r="4.4"></circle>
                                     <circle class="polar-svg-origin" r="2.1"></circle>
@@ -270,6 +262,23 @@
                         <p class="ic-desc">Visualize antenna radiation patterns from MSI file data with precision plotting</p>
                         <div class="ic-footer"><span class="ic-action">Open Instrument</span><span class="ic-arrow">&#8594;</span></div>
                     </a>
+
+                    <div class="instr-card instr-primary instr-card-placeholder" aria-label="Temporary reserved tool slot">
+                        <div class="ic-glow"></div>
+                        <div class="card-schematic schematic-tilt" aria-hidden="true">
+                            <span class="schem-line schem-line-a"></span>
+                            <span class="schem-line schem-line-b"></span>
+                            <span class="schem-node schem-node-a"></span>
+                            <span class="schem-node schem-node-b"></span>
+                        </div>
+                        <div class="ic-top">
+                            <div class="ic-icon icon-brass" aria-hidden="true">+</div>
+                            <div class="ic-badge badge-wip"><span class="badge-pip"></span>Reserved</div>
+                        </div>
+                        <h3 class="ic-title">Future Planning Tool</h3>
+                        <p class="ic-desc">Temporary slot reserved for the next calculation page.</p>
+                        <div class="ic-footer"><span class="ic-action">Coming Later</span><span class="ic-arrow" aria-hidden="true">&#8230;</span></div>
+                    </div>
                 </div>
 
             </div>
@@ -283,7 +292,7 @@
                     <span class="label-glyph">&#9881;</span>
                     <span>Supplementary Instruments</span>
                 </div>
-                <h2 class="section-title">Support Utilities</h2>
+                <h2 class="section-title" data-shiny-text data-shiny-speed="4.5" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">Support Utilities</h2>
 
                 <div class="instrument-grid instrument-grid-secondary">
                     <a href="tools/custom-tools/map_doodle.html" class="instr-card instr-compact">
@@ -333,7 +342,7 @@
                     <span class="label-glyph">&#9881;</span>
                     <span>Operating Flow</span>
                 </div>
-                <h2 class="section-title">From Field Question to Planning Evidence</h2>
+                <h2 class="section-title" data-shiny-text data-shiny-speed="4.5" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">From Field Question to Planning Evidence</h2>
 
                 <div class="process-flow">
                     <div class="process-step" data-step="1">
@@ -390,7 +399,7 @@
                     <span class="label-glyph">&#9881;</span>
                     <span>Experimental Bench</span>
                 </div>
-                <h2 class="section-title">In Development</h2>
+                <h2 class="section-title" data-shiny-text data-shiny-speed="4.5" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">In Development</h2>
 
                 <div class="dev-list">
                     <a href="tools/tilt-calculator/v6_1/cell_coverage_calculator_v6_1.html" class="dev-row">
@@ -452,7 +461,7 @@
                     <span class="label-glyph">&#9881;</span>
                     <span>Version Timeline</span>
                 </div>
-                <h2 class="section-title">Instrument Lineage</h2>
+                <h2 class="section-title" data-shiny-text data-shiny-speed="4.5" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">Instrument Lineage</h2>
 
                 <div class="timeline-stack">
                     <div class="timeline-lane">
@@ -519,14 +528,14 @@
             </div>
         </section>
 
-        <!-- ═══════ SECTION 7: ARCHIVE & LEGACY ═══════ -->
+        <!-- ═══════ SECTION 7: SYSTEM STATUS ═══════ -->
         <section class="scroll-section archive-section" id="archive" data-section="archive" data-theme="archive">
             <div class="section-content">
                 <div class="section-label">
                     <span class="label-glyph">&#9881;</span>
-                    <span>Archive Console</span>
+                    <span>System Monitor</span>
                 </div>
-                <h2 class="section-title">System Status</h2>
+                <h2 class="section-title" data-shiny-text data-shiny-speed="4.5" data-shiny-color="#6e5828" data-shiny-color-shine="#f5ead6" data-shiny-spread="115" data-shiny-yoyo="true">System Status</h2>
 
                 <div class="console-panel">
                     <div class="console-bar">
@@ -536,38 +545,16 @@
                     <div class="console-body">
                         <div class="cr"><span class="cr-k">SYS.STATUS</span><span class="cr-v v-live">ONLINE</span><span class="cr-bar"><span class="cr-fill cr-fill-full"></span></span></div>
                         <div class="cr"><span class="cr-k">ACTIVE.INSTR</span><span class="cr-v">4</span><span class="cr-bar"><span class="cr-fill" style="width:66%"></span></span></div>
-                        <div class="cr"><span class="cr-k">DEV.PIPELINE</span><span class="cr-v v-amber">5</span><span class="cr-bar"><span class="cr-fill cr-fill-amber" style="width:40%"></span></span></div>
-                        <div class="cr"><span class="cr-k">LEGACY.VER</span><span class="cr-v v-dim">4</span><span class="cr-bar"><span class="cr-fill cr-fill-dim" style="width:25%"></span></span></div>
+                        <div class="cr"><span class="cr-k">DEV.PIPELINE</span><span class="cr-v v-amber">6</span><span class="cr-bar"><span class="cr-fill cr-fill-amber" style="width:50%"></span></span></div>
+                        <div class="cr"><span class="cr-k">LEGACY.VER</span><span class="cr-v v-dim">0</span><span class="cr-bar"><span class="cr-fill cr-fill-dim" style="width:0%"></span></span></div>
                         <div class="cr-sep"></div>
-                        <div class="cr"><span class="cr-k">TILT.CALC.V5</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
+                        <div class="cr"><span class="cr-k">TILT.CALC.V7</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
                         <div class="cr"><span class="cr-k">MSI.PLOTTER</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
                         <div class="cr"><span class="cr-k">MAP.DRAW</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
                         <div class="cr"><span class="cr-k">PWR.CONVERT</span><span class="cr-v v-live">LIVE</span><span class="cr-ind ind-live"></span></div>
                     </div>
                 </div>
 
-                <!-- Legacy Versions -->
-                <div class="legacy-block">
-                    <div class="legacy-header">Legacy Archive</div>
-                    <div class="legacy-list">
-                        <a href="tools/tilt-calculator/v4/cell_coverage_calculator_v4.html" class="legacy-row">
-                            <span class="legacy-ver">V4</span>
-                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V4</span><span class="legacy-detail">Black Theme UI + Adaptive picture scaling</span></div>
-                        </a>
-                        <a href="tools/tilt-calculator/v3/cell_coverage_calculator_v3.html" class="legacy-row">
-                            <span class="legacy-ver">V3</span>
-                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V3</span><span class="legacy-detail">Black Theme UI + Adaptive picture scaling</span></div>
-                        </a>
-                        <a href="tools/tilt-calculator/v2/cell_coverage_calculator_v2.html" class="legacy-row">
-                            <span class="legacy-ver">V2</span>
-                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V2</span><span class="legacy-detail">Drawing scaling fix + Macro/Small Cell switch</span></div>
-                        </a>
-                        <a href="tools/tilt-calculator/v1/cell_coverage_calculator_v1.html" class="legacy-row">
-                            <span class="legacy-ver">V1</span>
-                            <div class="legacy-info"><span class="legacy-name">Tilt Calculator V1</span><span class="legacy-detail">Initial release — rendering glitch resolved in V2</span></div>
-                        </a>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -600,6 +587,8 @@
         </div>
     </footer>
 
+    <script src="./library/text/shiny_text/shiny_text.js"></script>
+
     <script>
     (function() {
         'use strict';
@@ -621,12 +610,6 @@
             cta:          'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 80% 80%, rgba(226,198,109,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 20% 70%, rgba(201,168,76,0.04) 0%, transparent 60%)'
         };
 
-        // Warp flash element
-        var warpFlash = document.createElement('div');
-        warpFlash.className = 'warp-flash';
-        warpFlash.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(warpFlash);
-
         var sectionObs = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
@@ -634,10 +617,6 @@
                     // Zone transition: shift atmospheric color
                     var theme = entry.target.getAttribute('data-theme');
                     if (theme && theme !== currentTheme && atmoGradient) {
-                        // Fire warp flash
-                        warpFlash.classList.remove('warp-fire');
-                        void warpFlash.offsetWidth; // reflow
-                        warpFlash.classList.add('warp-fire');
                         currentTheme = theme;
                         atmoGradient.style.background = themeColors[theme] || themeColors.hero;
                     }

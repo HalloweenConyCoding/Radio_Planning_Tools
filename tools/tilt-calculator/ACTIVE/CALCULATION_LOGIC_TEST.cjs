@@ -152,7 +152,6 @@ function testValidationAndClearing() {
     { bheight: '', bdistance: '100' }, { bdepth: '', bdistance: '100' }, { bdistance: '-10' },
     { bdistance: '0' }, { bdistance: '100', bdepth: '-30' }, { vbw: '-6.5' },
     { bdistance: '100', hbw: '-60' }, { bdistance: '100', hbw: '180' },
-    { mtilt: '100', etilt: '0', vbw: '10' }, { mtilt: '90', etilt: '0', vbw: '6' },
     { ha: '-1' }
   ];
   for (const overrides of invalidCases) {
@@ -214,7 +213,7 @@ function testSiteTypeScalingAdapters() {
 }
 
 function testOverflowIsInvalid() {
-  const derivedAngleOverflow = run({ ha: '1e308', mtilt: '89.99999999999999', etilt: '0', vbw: '0.0000000000001', hbw: '60' });
+  const derivedAngleOverflow = run({ ha: '1e308', mtilt: '0.0000000000001', etilt: '0', vbw: '0.0000000000001', hbw: '60' });
   assert.equal(derivedAngleOverflow.drawArgs, null);
   assert.ok(derivedAngleOverflow.alerts.length > 0);
 
@@ -246,6 +245,45 @@ function testTinyHeightVerticalClip() {
       assert.ok(Number.isFinite(beam(result, name).plotPoint.y));
     }
   }
+}
+
+function testExactVerticalBoundaryRays() {
+  const downward = run({
+    ha: 500, mtilt: 75, etilt: 0, vbw: 30, hbw: 30,
+    bdistance: 40, bheight: 200, bdepth: 100
+  }, '', 'Small');
+  assert.equal(downward.alerts.length, 0);
+  const lower = beam(downward, 'lower');
+  assert.equal(lower.angle, 90);
+  assert.equal(lower.status, 'hit');
+  assert.equal(lower.surface, 'ground');
+  assertNear(lower.hitPoint.x, 0, 1e-12, 'exact downward vertical x');
+  assertNear(lower.hitPoint.y, 0, 1e-12, 'exact downward vertical y');
+  assertFiniteCanvas(downward, 'exact downward vertical');
+
+  const upward = run({ ha: 30, mtilt: -75, etilt: 0, vbw: 30, hbw: 30 });
+  assert.equal(upward.alerts.length, 0);
+  const upper = beam(upward, 'upper');
+  assert.equal(upper.angle, -90);
+  assert.equal(upper.status, 'no_forward_hit');
+  assert.equal(upper.hitPoint, null);
+  assert.ok(Number.isFinite(upper.plotPoint.x));
+  assert.ok(Number.isFinite(upper.plotPoint.y));
+  assertFiniteCanvas(upward, 'exact upward vertical');
+
+  const backward = run({ ha: 30, mtilt: 95, etilt: 0, vbw: 2, hbw: 30 });
+  assert.equal(backward.alerts.length, 0);
+  for (const name of ['upper', 'main', 'lower']) {
+    const ray = beam(backward, name);
+    assert.ok(ray.angle > 90);
+    assert.equal(ray.status, 'no_forward_hit');
+    assert.equal(ray.hitPoint, null);
+    assert.ok(Number.isFinite(ray.plotPoint.x));
+    assert.ok(Number.isFinite(ray.plotPoint.y));
+    assert.ok(ray.plotPoint.x < 0, `${name} should be clipped behind the antenna`);
+  }
+  assert.match(textOf(backward), /points backward/);
+  assertFiniteCanvas(backward, 'backward rays');
 }
 
 function testMatrixAndScaleInvariant() {
@@ -294,6 +332,7 @@ const tests = [
   testOverflowIsInvalid,
   testDistantFrontTolerance,
   testTinyHeightVerticalClip,
+  testExactVerticalBoundaryRays,
   testMatrixAndScaleInvariant
 ];
 

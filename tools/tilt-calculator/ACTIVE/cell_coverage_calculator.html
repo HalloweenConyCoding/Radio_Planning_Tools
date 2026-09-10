@@ -14,6 +14,8 @@
 
     <link rel="stylesheet" href="../../../library/text/shiny_text/shiny_text.css">
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+
     <!-- External CSS -->
     <link rel="stylesheet" href="cell_coverage_calculator_style.css">
 
@@ -151,6 +153,32 @@
 
         </div>
 
+        <!-- ===== MAP PREVIEW PANEL ===== -->
+        <section id="map-preview" class="panel map-preview-panel" aria-labelledby="map-preview-title">
+            <div class="map-preview-heading">
+                <div>
+                    <h3 id="map-preview-title" class="panel-title">Map Preview</h3>
+                    <p class="map-preview-intro">Project the calculated coverage beam from a real antenna site.</p>
+                </div>
+                <span class="map-preview-mode">GROUND RANGE ONLY</span>
+            </div>
+
+            <div class="map-preview-controls" aria-label="Map preview controls">
+                <div class="map-input-group map-coordinate-group">
+                    <label for="map-coordinates">Coordinates (lat, lng)</label>
+                    <input id="map-coordinates" type="text" inputmode="decimal" value="13.98937472, 100.61781242" placeholder="e.g. 13.98937472, 100.61781242" autocomplete="off">
+                </div>
+                <div class="map-input-group">
+                    <label for="map-azimuth">Azimuth / Direction (°)</label>
+                    <input id="map-azimuth" type="number" inputmode="decimal" value="0" min="0" max="360" step="any" autocomplete="off">
+                </div>
+                <button id="plot-beam" class="plot-beam-button" type="button">Plot Beam</button>
+            </div>
+
+            <p id="map-status" class="map-status" role="status" aria-live="polite">Run Calculate Coverage to enable the map preview.</p>
+            <div id="beam-map" class="beam-map" role="application" aria-label="Coverage beam map preview"></div>
+        </section>
+
         <!-- ===== INFO / DOCS PANEL ===== -->
         <div id="readme" class="panel info-panel reveal-section">
             <h3 class="panel-title">System Documentation</h3>
@@ -176,6 +204,7 @@
     </div><!-- /.app-container -->
 
     <script src="../../../library/text/shiny_text/shiny_text.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         /* ============================================================
            UTILITY
@@ -193,10 +222,428 @@
            a horizontal ray into a false front hit. */
         const GEOMETRY_EPSILON = Number.EPSILON * 32;
         const PLOT_CLIP_DISTANCE = 1e6;
+        const NON_FORWARD_CLIP_DISTANCE = 20;
 
         function readInputNumber(id) {
             const raw = String(document.getElementById(id).value ?? '').trim();
             return raw === '' ? null : Number(raw);
+        }
+
+        /* ============================================================
+           MAP PREVIEW
+           The preview is deliberately separate from the protected canvas
+           calculation. Only finite ground hitPoint.x values become physical
+           map distances; all other beam portions terminate at the display
+           edge without inventing a distance.
+        ============================================================ */
+        const TILT_MAP_ORDER = ['lower', 'main', 'upper'];
+        const TILT_MAP_COLORS = { lower: '#c7ff2f', main: '#ffc247', upper: '#35e6ff' };
+        const TILT_MAP_CASING_COLOR = '#07131f';
+        const TILT_MAP_COVERAGE_COLORS = [
+            { color: '#ff4d5a', ratio: 1 },
+            { color: '#ffe45e', ratio: 0.67 },
+            { color: '#32e875', ratio: 0.34 }
+        ];
+        const TILT_MAP_EARTH_RADIUS_M = 6371008.8;
+        const TILT_MAP_MIN_DISPLAY_RANGE_M = 250;
+        const TILT_MAP_MAX_DISPLAY_RANGE_M = 500000;
+        const TILT_MAP_EDGE_MARGIN = 1.12;
+        const tiltMapState = {
+            map: null,
+            overlays: null,
+            tileLayer: null,
+            tileError: false,
+            hasValidCalculation: false,
+            isStale: false,
+            calculationResult: null,
+            calculatorSnapshot: null
+        };
+
+        function getTiltMapColors() {
+            return { ...TILT_MAP_COLORS };
+        }
+
+        function parseMapCoordinatePair(value) {
+            const raw = String(value ?? '').trim();
+            if (!raw) return null;
+            const commaParts = raw.split(',');
+            if (commaParts.length > 2) return null;
+            const tokens = commaParts
+                .flatMap((part) => part.trim().split(/\s+/))
+                .filter(Boolean);
+            if (tokens.length !== 2) return null;
+            const latitude = Number(tokens[0]);
+            const longitude = Number(tokens[1]);
+            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+            return { latitude, longitude };
+        }
+
+        function setMapStatus(message, state = 'neutral') {
+            const status = document.getElementById('map-status');
+            if (!status) return;
+            status.textContent = message;
+            if (status.dataset) status.dataset.state = state;
+        }
+
+        function groundHitDistance(beam) {
+            if (!beam || beam.status !== 'hit' || beam.surface !== 'ground' || !beam.hitPoint) return null;
+            const distance = beam.hitPoint.x;
+            return Number.isFinite(distance) && distance >= 0 ? distance : null;
+        }
+
+        function getMapDisplayRange(beams) {
+            const groundDistances = TILT_MAP_ORDER
+                .map((key) => groundHitDistance(beams && beams[key]))
+                .filter((distance) => distance !== null);
+            if (groundDistances.length === 0) return TILT_MAP_MIN_DISPLAY_RANGE_M;
+            const furthest = Math.max(...groundDistances);
+            return Math.min(
+                TILT_MAP_MAX_DISPLAY_RANGE_M,
+                Math.max(TILT_MAP_MIN_DISPLAY_RANGE_M, furthest * TILT_MAP_EDGE_MARGIN)
+            );
+        }
+
+        function buildMapBeamSegments(beams, maxDisplayRange) {
+            if (!Number.isFinite(maxDisplayRange) || maxDisplayRange <= 0) {
+                throw new Error('Map display range must be a finite positive distance.');
+            }
+
+            let cursor = 0;
+            return TILT_MAP_ORDER.map((key) => {
+                const beam = beams && beams[key];
+                const groundDistance = groundHitDistance(beam);
+                const hasGroundContact = groundDistance !== null;
+                const endDistance = hasGroundContact
+                    ? Math.max(cursor, Math.min(maxDisplayRange, groundDistance))
+                    : maxDisplayRange;
+                const segment = {
+                    key,
+                    color: (beam && beam.color) || key,
+                    startDistance: cursor,
+                    endDistance,
+                    groundDistance,
+                    hasGroundContact,
+                    label: hasGroundContact ? `Ground contact at ${groundDistance.toFixed(1)} m` : 'No ground contact'
+                };
+                cursor = endDistance;
+                return segment;
+            });
+        }
+
+        function normalizeMapLongitude(longitude) {
+            return ((longitude + 540) % 360) - 180;
+        }
+
+        function mapDestinationPoint(latitude, longitude, bearing, distance) {
+            const angularDistance = distance / TILT_MAP_EARTH_RADIUS_M;
+            const latitudeRadians = toRadians(latitude);
+            const bearingRadians = toRadians(bearing);
+            const sinLatitude = Math.sin(latitudeRadians);
+            const cosLatitude = Math.cos(latitudeRadians);
+            const sinAngularDistance = Math.sin(angularDistance);
+            const cosAngularDistance = Math.cos(angularDistance);
+            const destinationLatitude = Math.asin(Math.max(-1, Math.min(1,
+                sinLatitude * cosAngularDistance + cosLatitude * sinAngularDistance * Math.cos(bearingRadians)
+            )));
+            const destinationLongitude = toRadians(longitude) + Math.atan2(
+                Math.sin(bearingRadians) * sinAngularDistance * cosLatitude,
+                cosAngularDistance - sinLatitude * Math.sin(destinationLatitude)
+            );
+            const result = {
+                lat: destinationLatitude * 180 / Math.PI,
+                lng: normalizeMapLongitude(destinationLongitude * 180 / Math.PI)
+            };
+            if (!Number.isFinite(result.lat) || !Number.isFinite(result.lng)) {
+                return null;
+            }
+            return result;
+        }
+
+        function buildMapCoverageSector(origin, azimuth, horizontalBeamWidth, distance, sampleCount = 24) {
+            if (!origin || !Number.isFinite(origin.lat) || !Number.isFinite(origin.lng) ||
+                !Number.isFinite(azimuth) || !Number.isFinite(horizontalBeamWidth) ||
+                !Number.isFinite(distance) || distance <= 0 || horizontalBeamWidth <= 0 ||
+                horizontalBeamWidth >= 180 || !Number.isInteger(sampleCount) || sampleCount < 2) {
+                return null;
+            }
+
+            const points = [[origin.lat, origin.lng]];
+            const startBearing = azimuth - horizontalBeamWidth / 2;
+            for (let index = 0; index <= sampleCount; index += 1) {
+                const fraction = index / sampleCount;
+                const bearing = startBearing + horizontalBeamWidth * fraction;
+                const destination = mapDestinationPoint(origin.lat, origin.lng, bearing, distance);
+                if (!destination) return null;
+                points.push([
+                    destination.lat,
+                    unwrapMapLongitude(destination.lng, origin.lng)
+                ]);
+            }
+            return points;
+        }
+
+        function buildMapCoverageGradientLayers(origin, azimuth, horizontalBeamWidth, distance, sampleCount = 24) {
+            if (!Number.isFinite(distance) || distance <= 0) return null;
+            return TILT_MAP_COVERAGE_COLORS.map(({ color, ratio }) => {
+                const layerDistance = Math.max(1, Math.round(distance * ratio));
+                return {
+                    color,
+                    distance: layerDistance,
+                    points: buildMapCoverageSector(origin, azimuth, horizontalBeamWidth, layerDistance, sampleCount)
+                };
+            });
+        }
+
+        function unwrapMapLongitude(longitude, referenceLongitude) {
+            return longitude + 360 * Math.round((referenceLongitude - longitude) / 360);
+        }
+
+        function validateMapInputs() {
+            const coordinateField = document.getElementById('map-coordinates');
+            const coordinatePair = parseMapCoordinatePair(coordinateField && coordinateField.value);
+            const rawAzimuthField = document.getElementById('map-azimuth');
+            const rawAzimuthValue = String(rawAzimuthField && rawAzimuthField.value || '').trim();
+            const rawAzimuth = rawAzimuthValue === '' ? null : Number(rawAzimuthValue);
+            const latitude = coordinatePair && coordinatePair.latitude;
+            const longitude = coordinatePair && coordinatePair.longitude;
+            if (!coordinatePair) {
+                return { valid: false, error: 'Coordinates must be two decimal-degree numbers, for example 13.98937472, 100.61781242.' };
+            }
+            if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+                return { valid: false, error: 'Latitude must be a finite number from -90 to 90 degrees.' };
+            }
+            if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+                return { valid: false, error: 'Longitude must be a finite number from -180 to 180 degrees.' };
+            }
+            if (!Number.isFinite(rawAzimuth) || rawAzimuth < 0 || rawAzimuth > 360) {
+                return { valid: false, error: 'Azimuth / Direction must be a finite number from 0 to 360 degrees.' };
+            }
+            return {
+                valid: true,
+                latitude,
+                longitude,
+                azimuth: rawAzimuth === 360 ? 0 : rawAzimuth
+            };
+        }
+
+        function calculatorInputSnapshot() {
+            return [
+                'ha', 'mtilt', 'etilt', 'vbw', 'hbw', 'bdistance', 'bheight', 'bdepth'
+            ].map((id) => `${id}=${String(document.getElementById(id).value ?? '')}`).concat(
+                `siteType=${getSelectedSiteType()}`
+            ).join('|');
+        }
+
+        function clearMapPreviewLayers() {
+            if (tiltMapState.overlays) tiltMapState.overlays.clearLayers();
+        }
+
+        function invalidateMapPreview() {
+            tiltMapState.hasValidCalculation = false;
+            tiltMapState.isStale = true;
+            tiltMapState.calculationResult = null;
+            tiltMapState.calculatorSnapshot = null;
+            clearMapPreviewLayers();
+        }
+
+        function markMapPreviewStale() {
+            if (!tiltMapState.hasValidCalculation) return;
+            tiltMapState.isStale = true;
+            clearMapPreviewLayers();
+            setMapStatus('Calculator inputs changed. Run Calculate Coverage again before plotting this beam.', 'stale');
+        }
+
+        function createTiltSiteIcon() {
+            return L.divIcon({
+                className: 'tilt-map-site-icon',
+                html: '<span class="tilt-map-site-marker" role="img" aria-label="Antenna site"><span class="tilt-map-site-signal"></span><span class="tilt-map-site-body"></span></span>',
+                iconSize: [44, 44],
+                iconAnchor: [22, 22],
+                tooltipAnchor: [0, -22]
+            });
+        }
+
+        function createMapLabelIcon(text) {
+            return L.divIcon({
+                className: 'tilt-map-label-icon',
+                html: `<span>${text}</span>`,
+                iconSize: null
+            });
+        }
+
+        function segmentLatLngs(origin, azimuth, segment) {
+            const start = mapDestinationPoint(origin.lat, origin.lng, azimuth, segment.startDistance);
+            const end = mapDestinationPoint(origin.lat, origin.lng, azimuth, segment.endDistance);
+            if (!start || !end) return null;
+            end.lng = unwrapMapLongitude(end.lng, start.lng);
+            return [[start.lat, start.lng], [end.lat, end.lng]];
+        }
+
+        function initBeamMap() {
+            const mapElement = document.getElementById('beam-map');
+            if (!mapElement || typeof L === 'undefined') {
+                setMapStatus('Map imagery is unavailable. The controls remain usable, but Leaflet could not be loaded.', 'warning');
+                return;
+            }
+            try {
+                tiltMapState.map = L.map(mapElement, {
+                    zoomControl: true,
+                    worldCopyJump: true,
+                    minZoom: 1,
+                    maxZoom: 19
+                });
+                tiltMapState.tileLayer = L.tileLayer(
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    {
+                        maxZoom: 19,
+                        attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+                    }
+                ).addTo(tiltMapState.map);
+                tiltMapState.tileLayer.on('tileerror', () => {
+                    tiltMapState.tileError = true;
+                    setMapStatus('Satellite imagery is unavailable. Beam overlays and map controls remain available on the fallback base.', 'warning');
+                });
+                tiltMapState.overlays = L.layerGroup().addTo(tiltMapState.map);
+                tiltMapState.map.setView([13.98937472, 100.61781242], 15);
+            } catch (error) {
+                tiltMapState.map = null;
+                setMapStatus('Map preview could not initialize. Check Leaflet availability; calculator controls remain usable.', 'warning');
+            }
+        }
+
+        function plotBeamPreview(result = tiltMapState.calculationResult) {
+            if (!tiltMapState.hasValidCalculation || tiltMapState.isStale || !result) {
+                setMapStatus('Run Calculate Coverage before plotting a beam.', 'warning');
+                return false;
+            }
+            if (calculatorInputSnapshot() !== tiltMapState.calculatorSnapshot) {
+                markMapPreviewStale();
+                return false;
+            }
+            const mapInputs = validateMapInputs();
+            if (!mapInputs.valid) {
+                setMapStatus(mapInputs.error, 'error');
+                return false;
+            }
+            if (!tiltMapState.map || !tiltMapState.overlays) {
+                setMapStatus('Map preview is unavailable because Leaflet did not load. Coordinates and coverage calculation remain available.', 'warning');
+                return false;
+            }
+
+            const origin = L.latLng(mapInputs.latitude, mapInputs.longitude);
+            const maxDisplayRange = getMapDisplayRange(result.beams);
+            const segments = buildMapBeamSegments(result.beams, maxDisplayRange);
+            const gradientLayers = buildMapCoverageGradientLayers(origin, mapInputs.azimuth, result.inputs.hbw, maxDisplayRange);
+            if (!gradientLayers || gradientLayers.some((layer) => !layer.points)) {
+                setMapStatus('Coverage sector could not be represented safely for this beam width and direction.', 'error');
+                return false;
+            }
+            clearMapPreviewLayers();
+
+            gradientLayers.forEach((layer, index) => {
+                L.polygon(layer.points, {
+                    color: index === 0 ? '#ffd0c8' : layer.color,
+                    weight: index === 0 ? 2 : 1,
+                    opacity: index === 0 ? 0.88 : 0.48,
+                    fillColor: layer.color,
+                    fillOpacity: index === 0 ? 0.12 : 0.2,
+                    lineJoin: 'round',
+                    interactive: false
+                }).bindTooltip(`Coverage sector · ${result.inputs.hbw.toFixed(1)}° HBW · ${mapInputs.azimuth.toFixed(1)}° azimuth`, { sticky: true }).addTo(tiltMapState.overlays);
+            });
+
+            const siteLabel = `Antenna site at ${mapInputs.latitude.toFixed(6)}, ${mapInputs.longitude.toFixed(6)}`;
+            const siteMarker = L.marker(origin, {
+                icon: createTiltSiteIcon(),
+                title: siteLabel,
+                alt: siteLabel,
+                keyboard: true,
+                riseOnHover: true
+            }).bindTooltip(siteLabel, { direction: 'top', offset: [0, -18] });
+            siteMarker.addTo(tiltMapState.overlays);
+
+            const extentPoints = [origin];
+            const noGroundContact = [];
+            for (const segment of segments) {
+                const latlngs = segmentLatLngs(origin, mapInputs.azimuth, segment);
+                if (!latlngs) {
+                    setMapStatus('Beam destination could not be represented safely for this location and direction.', 'error');
+                    clearMapPreviewLayers();
+                    return false;
+                }
+                extentPoints.push(L.latLng(latlngs[1][0], latlngs[1][1]));
+                const beamName = segment.key.charAt(0).toUpperCase() + segment.key.slice(1);
+                if (!segment.hasGroundContact) noGroundContact.push(beamName);
+                if (segment.endDistance > segment.startDistance) {
+                    L.polyline(latlngs, {
+                        color: TILT_MAP_CASING_COLOR,
+                        weight: 11,
+                        opacity: 0.9,
+                        lineCap: 'round',
+                        lineJoin: 'round',
+                        interactive: false
+                    }).addTo(tiltMapState.overlays);
+                    L.polyline(latlngs, {
+                        color: getTiltMapColors()[segment.key],
+                        weight: 5,
+                        opacity: 0.95,
+                        lineCap: 'round',
+                        lineJoin: 'round'
+                    }).bindTooltip(`${beamName} beam · ${segment.label}`, { sticky: true }).addTo(tiltMapState.overlays);
+                }
+                if (!segment.hasGroundContact) {
+                    L.marker(latlngs[1], {
+                        icon: createMapLabelIcon(`${beamName}: No ground contact`),
+                        interactive: false,
+                        keyboard: false
+                    }).addTo(tiltMapState.overlays);
+                }
+            }
+
+            const bounds = L.latLngBounds(extentPoints);
+            tiltMapState.map.fitBounds(bounds.pad(0.2), { maxZoom: 17, animate: false });
+            tiltMapState.isStale = false;
+            if (noGroundContact.length > 0) {
+                setMapStatus(`Beam plotted. ${noGroundContact.join(', ')} section${noGroundContact.length > 1 ? 's' : ''} have no ground contact and end at the map edge.`, 'warning');
+            } else if (tiltMapState.tileError) {
+                setMapStatus('Beam plotted. Satellite imagery is unavailable; the overlay remains usable on the fallback base.', 'warning');
+            } else {
+                setMapStatus('Beam plotted from the latest valid coverage calculation. Lower, main, and upper sections are shown in sequence.', 'success');
+            }
+            return true;
+        }
+
+        function handleMapInputChange() {
+            if (!tiltMapState.hasValidCalculation || tiltMapState.isStale) return;
+            const mapInputs = validateMapInputs();
+            if (!mapInputs.valid) {
+                clearMapPreviewLayers();
+                setMapStatus(mapInputs.error, 'error');
+                return;
+            }
+            plotBeamPreview();
+        }
+
+        function setupMapPreview() {
+            initBeamMap();
+            const plotButton = document.getElementById('plot-beam');
+            if (plotButton && typeof plotButton.addEventListener === 'function') {
+                plotButton.addEventListener('click', () => plotBeamPreview());
+            }
+            ['ha', 'mtilt', 'etilt', 'vbw', 'hbw', 'bdistance', 'bheight', 'bdepth'].forEach((id) => {
+                const input = document.getElementById(id);
+                if (input && typeof input.addEventListener === 'function') {
+                    input.addEventListener('input', markMapPreviewStale);
+                    input.addEventListener('change', markMapPreviewStale);
+                }
+            });
+            ['map-coordinates', 'map-azimuth'].forEach((id) => {
+                const input = document.getElementById(id);
+                if (input && typeof input.addEventListener === 'function') {
+                    input.addEventListener('input', handleMapInputChange);
+                    input.addEventListener('change', handleMapInputChange);
+                }
+            });
         }
 
         function localTolerance(...values) {
@@ -228,8 +675,8 @@
                 lower: totalTilt + raw.vbw / 2
             };
             for (const angle of Object.values(angles)) {
-                if (!Number.isFinite(angle) || angle <= -90 || angle >= 90) {
-                    return { valid: false, error: "All derived beam angles must be strictly between -90 and 90 degrees." };
+                if (!Number.isFinite(angle)) {
+                    return { valid: false, error: "All derived beam angles must be finite numbers." };
                 }
             }
 
@@ -267,6 +714,19 @@
                 return { valid: false, error: "A required beam direction is not representable." };
             }
 
+            if (angle < -90 || angle > 90) {
+                return {
+                    valid: true,
+                    status: 'no_forward_hit',
+                    surface: null,
+                    hitPoint: null,
+                    rayParameter: null,
+                    reason: "The beam points backward and has no forward surface intersection.",
+                    sin,
+                    cos
+                };
+            }
+
             const candidates = [];
             if (sin > 0) {
                 const t = ha / sin;
@@ -281,22 +741,27 @@
             }
 
             if (building) {
-                const frontT = building.distance / cos;
-                if (!Number.isFinite(frontT) || frontT < 0) {
-                    return { valid: false, error: "A building-front intersection is not representable for the supplied values." };
-                }
-                const frontY = ha - frontT * sin;
-                if (!Number.isFinite(frontY)) {
-                    return { valid: false, error: "A building-front intersection is not representable for the supplied values." };
-                }
-                const frontTolerance = localTolerance(ha, building.height, frontY);
-                if (frontY >= -frontTolerance && frontY <= building.height + frontTolerance) {
-                    candidates.push({
-                        t: frontT,
-                        x: building.distance,
-                        y: Math.min(Math.max(frontY, 0), building.height),
-                        surface: 'front'
-                    });
+                /* A vertical ray has no finite intersection with the building's
+                   front plane. It may still hit ground at x = 0 when downward. */
+                const hasForwardHorizontalComponent = angle > -90 && angle < 90;
+                if (hasForwardHorizontalComponent) {
+                    const frontT = building.distance / cos;
+                    if (!Number.isFinite(frontT) || frontT < 0) {
+                        return { valid: false, error: "A building-front intersection is not representable for the supplied values." };
+                    }
+                    const frontY = ha - frontT * sin;
+                    if (!Number.isFinite(frontY)) {
+                        return { valid: false, error: "A building-front intersection is not representable for the supplied values." };
+                    }
+                    const frontTolerance = localTolerance(ha, building.height, frontY);
+                    if (frontY >= -frontTolerance && frontY <= building.height + frontTolerance) {
+                        candidates.push({
+                            t: frontT,
+                            x: building.distance,
+                            y: Math.min(Math.max(frontY, 0), building.height),
+                            surface: 'front'
+                        });
+                    }
                 }
 
                 if (sin !== 0) {
@@ -359,6 +824,11 @@
 
         function finitePlotPoint(beam, ha, plotExtent, plotHeight) {
             if (beam.hitPoint) return { x: beam.hitPoint.x, y: beam.hitPoint.y };
+            if (beam.angle < -90 || beam.angle > 90) {
+                const x = NON_FORWARD_CLIP_DISTANCE * beam.cos;
+                const y = ha - NON_FORWARD_CLIP_DISTANCE * beam.sin;
+                if (Number.isFinite(x) && Number.isFinite(y)) return { x, y };
+            }
             let t = plotExtent / beam.cos;
             if (!Number.isFinite(t) || t <= 0) t = PLOT_CLIP_DISTANCE;
             t = Math.min(t, PLOT_CLIP_DISTANCE);
@@ -466,6 +936,7 @@
             const resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = '';
             clearPlot();
+            invalidateMapPreview();
             const inputs = {
                 ha: readInputNumber('ha'),
                 mtilt: readInputNumber('mtilt'),
@@ -493,7 +964,12 @@
                 } else if (beam.status === 'hit' && beam.surface === 'roof') {
                     message = `${capKey} beam hits building roof at ${beam.hitPoint.x.toFixed(2)} [m.] distance and ${beam.hitPoint.y.toFixed(2)} [m.] height`;
                 } else {
-                    message = `${capKey} beam ${beam.angle < 0 ? 'goes upward' : 'is horizontal'} – Not Landing`;
+                    const direction = beam.angle < -90 || beam.angle > 90
+                        ? 'points backward'
+                        : beam.angle < 0
+                            ? 'goes upward'
+                            : 'is horizontal';
+                    message = `${capKey} beam ${direction} – Not Landing`;
                 }
                 beam.message = message;
 
@@ -512,6 +988,15 @@
             }
 
             draw(inputs.ha, result.beams, result.building, result.plotExtent);
+            tiltMapState.hasValidCalculation = true;
+            tiltMapState.isStale = false;
+            tiltMapState.calculationResult = result;
+            tiltMapState.calculatorSnapshot = calculatorInputSnapshot();
+            if (!plotBeamPreview(result)) {
+                if (validateMapInputs().valid) {
+                    setMapStatus('Coverage calculated. Press Plot Beam to render the map preview.', 'warning');
+                }
+            }
         }
 
         /* ============================================================
@@ -674,6 +1159,8 @@
                 }
             });
         });
+
+        setupMapPreview();
     </script>
     <script src="tilt_calculator_motion.js"></script>
 

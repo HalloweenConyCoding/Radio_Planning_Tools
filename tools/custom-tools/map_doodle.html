@@ -496,6 +496,8 @@
         }
 
         function setupCPListeners() {
+            if (setupCPListeners.initialized) return;
+            setupCPListeners.initialized = true;
             var downSpec = false;
             cpSpectrum.onmousedown = (e) => { downSpec = true; updateFromSpectrum(e); };
             window.addEventListener('mousemove', (e) => { if (downSpec) updateFromSpectrum(e); });
@@ -505,6 +507,7 @@
             cpSlider.onmousedown = (e) => { downSlide = true; updateFromSlider(e); };
             window.addEventListener('mousemove', (e) => { if (downSlide) updateFromSlider(e); });
             window.addEventListener('mouseup', () => { downSlide = false; });
+            window.addEventListener('blur', () => { downSpec = false; downSlide = false; });
 
             ['in-r', 'in-g', 'in-b'].forEach(id => {
                 document.getElementById(id).oninput = updateFromRGBInputs;
@@ -662,7 +665,7 @@
 
         function setTool(toolName) {
             if (activeTool === toolName) { resetTools(); return; }
-            if (activeTool === 'polyline') polylineDrawer.disable();
+            resetTools();
 
             activeTool = toolName;
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
@@ -681,6 +684,9 @@
 
         function resetTools() {
             activeTool = null;
+            clearTimeout(lineRestartTimer);
+            lineRestartTimer = null;
+            finishPenStroke();
             polylineDrawer.disable();
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
             updateStatus("Ready");
@@ -689,6 +695,7 @@
 
         function clearAll() {
             if (confirm("Clear all?")) {
+                resetTools();
                 drawnItems.clearLayers();
                 labelItems.clearLayers();
                 updateStatus("Cleared");
@@ -697,23 +704,35 @@
 
         function updateMapInteraction() {
             var mapEl = document.getElementById('map');
-            if (isManualLocked || activeTool === 'pen') {
+            mapEl.classList.toggle('mode-pen', activeTool === 'pen');
+            mapEl.classList.toggle('mode-eraser', activeTool === 'eraser');
+            mapEl.classList.toggle('mode-locked', isManualLocked && !activeTool);
+            if (isManualLocked || activeTool === 'pen' || activeTool === 'eraser') {
                 disableDragging();
-                mapEl.className = activeTool === 'pen' ? 'mode-pen' : 'mode-locked';
-            } else if (activeTool === 'eraser') {
-                enableDragging();
-                mapEl.className = 'mode-eraser';
             } else {
                 enableDragging();
-                mapEl.className = '';
             }
+            // Lock every navigation route, not just drag and pinch gestures.
+            ['scrollWheelZoom', 'boxZoom', 'keyboard', 'doubleClickZoom'].forEach(function (name) {
+                var handler = map[name];
+                if (!handler) return;
+                var blocked = isManualLocked || (name === 'doubleClickZoom' && activeTool !== null);
+                handler[blocked ? 'disable' : 'enable']();
+            });
         }
         function disableDragging() { map.dragging.disable(); map.touchZoom.disable(); }
         function enableDragging() { map.dragging.enable(); map.touchZoom.enable(); }
 
         // MOUSE EVENTS
+        var lineRestartTimer = null;
+        function finishPenStroke() {
+            isPenDrawing = false;
+            currentFreehandLine = null;
+        }
+        window.addEventListener('mouseup', finishPenStroke);
+        window.addEventListener('blur', finishPenStroke);
         map.on('mousedown', function (e) {
-            if (activeTool !== 'pen') return;
+            if (activeTool !== 'pen' || (e.originalEvent && e.originalEvent.button !== 0)) return;
             isPenDrawing = true;
             currentFreehandLine = L.polyline([e.latlng], { color: currentColor, weight: 4 }).addTo(drawnItems);
             attachEraserEvents(currentFreehandLine);
@@ -721,7 +740,7 @@
         map.on('mousemove', function (e) {
             if (activeTool === 'pen' && isPenDrawing && currentFreehandLine) currentFreehandLine.addLatLng(e.latlng);
         });
-        map.on('mouseup', function () { if (activeTool === 'pen') isPenDrawing = false; });
+        map.on('mouseup', finishPenStroke);
 
         map.on(L.Draw.Event.CREATED, function (e) {
             var layer = e.layer;
@@ -744,15 +763,17 @@
 
             // FIX: CONTINUOUS DRAWING MODE
             if (activeTool === 'polyline') {
-                setTimeout(() => {
-                    polylineDrawer.enable();
+                clearTimeout(lineRestartTimer);
+                lineRestartTimer = setTimeout(() => {
+                    lineRestartTimer = null;
+                    if (activeTool === 'polyline') polylineDrawer.enable();
                 }, 10);
             }
         });
 
         function attachEraserEvents(layer) {
-            layer.on('mouseover', function (e) { if (activeTool === 'eraser' && e.originalEvent.buttons === 1) deleteSmart(e.target); });
-            layer.on('mousedown', function (e) { if (activeTool === 'eraser') deleteSmart(e.target); });
+            layer.on('mouseover', function (e) { if (activeTool === 'eraser' && e.originalEvent && e.originalEvent.buttons === 1) deleteSmart(e.target); });
+            layer.on('mousedown', function (e) { if (activeTool === 'eraser' && e.originalEvent && e.originalEvent.button === 0) deleteSmart(e.target); });
         }
         function deleteSmart(target) {
             if (target.attachedLine) { deleteSmart(target.attachedLine); return; }

@@ -69,25 +69,25 @@
             </div>
         </header>
 
-        <!-- ===== SITE TYPE SWITCH ===== -->
-        <div class="controls-section">
-            <div id="siteTypeSwitch" class="switch-container">
-                <span class="switch-label-text">Site Type:</span>
-                <div class="switch">
-                    <input type="radio" id="macro" name="siteType" value="Macro" checked>
-                    <label for="macro" class="switch-label">Macro Site</label>
-                    <input type="radio" id="small" name="siteType" value="Small">
-                    <label for="small" class="switch-label">Small Cell</label>
-                    <div class="glider"></div>
-                </div>
-            </div>
-        </div>
-
         <!-- ===== MAIN DASHBOARD ===== -->
-        <div id="main-container" class="dashboard-grid">
+        <div id="main-container" class="dashboard-grid workspace-shell">
 
             <!-- LEFT: Control Panel -->
             <div id="left-panel" class="panel control-panel">
+                <!-- ===== SITE TYPE SWITCH ===== -->
+                <div class="controls-section">
+                    <div id="siteTypeSwitch" class="switch-container">
+                        <span class="switch-label-text">Site Type:</span>
+                        <div class="switch">
+                            <input type="radio" id="macro" name="siteType" value="Macro" checked>
+                            <label for="macro" class="switch-label">Macro Site</label>
+                            <input type="radio" id="small" name="siteType" value="Small">
+                            <label for="small" class="switch-label">Small Cell</label>
+                            <div class="glider"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <h3 class="panel-title">Parameters</h3>
 
                 <div class="parameters-grid">
@@ -125,40 +125,29 @@
                     </div>
                 </div>
 
-                <button type="button" class="calc-wrapper" onclick="calculate()">
-                    <span class="calc-link">
-                        <span>Calculate Coverage</span>
-                        <span class="calc-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.832 268.832">
-                                <path
-                                    d="M265.17 125.577l-80-80c-4.88-4.88-12.796-4.88-17.677 0-4.882 4.882-4.882 12.796 0 17.678l58.66 58.66H12.5c-6.903 0-12.5 5.598-12.5 12.5 0 6.903 5.597 12.5 12.5 12.5h213.654l-58.66 58.662c-4.88 4.882-4.88 12.796 0 17.678 2.44 2.44 5.64 3.66 8.84 3.66s6.398-1.22 8.84-3.66l79.997-80c4.883-4.882 4.883-12.796 0-17.678z" />
-                            </svg>
-                        </span>
-                    </span>
-                </button>
-
                 <div id="results" class="results-container"></div>
+                <p id="calculation-status" class="calculation-status" role="status" aria-live="polite"></p>
             </div>
 
-            <!-- RIGHT: Visualization Panel -->
-            <div id="right-panel" class="panel vis-panel">
-                <h3 class="panel-title">Visualization</h3>
-                <div class="canvas-wrapper">
-                    <div class="canvas-intro">
-                        <img src="../../../images/Tilt_Calculation.png" alt="Tilt calculation reference diagram" class="canvas-intro-image">
+            <div class="workspace-column visual-column">
+                <!-- RIGHT: Visualization Panel -->
+                <div id="right-panel" class="panel vis-panel">
+                    <h3 class="panel-title">Visualization</h3>
+                    <div class="canvas-wrapper">
+                        <div class="canvas-intro">
+                            <img src="../../../images/Tilt_Calculation.png" alt="Tilt calculation reference diagram" class="canvas-intro-image">
+                        </div>
+                        <canvas id="plot" width="800" height="500"></canvas>
+                        <canvas id="plot-transition" width="800" height="500" aria-hidden="true"></canvas>
                     </div>
-                    <canvas id="plot" width="800" height="500"></canvas>
                 </div>
-            </div>
 
-        </div>
-
-        <!-- ===== MAP PREVIEW PANEL ===== -->
-        <section id="map-preview" class="panel map-preview-panel" aria-labelledby="map-preview-title">
+                <!-- ===== MAP PREVIEW PANEL ===== -->
+                <section id="map-preview" class="panel map-preview-panel" aria-labelledby="map-preview-title">
             <div class="map-preview-heading">
                 <div>
                     <h3 id="map-preview-title" class="panel-title">Map Preview</h3>
-                    <p class="map-preview-intro">Project the calculated coverage beam from a real antenna site.</p>
+                    <p class="map-preview-intro">Project the calculated coverage beam from a real antenna site. Hold Ctrl/Cmd while scrolling to zoom the map.</p>
                 </div>
                 <span class="map-preview-mode">GROUND RANGE ONLY</span>
             </div>
@@ -172,15 +161,14 @@
                     <label for="map-azimuth">Azimuth / Direction (°)</label>
                     <input id="map-azimuth" type="number" inputmode="decimal" value="0" min="0" max="360" step="any" autocomplete="off">
                 </div>
-                <button id="plot-beam" class="plot-beam-button" type="button">Plot Beam</button>
             </div>
 
-            <p id="map-status" class="map-status" role="status" aria-live="polite">Run Calculate Coverage to enable the map preview.</p>
+            <p id="map-status" class="map-status" role="status" aria-live="polite">Enter calculator inputs to enable the map preview.</p>
             <div id="beam-map" class="beam-map" role="application" aria-label="Coverage beam map preview"></div>
-        </section>
+                </section>
 
-        <!-- ===== INFO / DOCS PANEL ===== -->
-        <div id="readme" class="panel info-panel reveal-section">
+                <!-- ===== INFO / DOCS PANEL ===== -->
+                <div id="readme" class="panel info-panel reveal-section">
             <h3 class="panel-title">System Documentation</h3>
             <div class="info-content">
                 <div class="info-item warning">
@@ -197,6 +185,8 @@
                         (standard macro site scenario).</p>
                     <p>Input this field only when simulating an antenna serving a specific building — e.g. small cell
                         for low / high rise coverage.</p>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
@@ -256,7 +246,11 @@
             hasValidCalculation: false,
             isStale: false,
             calculationResult: null,
-            calculatorSnapshot: null
+            calculatorSnapshot: null,
+            previousOverlays: null,
+            hasRenderedMap: false,
+            mapTransitionFrame: 0,
+            canvasTransitionFrame: 0
         };
 
         function getTiltMapColors() {
@@ -435,7 +429,21 @@
         }
 
         function clearMapPreviewLayers() {
+            cancelMapOverlayTransition();
             if (tiltMapState.overlays) tiltMapState.overlays.clearLayers();
+        }
+
+        function cancelMapOverlayTransition() {
+            if (tiltMapState.mapTransitionFrame && typeof cancelAnimationFrame === 'function') {
+                cancelAnimationFrame(tiltMapState.mapTransitionFrame);
+                tiltMapState.mapTransitionFrame = 0;
+            }
+            if (tiltMapState.previousOverlays) {
+                tiltMapState.previousOverlays.clearLayers();
+                if (typeof tiltMapState.previousOverlays.remove === 'function') tiltMapState.previousOverlays.remove();
+                tiltMapState.previousOverlays = null;
+            }
+            setMapGroupOpacity(tiltMapState.overlays, 1);
         }
 
         function invalidateMapPreview() {
@@ -446,11 +454,64 @@
             clearMapPreviewLayers();
         }
 
-        function markMapPreviewStale() {
-            if (!tiltMapState.hasValidCalculation) return;
-            tiltMapState.isStale = true;
-            clearMapPreviewLayers();
-            setMapStatus('Calculator inputs changed. Run Calculate Coverage again before plotting this beam.', 'stale');
+        function setMapLayerOpacity(layer, opacity) {
+            if (typeof layer.setStyle === 'function') {
+                const options = layer.options || {};
+                const baseOpacity = layer._tiltBaseOpacity ?? (options.opacity ?? 1);
+                const baseFillOpacity = layer._tiltBaseFillOpacity ?? (options.fillOpacity ?? 0);
+                layer._tiltBaseOpacity = baseOpacity;
+                layer._tiltBaseFillOpacity = baseFillOpacity;
+                layer.setStyle({
+                    opacity: baseOpacity * opacity,
+                    fillOpacity: baseFillOpacity * opacity
+                });
+            }
+            if (typeof layer.setOpacity === 'function') layer.setOpacity(opacity);
+            if (typeof layer.getElement === 'function') {
+                const element = layer.getElement();
+                if (element && element.style) element.style.opacity = String(opacity);
+            }
+        }
+
+        function setMapGroupOpacity(group, opacity) {
+            if (group && typeof group.eachLayer === 'function') {
+                group.eachLayer((layer) => setMapLayerOpacity(layer, opacity));
+            }
+        }
+
+        function reducedVisualMotion() {
+            return Boolean(document.hidden) || (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+        }
+
+        function transitionMapOverlays(previous, next) {
+            if (!previous || previous === next || reducedVisualMotion() || typeof requestAnimationFrame !== 'function') {
+                setMapGroupOpacity(next, 1);
+                if (previous && previous !== next) {
+                    previous.clearLayers();
+                    if (typeof previous.remove === 'function') previous.remove();
+                }
+                tiltMapState.previousOverlays = null;
+                return;
+            }
+
+            setMapGroupOpacity(previous, 1);
+            setMapGroupOpacity(next, 0);
+            const startedAt = performance.now();
+            const duration = 220;
+            const animate = (now) => {
+                const progress = Math.min(1, (now - startedAt) / duration);
+                setMapGroupOpacity(previous, 1 - progress);
+                setMapGroupOpacity(next, progress);
+                if (progress < 1) {
+                    tiltMapState.mapTransitionFrame = requestAnimationFrame(animate);
+                    return;
+                }
+                tiltMapState.mapTransitionFrame = 0;
+                previous.clearLayers();
+                if (typeof previous.remove === 'function') previous.remove();
+                tiltMapState.previousOverlays = null;
+            };
+            tiltMapState.mapTransitionFrame = requestAnimationFrame(animate);
         }
 
         function createTiltSiteIcon() {
@@ -479,6 +540,22 @@
             return [[start.lat, start.lng], [end.lat, end.lng]];
         }
 
+        function handleMapWheel(event) {
+            if (!event || !(event.ctrlKey || event.metaKey) || !tiltMapState.map) return;
+            event.preventDefault();
+            event.stopPropagation();
+
+            const currentZoom = tiltMapState.map.getZoom();
+            const delta = event.deltaY < 0 ? 1 : -1;
+            const nextZoom = Math.max(
+                tiltMapState.map.getMinZoom(),
+                Math.min(tiltMapState.map.getMaxZoom(), currentZoom + delta)
+            );
+            if (nextZoom !== currentZoom) {
+                tiltMapState.map.setZoom(nextZoom, { animate: true });
+            }
+        }
+
         function initBeamMap() {
             const mapElement = document.getElementById('beam-map');
             if (!mapElement || typeof L === 'undefined') {
@@ -489,9 +566,11 @@
                 tiltMapState.map = L.map(mapElement, {
                     zoomControl: true,
                     worldCopyJump: true,
+                    scrollWheelZoom: false,
                     minZoom: 1,
                     maxZoom: 19
                 });
+                mapElement.addEventListener('wheel', handleMapWheel, { capture: true, passive: false });
                 tiltMapState.tileLayer = L.tileLayer(
                     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                     {
@@ -511,13 +590,13 @@
             }
         }
 
-        function plotBeamPreview(result = tiltMapState.calculationResult) {
+        function plotBeamPreview(result = tiltMapState.calculationResult, options = {}) {
             if (!tiltMapState.hasValidCalculation || tiltMapState.isStale || !result) {
-                setMapStatus('Run Calculate Coverage before plotting a beam.', 'warning');
+                setMapStatus('Enter valid calculator inputs to render the map preview.', 'warning');
                 return false;
             }
             if (calculatorInputSnapshot() !== tiltMapState.calculatorSnapshot) {
-                markMapPreviewStale();
+                setMapStatus('The map preview is waiting for the latest coverage calculation.', 'stale');
                 return false;
             }
             const mapInputs = validateMapInputs();
@@ -538,7 +617,9 @@
                 setMapStatus('Coverage sector could not be represented safely for this beam width and direction.', 'error');
                 return false;
             }
-            clearMapPreviewLayers();
+            cancelMapOverlayTransition();
+            const previousOverlays = tiltMapState.overlays;
+            const nextOverlays = L.layerGroup().addTo(tiltMapState.map);
 
             gradientLayers.forEach((layer, index) => {
                 L.polygon(layer.points, {
@@ -549,7 +630,7 @@
                     fillOpacity: index === 0 ? 0.12 : 0.2,
                     lineJoin: 'round',
                     interactive: false
-                }).bindTooltip(`Coverage sector · ${result.inputs.hbw.toFixed(1)}° HBW · ${mapInputs.azimuth.toFixed(1)}° azimuth`, { sticky: true }).addTo(tiltMapState.overlays);
+                }).bindTooltip(`Coverage sector · ${result.inputs.hbw.toFixed(1)}° HBW · ${mapInputs.azimuth.toFixed(1)}° azimuth`, { sticky: true }).addTo(nextOverlays);
             });
 
             const siteLabel = `Antenna site at ${mapInputs.latitude.toFixed(6)}, ${mapInputs.longitude.toFixed(6)}`;
@@ -560,7 +641,7 @@
                 keyboard: true,
                 riseOnHover: true
             }).bindTooltip(siteLabel, { direction: 'top', offset: [0, -18] });
-            siteMarker.addTo(tiltMapState.overlays);
+            siteMarker.addTo(nextOverlays);
 
             const extentPoints = [origin];
             const noGroundContact = [];
@@ -568,7 +649,8 @@
                 const latlngs = segmentLatLngs(origin, mapInputs.azimuth, segment);
                 if (!latlngs) {
                     setMapStatus('Beam destination could not be represented safely for this location and direction.', 'error');
-                    clearMapPreviewLayers();
+                    nextOverlays.clearLayers();
+                    if (typeof nextOverlays.remove === 'function') nextOverlays.remove();
                     return false;
                 }
                 extentPoints.push(L.latLng(latlngs[1][0], latlngs[1][1]));
@@ -582,26 +664,31 @@
                         lineCap: 'round',
                         lineJoin: 'round',
                         interactive: false
-                    }).addTo(tiltMapState.overlays);
+                    }).addTo(nextOverlays);
                     L.polyline(latlngs, {
                         color: getTiltMapColors()[segment.key],
                         weight: 5,
                         opacity: 0.95,
                         lineCap: 'round',
                         lineJoin: 'round'
-                    }).bindTooltip(`${beamName} beam · ${segment.label}`, { sticky: true }).addTo(tiltMapState.overlays);
+                    }).bindTooltip(`${beamName} beam · ${segment.label}`, { sticky: true }).addTo(nextOverlays);
                 }
                 if (!segment.hasGroundContact) {
                     L.marker(latlngs[1], {
                         icon: createMapLabelIcon(`${beamName}: No ground contact`),
                         interactive: false,
                         keyboard: false
-                    }).addTo(tiltMapState.overlays);
+                    }).addTo(nextOverlays);
                 }
             }
 
             const bounds = L.latLngBounds(extentPoints);
-            tiltMapState.map.fitBounds(bounds.pad(0.2), { maxZoom: 17, animate: false });
+            const shouldFitView = Boolean(options.fitView) || !tiltMapState.hasRenderedMap;
+            if (shouldFitView) tiltMapState.map.fitBounds(bounds.pad(0.2), { maxZoom: 17, animate: !reducedVisualMotion(), duration: 0.22 });
+            tiltMapState.previousOverlays = previousOverlays;
+            tiltMapState.overlays = nextOverlays;
+            tiltMapState.hasRenderedMap = true;
+            transitionMapOverlays(previousOverlays, nextOverlays);
             tiltMapState.isStale = false;
             if (noGroundContact.length > 0) {
                 setMapStatus(`Beam plotted. ${noGroundContact.join(', ')} section${noGroundContact.length > 1 ? 's' : ''} have no ground contact and end at the map edge.`, 'warning');
@@ -621,22 +708,11 @@
                 setMapStatus(mapInputs.error, 'error');
                 return;
             }
-            plotBeamPreview();
+            plotBeamPreview(undefined, { fitView: true });
         }
 
         function setupMapPreview() {
             initBeamMap();
-            const plotButton = document.getElementById('plot-beam');
-            if (plotButton && typeof plotButton.addEventListener === 'function') {
-                plotButton.addEventListener('click', () => plotBeamPreview());
-            }
-            ['ha', 'mtilt', 'etilt', 'vbw', 'hbw', 'bdistance', 'bheight', 'bdepth'].forEach((id) => {
-                const input = document.getElementById(id);
-                if (input && typeof input.addEventListener === 'function') {
-                    input.addEventListener('input', markMapPreviewStale);
-                    input.addEventListener('change', markMapPreviewStale);
-                }
-            });
             ['map-coordinates', 'map-azimuth'].forEach((id) => {
                 const input = document.getElementById(id);
                 if (input && typeof input.addEventListener === 'function') {
@@ -923,10 +999,50 @@
         }
 
         function clearPlot() {
+            if (tiltMapState.canvasTransitionFrame && typeof cancelAnimationFrame === 'function') {
+                cancelAnimationFrame(tiltMapState.canvasTransitionFrame);
+                tiltMapState.canvasTransitionFrame = 0;
+            }
             const canvas = document.getElementById("plot");
-            if (!canvas || !canvas.getContext) return;
-            const ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (canvas && canvas.getContext) {
+                const ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            const transitionCanvas = document.getElementById("plot-transition");
+            if (transitionCanvas && transitionCanvas.getContext) {
+                transitionCanvas.getContext("2d").clearRect(0, 0, transitionCanvas.width, transitionCanvas.height);
+                if (transitionCanvas.classList) transitionCanvas.classList.remove("is-active");
+            }
+        }
+
+        function prepareCanvasTransition() {
+            const canvas = document.getElementById("plot");
+            const transitionCanvas = document.getElementById("plot-transition");
+            if (!canvas || !transitionCanvas || !canvas.getContext || !transitionCanvas.getContext) return;
+            const transitionContext = transitionCanvas.getContext("2d");
+            if (typeof transitionContext.drawImage !== "function") return;
+            transitionContext.clearRect(0, 0, transitionCanvas.width, transitionCanvas.height);
+            transitionContext.drawImage(canvas, 0, 0, transitionCanvas.width, transitionCanvas.height);
+            transitionCanvas.classList.remove("is-active");
+            if (typeof transitionCanvas.offsetWidth === "number") void transitionCanvas.offsetWidth;
+            transitionCanvas.classList.add("is-active");
+            if (reducedVisualMotion()) {
+                transitionCanvas.classList.remove("is-active");
+            } else if (typeof requestAnimationFrame === "function") {
+                tiltMapState.canvasTransitionFrame = requestAnimationFrame(() => {
+                    tiltMapState.canvasTransitionFrame = 0;
+                    transitionCanvas.classList.remove("is-active");
+                });
+            } else {
+                transitionCanvas.classList.remove("is-active");
+            }
+        }
+
+        function setCalculationStatus(message) {
+            const status = document.getElementById("calculation-status");
+            if (!status) return;
+            status.textContent = message;
+            if (status.dataset) status.dataset.state = message ? "error" : "neutral";
         }
 
         /* ============================================================
@@ -935,8 +1051,7 @@
         function calculate() {
             const resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = '';
-            clearPlot();
-            invalidateMapPreview();
+            setCalculationStatus('');
             const inputs = {
                 ha: readInputNumber('ha'),
                 mtilt: readInputNumber('mtilt'),
@@ -949,7 +1064,10 @@
             };
             const result = calculateCoverage(inputs);
             if (!result.valid) {
-                alert(result.error);
+                clearPlot();
+                invalidateMapPreview();
+                setCalculationStatus(result.error);
+                setMapStatus('Enter valid calculator inputs to render the map preview.', 'warning');
                 return;
             }
 
@@ -987,16 +1105,13 @@
                 </div>`;
             }
 
+            prepareCanvasTransition();
             draw(inputs.ha, result.beams, result.building, result.plotExtent);
             tiltMapState.hasValidCalculation = true;
             tiltMapState.isStale = false;
             tiltMapState.calculationResult = result;
             tiltMapState.calculatorSnapshot = calculatorInputSnapshot();
-            if (!plotBeamPreview(result)) {
-                if (validateMapInputs().valid) {
-                    setMapStatus('Coverage calculated. Press Plot Beam to render the map preview.', 'warning');
-                }
-            }
+            plotBeamPreview(result);
         }
 
         /* ============================================================
@@ -1134,6 +1249,33 @@
         /* ============================================================
            SITE TYPE SWITCH HANDLER
         ============================================================ */
+        let calculationFrame = 0;
+
+        function scheduleCalculation() {
+            if (calculationFrame) return;
+            const runCalculation = () => {
+                calculationFrame = 0;
+                calculate();
+            };
+            if (typeof requestAnimationFrame === 'function') {
+                calculationFrame = requestAnimationFrame(runCalculation);
+            } else {
+                runCalculation();
+            }
+        }
+
+        function setupCalculatorInputs() {
+            [
+                'ha', 'mtilt', 'etilt', 'vbw', 'hbw',
+                'bdistance', 'bheight', 'bdepth'
+            ].forEach((id) => {
+                const input = document.getElementById(id);
+                if (!input || typeof input.addEventListener !== 'function') return;
+                input.addEventListener('input', scheduleCalculation);
+                input.addEventListener('change', scheduleCalculation);
+            });
+        }
+
         document.querySelectorAll('input[name="siteType"]').forEach((radio) => {
             radio.addEventListener('change', (e) => {
                 const type = e.target.value;
@@ -1154,12 +1296,11 @@
                     document.getElementById("bheight").value = 50;
                 }
 
-                if (document.getElementById("results").innerHTML !== '') {
-                    calculate();
-                }
+                scheduleCalculation();
             });
         });
 
+        setupCalculatorInputs();
         setupMapPreview();
     </script>
     <script src="tilt_calculator_motion.js"></script>

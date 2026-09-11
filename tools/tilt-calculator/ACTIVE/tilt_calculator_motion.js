@@ -9,6 +9,7 @@
   const reducedMotion = global.matchMedia("(prefers-reduced-motion: reduce)");
   const finePointerQuery = global.matchMedia("(hover: hover) and (pointer: fine)");
   const revealTargets = Array.from(document.querySelectorAll(".reveal-section"));
+  const scrollSources = Array.from(document.querySelectorAll(".control-panel, .visual-column"));
   const resultsTarget = document.getElementById("results");
   const introTarget = document.querySelector(".canvas-intro");
   const introImage = document.querySelector(".canvas-intro-image");
@@ -31,7 +32,10 @@
   function refreshDimensions() {
     viewportWidth = Math.max(global.innerWidth || 1, 1);
     viewportHeight = Math.max(global.innerHeight || 1, 1);
-    scrollableHeight = Math.max(document.documentElement.scrollHeight - viewportHeight, 1);
+    const workspaceScroll = scrollSources.reduce((largest, source) => {
+      return Math.max(largest, source.scrollHeight - source.clientHeight);
+    }, 0);
+    scrollableHeight = Math.max(document.documentElement.scrollHeight - viewportHeight, workspaceScroll, 1);
   }
 
   function setDynamicValue(name, value) {
@@ -44,6 +48,10 @@
     setDynamicValue("--paper-shift-far", Math.round(progress * -20));
     setDynamicValue("--paper-shift-mid", Math.round(progress * -62));
     setDynamicValue("--paper-shift-near", Math.round(progress * -112));
+  }
+
+  function getWorkspaceScroll() {
+    return Math.max(global.scrollY || 0, ...scrollSources.map((source) => source.scrollTop || 0));
   }
 
   function setPointerShift() {
@@ -61,7 +69,7 @@
 
   function updateBackground() {
     frame = 0;
-    setPaperShift(global.scrollY);
+    setPaperShift(getWorkspaceScroll());
     setPointerShift();
   }
 
@@ -71,6 +79,10 @@
   }
 
   function handleScroll() {
+    scheduleBackgroundUpdate();
+  }
+
+  function handleWorkspaceScroll() {
     scheduleBackgroundUpdate();
   }
 
@@ -153,13 +165,6 @@
       } catch (error) {
         introObserver = null;
       }
-    }
-    const calcButton = document.querySelector(".calc-wrapper");
-    if (calcButton) {
-      const afterEvent = typeof global.queueMicrotask === "function"
-        ? global.queueMicrotask.bind(global)
-        : (callback) => Promise.resolve().then(callback);
-      calcButton.addEventListener("click", () => afterEvent(checkIntroResults));
     }
     checkIntroResults();
   }
@@ -265,7 +270,11 @@
             entry.target.classList.add("is-visible");
             nextObserver.unobserve(entry.target);
           });
-        }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+        }, {
+          threshold: 0.12,
+          root: document.querySelector(".visual-column") || null,
+          rootMargin: "0px 0px -8% 0px"
+        });
         revealTargets.forEach((target) => {
           const bounds = target.getBoundingClientRect();
           if (bounds.top < global.innerHeight && bounds.bottom > 0) {
@@ -286,6 +295,7 @@
     startSizeObserver();
     startResultObserver();
     global.addEventListener("scroll", handleScroll, { passive: true });
+    scrollSources.forEach((source) => source.addEventListener("scroll", handleWorkspaceScroll, { passive: true }));
     global.addEventListener("resize", handleResize, { passive: true });
     updatePointerListeners();
     scheduleBackgroundUpdate();
@@ -306,6 +316,7 @@
     }
     clearBackgroundTransforms();
     global.removeEventListener("scroll", handleScroll);
+    scrollSources.forEach((source) => source.removeEventListener("scroll", handleWorkspaceScroll));
     global.removeEventListener("resize", handleResize);
     updatePointerListeners();
   }

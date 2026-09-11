@@ -23,15 +23,28 @@ assert.equal(typeof context.buildMapCoverageSector, 'function', 'coverage sector
 assert.equal(typeof context.parseMapCoordinatePair, 'function', 'coordinate pair parser should be available');
 assert.equal(typeof context.buildMapCoverageGradientLayers, 'function', 'coverage gradient helper should be available');
 assert.equal(typeof context.getTiltMapColors, 'function', 'map color constants should be available');
+assert.equal(typeof context.setMapLayerOpacity, 'function', 'map layer transition helper should be available');
 assert.equal(typeof context.createTiltDirectionIcon, 'undefined', 'separate direction triangle should not be available');
 assert.ok(!source.includes('directionMarker'), 'map preview should not add a separate direction marker');
 assert.ok(!style.includes('tilt-map-direction-arrow'), 'direction triangle styling should be removed');
 assert.ok(source.includes('TILT_MAP_COVERAGE_COLORS'), 'coverage gradient colors should remain available');
+
+const fadingLayer = {
+  options: { opacity: 0.95, fillOpacity: 0.2 },
+  setStyle(style) { this.style = style; }
+};
+context.setMapLayerOpacity(fadingLayer, 0.25);
+context.setMapLayerOpacity(fadingLayer, 1);
+assert.equal(fadingLayer.style.opacity, 0.95, 'layer transition should preserve vector opacity');
+assert.equal(fadingLayer.style.fillOpacity, 0.2, 'layer transition should preserve fill opacity');
 assert.match(html, /<label for="map-coordinates">Coordinates \(lat, lng\)<\/label>/, 'map should expose one coordinate-pair label');
 assert.match(html, /<input id="map-coordinates" type="text"[^>]*>/, 'map should expose one text coordinate-pair field');
 assert.doesNotMatch(html, /id="map-latitude"|id="map-longitude"/, 'separate latitude and longitude fields should be removed');
 assert.ok(source.includes('function handleMapInputChange()'), 'map input changes should use a shared redraw handler');
 assert.ok(source.includes("['map-coordinates', 'map-azimuth']"), 'coordinate pair and azimuth should be the map input controls');
+assert.ok(source.includes('scrollWheelZoom: false'), 'ordinary map wheel events should remain available to the right-column scroller');
+assert.ok(source.includes('function handleMapWheel(event)'), 'modified map wheel zoom should use a dedicated handler');
+assert.match(html, /Hold Ctrl\/Cmd while scrolling to zoom the map\./, 'map should explain modified-wheel zoom');
 
 assert.equal(JSON.stringify(context.parseMapCoordinatePair('13.98937472,100.61781242')), JSON.stringify({
   latitude: 13.98937472,

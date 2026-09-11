@@ -46,6 +46,7 @@ function run(overrides = {}, prior = '', siteType = 'Macro') {
   const values = { ...base, ...overrides };
   const fields = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, { value: String(value) }]));
   fields.results = { innerHTML: prior };
+  fields['calculation-status'] = { textContent: '', dataset: {} };
   fields.plot = makeCanvas();
   const alerts = [];
   const document = {
@@ -157,8 +158,9 @@ function testValidationAndClearing() {
   for (const overrides of invalidCases) {
     const result = run(overrides);
     assert.equal(result.drawArgs, null, `invalid input drew: ${JSON.stringify(overrides)}`);
-    assert.ok(result.alerts.length > 0, `invalid input was not rejected: ${JSON.stringify(overrides)}`);
+    assert.equal(result.alerts.length, 0, `invalid input should not alert while typing: ${JSON.stringify(overrides)}`);
     assert.equal(result.fields.results.innerHTML, '', `invalid input retained results: ${JSON.stringify(overrides)}`);
+    assert.notEqual(result.fields['calculation-status'].textContent, '', `invalid input did not show inline status: ${JSON.stringify(overrides)}`);
     assert.ok(result.canvas.context.calls.some((call) => call[0] === 'clearRect'), 'invalid input did not clear canvas');
   }
 
@@ -166,6 +168,7 @@ function testValidationAndClearing() {
   const invalid = run({ ha: '-1' }, valid.fields.results.innerHTML);
   assert.equal(invalid.fields.results.innerHTML, '');
   assert.equal(invalid.drawArgs, null);
+  assert.equal(invalid.alerts.length, 0);
 }
 
 function testBlankBuildingIsolation() {
@@ -215,16 +218,16 @@ function testSiteTypeScalingAdapters() {
 function testOverflowIsInvalid() {
   const derivedAngleOverflow = run({ ha: '1e308', mtilt: '0.0000000000001', etilt: '0', vbw: '0.0000000000001', hbw: '60' });
   assert.equal(derivedAngleOverflow.drawArgs, null);
-  assert.ok(derivedAngleOverflow.alerts.length > 0);
+  assert.equal(derivedAngleOverflow.alerts.length, 0);
 
   const plotOverflow = run({ ha: '1e308', mtilt: '60', etilt: '0', vbw: '1', hbw: '60', bdistance: '100', bheight: '1.7e308', bdepth: '30' }, '', 'Small');
   assert.equal(plotOverflow.drawArgs, null);
-  assert.ok(plotOverflow.alerts.length > 0);
+  assert.equal(plotOverflow.alerts.length, 0);
   assert.equal(plotOverflow.fields.results.innerHTML, '');
 
   const groundOverflow = run({ ha: '1e308', mtilt: '1', etilt: '0', vbw: '0.1', hbw: '60' });
   assert.equal(groundOverflow.drawArgs, null);
-  assert.ok(groundOverflow.alerts.length > 0);
+  assert.equal(groundOverflow.alerts.length, 0);
 }
 
 function testDistantFrontTolerance() {

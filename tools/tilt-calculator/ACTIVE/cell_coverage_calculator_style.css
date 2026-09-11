@@ -40,6 +40,7 @@ html {
 
 body {
     min-height: 100vh;
+    overflow: hidden;
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-sans);
@@ -188,19 +189,27 @@ button {
 
 .app-container {
     width: min(100%, 1280px);
+    height: 100vh;
     margin: 0 auto;
     padding: 28px 36px 72px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
     position: relative;
     z-index: 1;
 }
 
 .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     gap: 28px;
     padding: 24px 0 22px;
     border-bottom: 1px solid var(--line-strong);
+    background: transparent;
 }
 
 .logo {
@@ -311,7 +320,6 @@ button {
     display: flex;
     align-items: center;
     padding: 20px 0;
-    border-bottom: 1px solid var(--line);
 }
 
 .switch-container {
@@ -400,14 +408,17 @@ button {
 
 .dashboard-grid {
     display: grid;
+    height: auto;
+    min-height: 0;
     min-width: 0;
     margin-top: 14px;
     padding: 0 clamp(10px, 2vw, 24px);
-    border-block: 1px solid var(--line);
-    background: oklch(99.2% 0.008 235 / 0.72);
+    border-top: 0;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
     grid-template-columns: minmax(380px, 0.85fr) minmax(0, 1.65fr);
-    gap: 48px;
-    align-items: start;
+    gap: 0;
+    align-items: stretch;
 }
 
 .panel {
@@ -434,9 +445,60 @@ button {
     background: var(--line);
 }
 
+.control-panel .panel-title::after {
+    display: none;
+}
+
 .control-panel {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
     padding-right: 28px;
     border-right: 1px solid var(--line);
+}
+
+.workspace-column {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+.visual-column {
+    padding-left: 48px;
+}
+
+.control-panel,
+.visual-column {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+}
+
+.control-panel::-webkit-scrollbar,
+.visual-column::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.control-panel::-webkit-scrollbar-track,
+.visual-column::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.control-panel::-webkit-scrollbar-thumb,
+.visual-column::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--line-strong);
+    background-clip: padding-box;
+}
+
+.control-panel::-webkit-scrollbar-thumb:hover,
+.visual-column::-webkit-scrollbar-thumb:hover {
+    background: var(--cobalt);
+    background-clip: padding-box;
 }
 
 .parameters-grid {
@@ -485,66 +547,6 @@ button {
 
 .input-group:focus-within label {
     color: var(--cobalt-dark);
-}
-
-.calc-wrapper {
-    display: block;
-    width: 100%;
-    min-height: 50px;
-    margin-top: 26px;
-    padding: 0;
-    border: 1px solid var(--cobalt-dark);
-    border-radius: var(--radius);
-    background: var(--cobalt);
-    color: var(--surface);
-    cursor: pointer;
-    text-align: left;
-    transition: transform 200ms var(--ease-out), box-shadow 200ms ease-out, background-color 180ms ease-out;
-}
-
-.calc-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 48px;
-    padding: 0 14px 0 16px;
-}
-
-.calc-link > span:first-child {
-    color: var(--surface);
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.calc-icon {
-    display: grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-}
-
-.calc-icon svg {
-    width: 17px;
-    height: 17px;
-    fill: var(--surface);
-    transition: transform 180ms var(--ease-out);
-}
-
-.calc-wrapper:focus-visible {
-    outline: 3px solid var(--cobalt);
-    outline-offset: 4px;
-}
-
-.calc-wrapper:active {
-    background: var(--cobalt-dark);
-}
-
-.calc-wrapper:focus-visible .calc-icon svg,
-.calc-wrapper:active .calc-icon svg {
-    transform: translateX(3px);
 }
 
 .results-updated {
@@ -603,8 +605,18 @@ button {
     font-weight: 600;
 }
 
+.calculation-status {
+    min-height: 1.6em;
+    margin-top: 10px;
+    color: var(--beam-red);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
 .vis-panel {
     padding-left: 0;
+    padding-right: 0;
 }
 
 .canvas-wrapper {
@@ -614,7 +626,7 @@ button {
     overflow: hidden;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
-    background: var(--surface);
+    background: transparent;
 }
 
 .canvas-intro {
@@ -624,7 +636,7 @@ button {
     display: grid;
     place-items: center;
     padding: clamp(16px, 4vw, 42px);
-    background: oklch(99.2% 0.008 235 / 0.88);
+    background: transparent;
     opacity: 1;
     pointer-events: none;
     transition: opacity 320ms ease-out, visibility 0s linear 320ms;
@@ -654,11 +666,30 @@ canvas {
     height: auto;
 }
 
+#plot {
+    position: relative;
+    z-index: 0;
+}
+
+#plot-transition {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms var(--ease-out);
+}
+
+#plot-transition.is-active {
+    opacity: 1;
+}
+
 .map-preview-panel {
     margin-top: 18px;
-    padding: 28px clamp(16px, 2.5vw, 30px) 30px;
+    padding: 28px 0 30px;
     border-block: 1px solid var(--line-strong);
-    background: oklch(95.9% 0.018 235 / 0.72);
 }
 
 .map-preview-heading {
@@ -693,7 +724,7 @@ canvas {
 .map-preview-controls {
     display: grid;
     align-items: end;
-    grid-template-columns: minmax(240px, 1.5fr) minmax(160px, 0.8fr) minmax(130px, 0.72fr);
+    grid-template-columns: minmax(240px, 1.5fr) minmax(160px, 0.8fr);
     gap: 14px;
     margin-top: 22px;
 }
@@ -738,37 +769,6 @@ canvas {
     background: var(--surface-tint);
 }
 
-.plot-beam-button {
-    min-height: 42px;
-    padding: 9px 15px;
-    border: 1px solid var(--cobalt-dark);
-    border-radius: var(--radius);
-    background: var(--ink);
-    color: var(--surface);
-    cursor: pointer;
-    font-family: var(--font-sans);
-    font-size: 0.73rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    transition: background-color 180ms ease-out, transform 180ms var(--ease-out);
-}
-
-.plot-beam-button:hover {
-    background: var(--cobalt-dark);
-    transform: translateY(-2px);
-}
-
-.plot-beam-button:focus-visible {
-    outline: 3px solid var(--cobalt);
-    outline-offset: 4px;
-}
-
-.plot-beam-button:active {
-    background: var(--cobalt);
-    transform: translateY(0);
-}
-
 .map-status {
     min-height: 1.7em;
     margin-top: 16px;
@@ -798,7 +798,7 @@ canvas {
     margin-top: 10px;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
-    background: var(--paper-deep);
+    background: transparent;
     isolation: isolate;
 }
 
@@ -950,10 +950,6 @@ html.motion-ready .reveal-section:focus-within {
         background: var(--surface-tint);
     }
 
-    .calc-wrapper:hover {
-        box-shadow: 0 7px 18px oklch(36% 0.145 255 / 0.18);
-        transform: translateY(-3px);
-    }
 }
 
 .info-content {
@@ -1022,20 +1018,36 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 @media (max-width: 900px) {
+    body {
+        overflow: auto;
+    }
+
     .app-container {
+        height: auto;
         padding-right: 24px;
         padding-left: 24px;
+        overflow: visible;
     }
 
     .dashboard-grid {
+        height: auto;
         grid-template-columns: 1fr;
         gap: 0;
     }
 
     .control-panel {
+        overflow: visible;
         padding-right: 0;
         border-right: 0;
         border-bottom: 1px solid var(--line);
+    }
+
+    .workspace-column {
+        overflow: visible;
+    }
+
+    .visual-column {
+        padding-left: 0;
     }
 
     .vis-panel {
@@ -1127,10 +1139,6 @@ input[type="number"]::-webkit-outer-spin-button {
         grid-template-columns: 1fr;
     }
 
-    .plot-beam-button {
-        width: 100%;
-    }
-
     .wave-field-far {
         top: 8%;
         left: -48%;
@@ -1190,20 +1198,8 @@ input[type="number"]::-webkit-outer-spin-button {
     .switch-label,
     .input-group input,
     .map-input-group input,
-    .plot-beam-button,
-    .calc-wrapper,
-    .calc-icon svg {
+    #plot-transition {
         transition: none;
-    }
-
-    .calc-wrapper:hover {
-        box-shadow: none;
-        transform: none;
-    }
-
-    .calc-wrapper:focus-visible .calc-icon svg,
-    .calc-wrapper:active .calc-icon svg {
-        transform: none;
     }
 
     .results-updated {

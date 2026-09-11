@@ -514,10 +514,11 @@
             tiltMapState.mapTransitionFrame = requestAnimationFrame(animate);
         }
 
-        function createTiltSiteIcon() {
+        function createTiltSiteIcon(azimuth = 0) {
+            const safeAzimuth = Number.isFinite(azimuth) ? azimuth : 0;
             return L.divIcon({
                 className: 'tilt-map-site-icon',
-                html: '<span class="tilt-map-site-marker" role="img" aria-label="Antenna site"><span class="tilt-map-site-signal"></span><span class="tilt-map-site-body"></span></span>',
+                html: `<span class="tilt-map-site-marker" style="--tilt-map-azimuth: ${safeAzimuth}deg" role="img" aria-label="Antenna site"><span class="tilt-map-site-signal"></span><span class="tilt-map-site-body"></span></span>`,
                 iconSize: [44, 44],
                 iconAnchor: [22, 22],
                 tooltipAnchor: [0, -22]
@@ -635,7 +636,7 @@
 
             const siteLabel = `Antenna site at ${mapInputs.latitude.toFixed(6)}, ${mapInputs.longitude.toFixed(6)}`;
             const siteMarker = L.marker(origin, {
-                icon: createTiltSiteIcon(),
+                icon: createTiltSiteIcon(mapInputs.azimuth),
                 title: siteLabel,
                 alt: siteLabel,
                 keyboard: true,

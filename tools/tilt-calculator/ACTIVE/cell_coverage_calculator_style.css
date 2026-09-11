@@ -831,6 +831,8 @@ canvas {
     place-items: center;
     width: 44px;
     height: 44px;
+    transform: rotate(var(--tilt-map-azimuth, 0deg));
+    transform-origin: center;
 }
 
 .tilt-map-site-body {
@@ -912,7 +914,6 @@ canvas {
 .info-panel {
     margin-top: 6px;
     padding: 30px 0 0;
-    border-top: 1px solid var(--line-strong);
 }
 
 html.motion-ready .reveal-section {

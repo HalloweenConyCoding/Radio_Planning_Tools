@@ -45,6 +45,9 @@ assert.ok(source.includes("['map-coordinates', 'map-azimuth']"), 'coordinate pai
 assert.ok(source.includes('scrollWheelZoom: false'), 'ordinary map wheel events should remain available to the right-column scroller');
 assert.ok(source.includes('function handleMapWheel(event)'), 'modified map wheel zoom should use a dedicated handler');
 assert.match(html, /Hold Ctrl\/Cmd while scrolling to zoom the map\./, 'map should explain modified-wheel zoom');
+assert.ok(source.includes('function createTiltSiteIcon(azimuth = 0)'), 'antenna icon should accept the map azimuth');
+assert.ok(source.includes('createTiltSiteIcon(mapInputs.azimuth)'), 'antenna icon should use the rendered beam azimuth');
+assert.ok(style.includes('--tilt-map-azimuth'), 'antenna icon styling should expose an azimuth rotation');
 
 assert.equal(JSON.stringify(context.parseMapCoordinatePair('13.98937472,100.61781242')), JSON.stringify({
   latitude: 13.98937472,
